@@ -25,12 +25,10 @@ const spaceMono = Space_Mono({
   weight: ['400', '700'],
   subsets: ['latin'],
   variable: '--font-space-mono',
-  display: 'optional',
-  // Critical above-the-fold chrome (header utility bar, footer, mega panels,
-  // cart badge) — MUST be preloaded. Without it, `optional` misses its window
-  // on first paint and locks the fallback monospace in until a manual refresh.
-  // preload: false here was the original bug. (next/font emits this preload as
-  // an HTTP Link response header, not a <head> tag.)
+  // Critical above-the-fold chrome must not get permanently stuck on its
+  // fallback when a cold font request misses the short `optional` window.
+  // Preload it for first paint, then swap it in if delivery is delayed.
+  display: 'swap',
   preload: true,
 })
 
