@@ -366,6 +366,45 @@ async function walkDirectory(directory, files = []) {
   return files
 }
 
+async function filesToCheck() {
+  const requestedFiles = process.argv.slice(2)
+  const globalsPath = path.normalize(path.join('src', 'app', 'globals.css'))
+  const scansDesignSystem = requestedFiles.some(
+    (filePath) =>
+      path.normalize(path.relative(process.cwd(), path.resolve(filePath))) ===
+      globalsPath,
+  )
+
+  if (requestedFiles.length === 0 || scansDesignSystem) {
+    return (await Promise.all(roots.map((root) => walkDirectory(root)))).flat()
+  }
+
+  const files = await Promise.all(
+    requestedFiles.map(async (filePath) => {
+      const relativePath = path.normalize(
+        path.relative(process.cwd(), path.resolve(filePath)),
+      )
+      const isSourceFile =
+        roots.some(
+          (root) =>
+            relativePath === root ||
+            relativePath.startsWith(`${root}${path.sep}`),
+        ) && extensions.has(path.extname(relativePath))
+
+      if (!isSourceFile) return null
+
+      try {
+        const stats = await fs.stat(relativePath)
+        return stats.isFile() ? relativePath : null
+      } catch {
+        return null
+      }
+    }),
+  )
+
+  return [...new Set(files.filter(Boolean))]
+}
+
 async function loadDesignSystem() {
   const cssPath = path.resolve('src/app/globals.css')
   const css = await fs.readFile(cssPath, 'utf8')
@@ -468,9 +507,7 @@ function isCanonicalSpacingException(candidate, token) {
 }
 
 const design = await loadDesignSystem()
-const files = (
-  await Promise.all(roots.map((root) => walkDirectory(root)))
-).flat()
+const files = await filesToCheck()
 const invalid = []
 const canonical = []
 const seen = new Set()

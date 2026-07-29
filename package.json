@@ -24,7 +24,16 @@
     "build-storybook": "storybook build",
     "create:component": "node scripts/create-component.mjs",
     "create:lib": "node scripts/create-lib.mjs",
+    "lint:staged": "lint-staged",
+    "verify": "pnpm lint && pnpm test:contracts && pnpm build",
     "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,mjs,cjs}": [
+      "node scripts/check-tailwind-classes.mjs",
+      "eslint"
+    ],
+    "src/app/globals.css": "node scripts/check-tailwind-classes.mjs"
   },
   "dependencies": {
     "@portabletext/react": "^6.2.0",
@@ -67,6 +76,7 @@
     "eslint-plugin-storybook": "^10.4.1",
     "husky": "^9.1.7",
     "lighthouse": "^13.4.0",
+    "lint-staged": "^15.5.2",
     "prettier": "^3.8.3",
     "prettier-plugin-tailwindcss": "^0.8.0",
     "sharp": "0.34.5",
