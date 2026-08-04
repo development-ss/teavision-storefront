@@ -66,7 +66,7 @@ export async function generateMetadata({
 
 export default function Page({ params, searchParams }: PageProps) {
   return (
-    <>
+    <div className="bg-card">
       <HeroContent params={params} />
       {/* The fallback is the real default grid, not a skeleton: it reads only
           params + cached data, so crawlers and no-JS renders get actual
@@ -74,6 +74,6 @@ export default function Page({ params, searchParams }: PageProps) {
       <Suspense fallback={<DefaultResults params={params} />}>
         <PageContent params={params} searchParams={searchParams} />
       </Suspense>
-    </>
+    </div>
   )
 }
