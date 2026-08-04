@@ -182,7 +182,7 @@ export function ProductCard({
           <StarRating
             rating={product.rating}
             count={product.reviewCount}
-            size="sm"
+            size="md"
             className={cn(isListLayout ? 'mt-2' : 'mt-1')}
           />
         )}

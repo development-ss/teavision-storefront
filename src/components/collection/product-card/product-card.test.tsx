@@ -116,6 +116,8 @@ describe('ProductCard', () => {
     expect(html).not.toContain('Quick View')
     // Star rating row renders when rating data is available
     expect(html).toContain('out of 5 stars')
+    expect(html).toContain('<svg width="16" height="16"')
+    expect(html).toContain('text-rating')
   })
 
   it('shows quantity and add-to-cart controls for single-variant products', () => {

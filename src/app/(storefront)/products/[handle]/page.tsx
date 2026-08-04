@@ -20,7 +20,7 @@ import {
   sanitizeShopifyCompactHtml,
 } from '@/lib/shopify/html-content'
 import { RichText } from '@/components/ui/rich-text'
-import { Badge, Eyebrow, Section, StarRating } from '@/components/ui'
+import { Badge, Eyebrow, StarRating } from '@/components/ui'
 import { ProductForm, ProductGallery } from '@/components/product'
 
 import { CustomersAlsoBought } from './_components/customers-also-bought'
@@ -276,7 +276,6 @@ export async function ProductContent({
     ],
   }
 
-  const numericProductId = product.id.replace('gid://shopify/Product/', '')
   const numericProductIdNumber = getNumericShopifyId(product.id)
   const shopifyAnalyticsMeta = numericProductIdNumber
     ? getShopifyAnalyticsMeta(product, numericProductIdNumber)
@@ -375,7 +374,7 @@ export async function ProductContent({
               <div className="flex flex-wrap items-center gap-2.5">
                 <StarRating
                   rating={visibleProductReviewSummary.rating}
-                  size="md"
+                  size="lg"
                 />
                 <span className="type-mono-meta text-ink-faint">
                   {visibleProductReviewSummary.rating.toFixed(1)} ·{' '}
@@ -477,19 +476,6 @@ export async function ProductContent({
           ) : null}
         </div>
       </div>
-
-      {/* Reviews */}
-      <Section.Root
-        tone="transparent"
-        spacing="none"
-        className="border-hairline mt-[clamp(50px,7vw,90px)] border-t pt-10"
-        aria-label="Customer reviews"
-      >
-        <div className="mb-6 flex flex-wrap items-baseline gap-3">
-          <h2 className="font-display text-ink text-[1.4rem]">Reviews</h2>
-        </div>
-        <div id="shopify-product-reviews" data-id={numericProductId} />
-      </Section.Root>
 
       {/* Product recommendations — mb keeps the last carousel clear of the footer */}
       <div className="my-[clamp(50px,7vw,90px)] flex flex-col gap-10">

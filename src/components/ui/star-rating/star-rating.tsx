@@ -47,7 +47,7 @@ function Star({
       viewBox="0 0 20 20"
       aria-hidden="true"
       fill="none"
-      className={cn(fill === 'empty' ? 'text-ink-faint/40' : 'text-gold')}
+      className={cn(fill === 'empty' ? 'text-ink-faint/40' : 'text-rating')}
     >
       {fill === 'half' && (
         <defs>

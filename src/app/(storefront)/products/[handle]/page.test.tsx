@@ -259,6 +259,10 @@ describe('ProductContent aggregateRating JSON-LD', () => {
 
     expect(html).toContain('4.7')
     expect(html).toContain('12 reviews')
+    expect(html).toContain('<svg width="20" height="20"')
+    expect(html).toContain('text-rating')
+    expect(html).not.toContain('shopify-product-reviews')
+    expect(html).not.toContain('aria-label="Customer reviews"')
     expect(productJsonLd).toMatchObject({
       aggregateRating: {
         '@type': 'AggregateRating',
