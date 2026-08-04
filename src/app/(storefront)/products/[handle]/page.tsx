@@ -13,6 +13,7 @@ import {
 import { withNoindexRobots } from '@/lib/seo/noindex'
 import { serializeInlineJson } from '@/lib/seo/serialize-inline-json'
 import { SITE_URL } from '@/lib/seo/site-url'
+import { getVisibleProductReviewSummary } from '@/lib/reviews/summary'
 import { getTrustooProductRatings } from '@/lib/reviews/trustoo'
 import { sanitizeShopifyCompactHtml } from '@/lib/shopify/html-content'
 import { RichText } from '@/components/ui/rich-text'
@@ -55,27 +56,6 @@ function getMetaSegments(tags: string[], optionName?: string): string[] {
   return [visibleTags[0], optionName, visibleTags[1]]
     .filter((segment): segment is string => Boolean(segment))
     .slice(0, 3)
-}
-
-function getVisibleProductReviewSummary(summary: {
-  rating?: number
-  reviewCount?: number
-}): { rating: number; reviewCount: number } | null {
-  const { rating, reviewCount } = summary
-
-  if (
-    typeof rating === 'number' &&
-    Number.isFinite(rating) &&
-    rating > 0 &&
-    rating <= 5 &&
-    typeof reviewCount === 'number' &&
-    Number.isInteger(reviewCount) &&
-    reviewCount > 0
-  ) {
-    return { rating, reviewCount }
-  }
-
-  return null
 }
 
 type Props = {

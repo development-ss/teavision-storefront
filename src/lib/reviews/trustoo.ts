@@ -3,10 +3,7 @@ import { cacheLife, cacheTag } from 'next/cache'
 import { trustooShopDomain } from '@/lib/env/public'
 import { logEvent } from '@/lib/observability/logger'
 
-export type ProductReviewSummary = {
-  rating: number
-  reviewCount: number
-}
+import type { ProductReviewSummary } from './summary'
 
 type TrustooRatingRow = {
   rating?: unknown

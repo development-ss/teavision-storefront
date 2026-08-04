@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation'
 
 import { StoryDisclosure, Toolbar } from '@/components/collection'
 import { Section } from '@/components/ui'
+import { getVisibleProductReviewSummary } from '@/lib/reviews/summary'
+import { getTrustooProductRatings } from '@/lib/reviews/trustoo'
 import { SITE_URL } from '@/lib/seo/site-url'
 import { sanitizeShopifyCollectionStoryHtml } from '@/lib/shopify/html-content'
 import {
@@ -184,6 +186,24 @@ export async function Results({
     )
   }
 
+  const trustooProductRatings = await getTrustooProductRatings(
+    products.map((product) => product.handle),
+  )
+  const productsWithRatings = products.map((product) => {
+    const visibleRating = getVisibleProductReviewSummary(
+      trustooProductRatings[product.handle] ?? {
+        rating: product.rating,
+        reviewCount: product.reviewCount,
+      },
+    )
+
+    return {
+      ...product,
+      rating: visibleRating?.rating,
+      reviewCount: visibleRating?.reviewCount,
+    }
+  })
+
   const clearFiltersHref = getHref(handle, sort)
   const categoryFilter = buildCategoryFilter({
     products: initialProductsResult.products,
@@ -246,7 +266,7 @@ export async function Results({
           baseUrl={SITE_URL}
           collection={collection}
           collectionUrl={collectionUrl}
-          products={products}
+          products={productsWithRatings}
         />
       )}
 
@@ -285,7 +305,7 @@ export async function Results({
                 })
               }
               preloadFirstImage={!hasRenderableCollectionHeroImage}
-              products={products}
+              products={productsWithRatings}
             />
           </div>
         </Section.Container>

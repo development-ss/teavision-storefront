@@ -25,6 +25,10 @@ const htmlContentMocks = vi.hoisted(() => ({
   sanitizeShopifyCollectionStoryHtml: vi.fn(),
 }))
 
+const reviewsMocks = vi.hoisted(() => ({
+  getTrustooProductRatings: vi.fn(),
+}))
+
 vi.mock('server-only', () => ({}))
 
 vi.mock('@/lib/shopify/html-content', async (importOriginal) => {
@@ -48,6 +52,10 @@ vi.mock('@/lib/shopify/operations/collection', () => ({
   getCollectionPageIndex: shopifyMocks.getCollectionPageIndex,
   getCollectionSummaries: shopifyMocks.getCollectionSummaries,
   getCollectionTagCounts: shopifyMocks.getCollectionTagCounts,
+}))
+
+vi.mock('@/lib/reviews/trustoo', () => ({
+  getTrustooProductRatings: reviewsMocks.getTrustooProductRatings,
 }))
 
 vi.mock('next/navigation', () => ({
@@ -154,6 +162,8 @@ function getImagePreloads(html: string): string[] {
 
 beforeEach(() => {
   htmlContentMocks.sanitizeShopifyCollectionStoryHtml.mockClear()
+  reviewsMocks.getTrustooProductRatings.mockReset()
+  reviewsMocks.getTrustooProductRatings.mockResolvedValue({})
 })
 
 describe('PageContent out-of-range and stale-cursor handling', () => {
@@ -250,6 +260,32 @@ describe('PageContent out-of-range and stale-cursor handling', () => {
       searchParams: Promise.resolve({ page: '1' }),
     })
     expect(element).toBeTruthy()
+  })
+
+  it('uses the same Trustoo rating on collection cards as the product page', async () => {
+    shopifyMocks.getCollectionPageIndex.mockResolvedValue(
+      pageIndexFixture({ totalCount: 1, totalPages: 1 }),
+    )
+    shopifyMocks.getCollectionProductsPage.mockResolvedValue({
+      filters: [],
+      pageInfo: { endCursor: null, hasNextPage: false },
+      products: [productFixture({ rating: 4.8, reviewCount: 37 })],
+    })
+    reviewsMocks.getTrustooProductRatings.mockResolvedValue({
+      'tea-masters-sencha': { rating: 5, reviewCount: 2 },
+    })
+
+    const element = await PageContent({
+      params: Promise.resolve({ handle: 'all' }),
+      searchParams: Promise.resolve({}),
+    })
+    const html = renderToStaticMarkup(element)
+
+    expect(reviewsMocks.getTrustooProductRatings).toHaveBeenCalledWith([
+      'tea-masters-sencha',
+    ])
+    expect(html).toContain('aria-label="5.0 out of 5 stars, 2 reviews"')
+    expect(html).not.toContain('aria-label="4.8 out of 5 stars, 37 reviews"')
   })
 
   it('treats invalid page param as page 1 (no redirect)', async () => {
