@@ -31,10 +31,12 @@ export const Default: Story = {
         name: '4.9 out of 5 stars from 76 Google reviews',
       }),
     ).toBeInTheDocument()
-    await expect(canvas.getByText('4.9-star')).toBeInTheDocument()
+    await expect(canvas.getByText('4.9')).toBeInTheDocument()
     await expect(
       canvas.getByText('Google rated · 76 reviews'),
     ).toBeInTheDocument()
-    await expect(canvas.queryByText('Owned & Operated')).not.toBeInTheDocument()
+    await expect(canvas.getByText('Owned & Operated')).toBeInTheDocument()
+    await expect(canvas.queryByText('1,000+')).not.toBeInTheDocument()
+    await expect(canvas.queryByText('4.9-star')).not.toBeInTheDocument()
   },
 }

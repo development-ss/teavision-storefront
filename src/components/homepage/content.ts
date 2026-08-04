@@ -73,8 +73,14 @@ export const CATALOGUE_CTA_FIXTURE = {
 
 export const HOMEPAGE_PROOF_POINTS_FIXTURE = [
   {
-    title: '4.9-star',
-    description: 'Google rated · 76 reviews',
+    image: {
+      src: '/images/australian-flag.svg',
+      alt: 'Australian flag',
+      width: 1280,
+      height: 640,
+    },
+    title: 'Australian',
+    description: 'Owned & Operated',
   },
   {
     icon: 'Truck',
@@ -82,9 +88,8 @@ export const HOMEPAGE_PROOF_POINTS_FIXTURE = [
     description: 'Tea and Herb Wholesale Supplier',
   },
   {
-    icon: 'FlaskConical',
-    title: '1,000+',
-    description: 'Ingredient options including 500+ Certified Organic',
+    title: '4.9',
+    description: 'Google rated · 76 reviews',
   },
   {
     icon: 'Medal',

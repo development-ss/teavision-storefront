@@ -80,7 +80,7 @@ export function HomepageHero({ hero }: HomepageHeroProps) {
               const IconComponent = point.icon
                 ? STRIP_ICON_MAP[point.icon]
                 : undefined
-              const isGoogleRating = index === 0
+              const isGoogleRating = index === 2
               const isLastInRow2 = index % 2 === 1
               const isLastOverall = index === hero.proofPoints.length - 1
               return (
@@ -125,9 +125,7 @@ export function HomepageHero({ hero }: HomepageHeroProps) {
                         strokeWidth={1.8}
                       />
                     ) : null}
-                    {isGoogleRating
-                      ? `${GOOGLE_RATING.rating}-star`
-                      : point.title}
+                    {isGoogleRating ? GOOGLE_RATING.rating : point.title}
                   </div>
                   <div className="text-paper/85 mt-1 text-[0.82rem]">
                     {isGoogleRating
