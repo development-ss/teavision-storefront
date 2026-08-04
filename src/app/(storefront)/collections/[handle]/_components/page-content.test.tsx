@@ -645,17 +645,18 @@ describe('Collection hero and page content rendering', () => {
 
     expect(heroHtml.match(/<h1\b/g)).toHaveLength(1)
     expect(heroHtml).not.toContain('<h1 class="sr-only"')
+    expect(heroHtml).not.toContain('type-display')
     expect(heroHtml).toContain(
-      '<h1 class="font-display text-paper mt-4 text-balance text-[clamp(2.4rem,5vw,4rem)] leading-[1.04]">Wholesale Bulk Tea</h1>',
+      '<h1 aria-current="page" class="type-mono-meta text-gold-deep m-0 inline">Wholesale Bulk Tea</h1>',
     )
-    expect(heroHtml).toContain(
-      '<span aria-current="page" class="text-gold">Wholesale Bulk Tea</span>',
+    expect(heroHtml).not.toContain(
+      '<span aria-current="page" class="text-gold-deep">Wholesale Bulk Tea</span>',
     )
     expect(heroHtml).not.toContain(
       '<p class="type-body text-ink-soft mt-4 max-w-[58ch]">Hero summary should not render',
     )
     expect(heroHtml).toMatch(
-      /<img(?=[^>]*alt="")(?=[^>]*class="object-cover opacity-35")(?=[^>]*fetchPriority="high")(?=[^>]*loading="eager")[^>]*>/,
+      /<img(?=[^>]*class="w-full object-cover")(?=[^>]*fetchPriority="high")(?=[^>]*loading="eager")[^>]*>/,
     )
     expect(heroHtml).toMatch(
       /<link(?=[^>]*rel="preload")(?=[^>]*as="image")(?=[^>]*fetchPriority="high")[^>]*>/,
