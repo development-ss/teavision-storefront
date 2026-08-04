@@ -133,7 +133,48 @@ export async function ProductContent({
   const visibleTags = product.tags
     .map(formatTag)
     .filter((tag): tag is string => tag !== null)
+  const certificationTags = visibleTags.filter((tag) =>
+    /aco|certif|haccp|halal|kosher|organic|usda/i.test(tag),
+  )
   const metaSegments = getMetaSegments(product.tags, product.options[0]?.name)
+  const ingredientRows: [string, string][] = []
+  const packingRows: [string, string][] = []
+
+  if (descriptionDetails.origin) {
+    ingredientRows.push(['Origin', descriptionDetails.origin])
+  }
+  if (descriptionDetails.ingredients) {
+    ingredientRows.push(['Ingredients', descriptionDetails.ingredients])
+  }
+  if (certificationTags.length > 0) {
+    ingredientRows.push(['Certifications', certificationTags.join(' · ')])
+  }
+  if (ingredientRows.length === 0) {
+    ingredientRows.push([
+      'Product details',
+      'Ingredient and certification details have not yet been supplied for this product.',
+    ])
+  }
+
+  if (descriptionDetails.packaging) {
+    packingRows.push(['Packaging', descriptionDetails.packaging])
+  }
+  if (descriptionDetails.storage) {
+    packingRows.push(['Storage', descriptionDetails.storage])
+  }
+  if (descriptionDetails.qualityControl) {
+    packingRows.push(['Quality control', descriptionDetails.qualityControl])
+  }
+  if (descriptionDetails.warning) {
+    packingRows.push(['Warning', descriptionDetails.warning])
+  }
+  if (packingRows.length === 0) {
+    packingRows.push([
+      'Product details',
+      'Packing and storage guidance has not yet been supplied for this product.',
+    ])
+  }
+
   const specDisclosures: SpecDisclosure[] = [
     {
       kind: 'table',
@@ -150,18 +191,14 @@ export async function ProductContent({
       ],
     },
     {
-      kind: 'text',
+      kind: 'table',
       title: 'Ingredients & certification',
-      content:
-        visibleTags.length > 0
-          ? visibleTags.join(' · ')
-          : 'Product certification and ingredient details are listed in the product description.',
+      rows: ingredientRows,
     },
     {
-      kind: 'text',
+      kind: 'table',
       title: 'Packing, shipping & storage',
-      content:
-        'Packed for bulk tea service and shipped through the existing Teavision checkout flow.',
+      rows: packingRows,
     },
   ]
 

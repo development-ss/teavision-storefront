@@ -178,6 +178,28 @@ describe('ProductContent heading hierarchy', () => {
     expect(html).not.toContain('Available variants')
   })
 
+  it('places real ingredients, storage, and quality details in their matching disclosures', async () => {
+    const html = await renderProductContent(
+      makeProduct({
+        handle: 'structured-wild-berry',
+        tags: ['filter_categories_Herbal Tea', 'Premium', 'Organic'],
+        descriptionHtml:
+          '<p><strong>Origin:</strong> Multiple.</p><p><strong>Ingredients:</strong> Hibiscus, apple pieces, rosehip shells.</p><p><strong>Packaging:</strong> Sealed, air-tight pouches.</p><p><strong>Storage:</strong> Store below 18ºC in a dry place.</p><p><strong>Quality Control:</strong> HACCP and ACO accredited facilities.</p><p><strong>WARNING:</strong> Consult a healthcare professional before use.</p>',
+      }),
+    )
+
+    expect(html).toMatch(
+      /Ingredients &amp; certification[\s\S]*Ingredients[\s\S]*Hibiscus, apple pieces, rosehip shells\.[\s\S]*Certifications[\s\S]*Organic/,
+    )
+    expect(html).toMatch(
+      /Packing, shipping &amp; storage[\s\S]*Packaging[\s\S]*Sealed, air-tight pouches\.[\s\S]*Storage[\s\S]*Store below 18ºC in a dry place\.[\s\S]*Quality control[\s\S]*HACCP and ACO accredited facilities\.[\s\S]*Warning[\s\S]*Consult a healthcare professional before use\./,
+    )
+    expect(html).not.toContain(
+      'Packed for bulk tea service and shipped through the existing Teavision checkout flow.',
+    )
+    expect(html).not.toContain('categories: Herbal Tea · Premium · Organic')
+  })
+
   it('keeps deep-linked variant selection in the route-local client leaf', () => {
     const html = renderToStaticMarkup(
       <PurchaseForm variants={[]} options={[]} bulkPricingTiers={[]} />,
