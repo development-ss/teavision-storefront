@@ -44,6 +44,30 @@ function formatTag(tag: string): string | null {
   return tag
 }
 
+function getCategoryLabel(tag: string): string | null {
+  const formattedTag = formatTag(tag)
+  if (!formattedTag) return null
+
+  const categoryMatch = /^categories:\s*(.+)$/i.exec(formattedTag)
+  return categoryMatch?.[1]?.trim() || null
+}
+
+function getCertificationLabel(tag: string): string | null {
+  const formattedTag = formatTag(tag)
+  if (!formattedTag) return null
+
+  const certificationMatch = /^(?:certified|certification):\s*(.+)$/i.exec(
+    formattedTag,
+  )
+  if (certificationMatch?.[1]) return certificationMatch[1].trim()
+
+  return /^(?:aco certified|haccp|halal|kosher|organic|usda organic)$/i.test(
+    formattedTag,
+  )
+    ? formattedTag
+    : null
+}
+
 function getBadgeVariant(tag: string): 'gold' | 'organic' | 'certification' {
   if (/award|gold/i.test(tag)) return 'gold'
   if (/organic/i.test(tag)) return 'organic'
@@ -51,12 +75,18 @@ function getBadgeVariant(tag: string): 'gold' | 'organic' | 'certification' {
 }
 
 function getMetaSegments(tags: string[], optionName?: string): string[] {
-  const visibleTags = tags
+  const categoryLabels = tags
+    .map(getCategoryLabel)
+    .filter((tag): tag is string => tag !== null)
+  const fallbackLabels = tags
     .map(formatTag)
     .filter((tag): tag is string => tag !== null)
+    .filter((tag) => !/^categories:\s*/i.test(tag))
     .filter((tag) => !/award|organic|certified/i.test(tag))
+  const groupLabels =
+    categoryLabels.length > 0 ? categoryLabels : fallbackLabels
 
-  return [visibleTags[0], optionName, visibleTags[1]]
+  return [groupLabels[0], optionName, groupLabels[1]]
     .filter((segment): segment is string => Boolean(segment))
     .slice(0, 3)
 }
@@ -133,9 +163,9 @@ export async function ProductContent({
   const visibleTags = product.tags
     .map(formatTag)
     .filter((tag): tag is string => tag !== null)
-  const certificationTags = visibleTags.filter((tag) =>
-    /aco|certif|haccp|halal|kosher|organic|usda/i.test(tag),
-  )
+  const certificationTags = product.tags
+    .map(getCertificationLabel)
+    .filter((tag): tag is string => tag !== null)
   const metaSegments = getMetaSegments(product.tags, product.options[0]?.name)
   const ingredientRows: [string, string][] = []
   const packingRows: [string, string][] = []

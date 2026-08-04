@@ -200,6 +200,34 @@ describe('ProductContent heading hierarchy', () => {
     expect(html).not.toContain('categories: Herbal Tea · Premium · Organic')
   })
 
+  it('uses assigned category groups in the product label without treating categories as certifications', async () => {
+    const html = await renderProductContent(
+      makeProduct({
+        handle: 'organic-black-assam',
+        tags: [
+          'black-tea',
+          'filter_categories_Organic Black Tea',
+          'filter_categories_Assam Tea',
+          'filter_categories_All Organic Tea',
+          'filter_certified_ACO',
+          'Package_1kg',
+        ],
+        options: [{ name: 'Size', values: ['50g', '250g', '1kg'] }],
+        descriptionHtml:
+          '<p><strong>Ingredients:</strong> Certified organic black tea.</p>',
+      }),
+    )
+
+    expect(html).toContain('Organic Black Tea · Size · Assam Tea')
+    expect(html).toContain(
+      '<th scope="row" class="type-mono-meta text-ink-faint w-2/5 py-3 pr-4">Certifications</th><td class="text-ink-soft py-3 text-sm">ACO</td>',
+    )
+    expect(html).not.toContain(
+      '>Certifications</th><td class="text-ink-soft py-3 text-sm">categories: All Organic Tea',
+    )
+    expect(html).not.toContain('Package: 1kg')
+  })
+
   it('keeps deep-linked variant selection in the route-local client leaf', () => {
     const html = renderToStaticMarkup(
       <PurchaseForm variants={[]} options={[]} bulkPricingTiers={[]} />,
