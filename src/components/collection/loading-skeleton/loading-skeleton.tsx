@@ -75,22 +75,25 @@ export function LoadingSkeleton({
                 <Skeleton key={index} className="h-9" data-skeleton="sidebar" />
               ))}
             </div>
-            <ul
-              className="grid grid-cols-2 gap-x-3 gap-y-4 sm:gap-x-4.5 sm:gap-y-5.5 lg:grid-cols-3"
-              role="list"
-              aria-hidden="true"
-            >
+            <ul className="grid gap-4 sm:gap-5" role="list" aria-hidden="true">
               {Array.from({ length: productCount }, (_, index) => (
                 <li
                   key={index}
-                  className="border-hairline-2"
+                  className="border-hairline bg-card grid grid-cols-[7.5rem_minmax(0,1fr)] gap-x-4 gap-y-4 rounded-lg border p-4 sm:grid-cols-[12rem_minmax(0,1fr)] sm:gap-x-6 sm:p-5 lg:grid-cols-[14rem_minmax(0,1fr)]"
                   data-skeleton="product"
                 >
-                  <Skeleton className="aspect-square rounded-lg" />
-                  <div className="pt-4">
+                  <Skeleton className="aspect-square rounded-md sm:row-span-2" />
+                  <div>
                     <Skeleton className="mb-1 h-3 w-18" />
                     <Skeleton className="my-1.5 h-6 w-4/5" />
                     <Skeleton className="mt-1.5 h-4 w-20" />
+                  </div>
+                  <div className="col-span-2 grid gap-2 sm:col-span-1 sm:col-start-2">
+                    <Skeleton className="h-5 w-20" />
+                    <div className="grid grid-cols-[7.5rem_minmax(0,1fr)] gap-2">
+                      <Skeleton className="h-11 rounded-full" />
+                      <Skeleton className="h-11 rounded-full" />
+                    </div>
                   </div>
                 </li>
               ))}

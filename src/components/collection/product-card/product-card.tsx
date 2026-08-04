@@ -30,27 +30,64 @@ type ProductCardProduct = ProductSummary &
 type ProductCardProps = {
   product: ProductCardProduct
   priority?: boolean
+  layout?: 'grid' | 'list'
   className?: string
 }
 
 export function ProductCard({
   product,
   priority = false,
+  layout = 'grid',
   className,
 }: ProductCardProps) {
   const productUrl = `/products/${product.handle}`
   const isSoldOut = product.availableForSale === false
+  const isListLayout = layout === 'list'
   const variants = product.variants ?? []
   const hasKnownVariants = variants.length > 0
   const canPurchaseFromCard = !isSoldOut && hasKnownVariants
 
   const { organic, gold } = getCertBadges(product.tags ?? [])
   const featuredImage = product.featuredImage
+  const purchaseContent = canPurchaseFromCard ? (
+    <ProductPurchaseForm
+      variants={variants}
+      productTitle={product.title}
+      layout={isListLayout ? 'inline' : 'card'}
+      className={cn(!isListLayout && 'mt-auto pt-3')}
+    />
+  ) : (
+    <div
+      className={cn(
+        'flex items-baseline gap-2',
+        !isListLayout && 'mt-auto pt-1.5',
+      )}
+    >
+      <Price
+        price={product.priceRange.minVariantPrice}
+        size="sm"
+        className="font-sans font-bold"
+      />
+    </div>
+  )
 
   return (
-    <article className={cn('group relative flex h-full flex-col', className)}>
+    <article
+      className={cn(
+        'group relative',
+        isListLayout
+          ? 'border-hairline bg-card grid grid-cols-[7.5rem_minmax(0,1fr)] gap-x-4 gap-y-4 rounded-lg border p-4 sm:grid-cols-[12rem_minmax(0,1fr)] sm:gap-x-6 sm:p-5 lg:grid-cols-[14rem_minmax(0,1fr)]'
+          : 'flex h-full flex-col',
+        className,
+      )}
+    >
       {/* Media block */}
-      <div className="relative aspect-square overflow-hidden rounded-lg bg-white">
+      <div
+        className={cn(
+          'relative aspect-square overflow-hidden bg-white',
+          isListLayout ? 'rounded-md sm:row-span-2' : 'rounded-lg',
+        )}
+      >
         <Link
           href={productUrl}
           tabIndex={-1}
@@ -64,7 +101,11 @@ export function ProductCard({
               fill
               preload={priority}
               quality={68}
-              sizes="(min-width: 1480px) 336px, (min-width: 1024px) calc(30vw - 6.833rem), (min-width: 640px) calc(45vw - 0.5625rem), calc(50vw - 1.625rem)"
+              sizes={
+                isListLayout
+                  ? '(min-width: 1024px) 224px, (min-width: 640px) 192px, 120px'
+                  : '(min-width: 1480px) 336px, (min-width: 1024px) calc(30vw - 6.833rem), (min-width: 640px) calc(45vw - 0.5625rem), calc(50vw - 1.625rem)'
+              }
               className="object-contain transition-transform duration-300 group-hover:scale-[1.02] motion-reduce:transform-none motion-reduce:transition-none motion-reduce:group-hover:scale-100"
             />
           ) : (
@@ -109,7 +150,9 @@ export function ProductCard({
       </div>
 
       {/* Body: identity + price (CARD-05) */}
-      <div className="flex flex-1 flex-col pt-4">
+      <div
+        className={cn('flex min-w-0 flex-col', !isListLayout && 'flex-1 pt-4')}
+      >
         {/* Origin/type eyebrow (CARD-02) */}
         {product.productType && (
           <p className="type-mono-meta text-ink-faint mb-1">
@@ -118,7 +161,14 @@ export function ProductCard({
         )}
 
         {/* Title as sole PDP link (CARD-04) */}
-        <h3 className="font-display my-1.5 text-[1.2rem] leading-[1.1]">
+        <h3
+          className={cn(
+            'font-display my-1.5 wrap-break-word',
+            isListLayout
+              ? 'text-[1.3rem] leading-[1.15] sm:text-[1.55rem]'
+              : 'text-[1.2rem] leading-[1.1]',
+          )}
+        >
           <Link
             href={productUrl}
             className="focus-visible:ring-ring hover:text-brand transition-colors focus-visible:rounded focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
@@ -133,27 +183,18 @@ export function ProductCard({
             rating={product.rating}
             count={product.reviewCount}
             size="sm"
-            className="mt-1"
+            className={cn(isListLayout ? 'mt-2' : 'mt-1')}
           />
         )}
 
-        {canPurchaseFromCard ? (
-          <ProductPurchaseForm
-            variants={variants}
-            productTitle={product.title}
-            layout="card"
-            className="mt-auto pt-3"
-          />
-        ) : (
-          <div className="mt-auto flex items-baseline gap-2 pt-1.5">
-            <Price
-              price={product.priceRange.minVariantPrice}
-              size="sm"
-              className="font-sans font-bold"
-            />
-          </div>
-        )}
+        {!isListLayout ? purchaseContent : null}
       </div>
+
+      {isListLayout ? (
+        <div className="col-span-2 min-w-0 sm:col-span-1 sm:col-start-2">
+          {purchaseContent}
+        </div>
+      ) : null}
     </article>
   )
 }

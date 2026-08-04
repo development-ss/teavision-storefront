@@ -49,13 +49,14 @@ export function ProductList({
     <div>
       <ul
         id="product-grid"
-        className="grid scroll-mt-24 grid-cols-2 gap-x-3 gap-y-4 sm:gap-x-4.5 sm:gap-y-5.5 lg:scroll-mt-32 lg:grid-cols-3"
+        className="grid scroll-mt-24 gap-4 sm:gap-5 lg:scroll-mt-32"
         role="list"
       >
         {products.map((product, index) => (
-          <li key={product.id} className="border-hairline-2">
+          <li key={product.id}>
             <ProductCard
               product={product}
+              layout="list"
               priority={
                 preloadFirstImage && index < PRODUCT_IMAGE_PRELOAD_COUNT
               }

@@ -5,6 +5,7 @@ import type {
   CollectionProductSummary,
   ProductVariant,
 } from '@/lib/shopify/types'
+import { cn } from '@/lib/utils'
 
 import { ProductCard } from './product-card'
 
@@ -76,8 +77,14 @@ const meta: Meta<typeof ProductCard> = {
     nextjs: { appDirectory: true },
   },
   decorators: [
-    (Story) => (
-      <div className="w-64">
+    (Story, context) => (
+      <div
+        className={cn(
+          context.args.layout === 'list'
+            ? 'w-[min(56rem,calc(100vw-2rem))]'
+            : 'w-64',
+        )}
+      >
         <Story />
       </div>
     ),
@@ -161,6 +168,73 @@ export const MultiVariantPurchase: Story = {
     await expect(
       canvas.getByRole('button', { name: 'Add to cart' }),
     ).toBeVisible()
+  },
+}
+
+/** Collection PLP layout: horizontal media, details, and purchase controls */
+export const CollectionListLayout: Story = {
+  args: {
+    layout: 'list',
+    product: {
+      ...stubProduct,
+      id: 'gid://shopify/Product/masters-breakfast-list',
+      handle: 'tea-masters-breakfast-list',
+      title: 'Tea Masters Breakfast Blend',
+      variants: multiVariants,
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    await expect(
+      canvas.getByRole('link', { name: 'Tea Masters Breakfast Blend' }),
+    ).toBeVisible()
+    await expect(
+      canvas.getByRole('combobox', {
+        name: 'Select pack size for Tea Masters Breakfast Blend',
+      }),
+    ).toBeVisible()
+    await expect(
+      canvas.getByRole('spinbutton', {
+        name: 'Quantity for Tea Masters Breakfast Blend',
+      }),
+    ).toBeVisible()
+    await expect(
+      canvas.getByRole('button', { name: 'Add to cart' }),
+    ).toBeVisible()
+  },
+}
+
+/** Narrow PLP layout keeps media, identity, and controls within the viewport. */
+export const CollectionListMobile: Story = {
+  args: {
+    layout: 'list',
+    product: {
+      ...stubProduct,
+      title: 'WholesaleTeaProcurementComplianceSourcingIntelligenceSenchaBlend',
+      variants: multiVariants,
+    },
+  },
+  parameters: {
+    viewport: {
+      defaultViewport: 'mobile1',
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    await expect(
+      canvas.getByRole('combobox', {
+        name: /Select pack size for WholesaleTeaProcurement/,
+      }),
+    ).toBeVisible()
+    await expect(
+      canvas.getByRole('button', { name: 'Add to cart' }),
+    ).toBeVisible()
+
+    if (canvasElement.scrollWidth > canvasElement.clientWidth) {
+      throw new Error('Collection list card overflows the mobile canvas')
+    }
   },
 }
 

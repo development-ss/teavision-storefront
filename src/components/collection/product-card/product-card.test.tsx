@@ -96,7 +96,7 @@ describe('ProductCard', () => {
     expect(html).not.toContain('bg-paper-2')
     // Title uses display font (lockstep with UI-SPEC §5.5)
     expect(html).toContain(
-      '<h3 class="font-display my-1.5 text-[1.2rem] leading-[1.1]">',
+      '<h3 class="font-display my-1.5 wrap-break-word text-[1.2rem] leading-[1.1]">',
     )
     // Product imagery is contained so pack shots are not cropped/zoomed in.
     expect(html).toContain('object-contain')
@@ -122,6 +122,25 @@ describe('ProductCard', () => {
     const html = renderToStaticMarkup(<ProductCard product={product} />)
     expect(html).toContain('Add to cart')
     expect(html).toContain('Quantity for Tea Masters Sencha Green Tea')
+  })
+
+  it('renders a responsive horizontal layout when used by collection PLPs', () => {
+    const html = renderToStaticMarkup(
+      <ProductCard
+        product={{ ...product, variants: multiVariants }}
+        layout="list"
+      />,
+    )
+
+    expect(html).toContain('grid-cols-[7.5rem_minmax(0,1fr)]')
+    expect(html).toContain('sm:grid-cols-[12rem_minmax(0,1fr)]')
+    expect(html).toContain('lg:grid-cols-[14rem_minmax(0,1fr)]')
+    expect(html).toContain(
+      'sizes="(min-width: 1024px) 224px, (min-width: 640px) 192px, 120px"',
+    )
+    expect(html).toContain('Select pack size for Tea Masters Sencha Green Tea')
+    expect(html).toContain('Quantity for Tea Masters Sencha Green Tea')
+    expect(html).toContain('Add to cart')
   })
 
   it('preloads priority product imagery for above-the-fold LCP candidates', () => {

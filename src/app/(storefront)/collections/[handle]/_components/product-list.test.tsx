@@ -56,7 +56,7 @@ function getImagePreloads(html: string): string[] {
 }
 
 describe('ProductList', () => {
-  it('uses a CSS grid layout with hairline-2 separators for product rows', () => {
+  it('uses a single-column list of horizontal product cards', () => {
     const html = renderToStaticMarkup(
       <ProductList
         products={[
@@ -71,14 +71,12 @@ describe('ProductList', () => {
       />,
     )
 
-    expect(html).toContain('grid-cols-2')
-    expect(html).toContain('lg:grid-cols-3')
-    expect(html).toContain('gap-y-5.5')
-    expect(html).toContain('gap-x-4.5')
-    expect(html).toContain('border-hairline-2')
-    // Old listing layout classes must be gone (migrated to new grid)
-    expect(html).not.toContain('space-y-8')
-    expect(html).not.toContain('divide-y')
+    expect(html).toContain('grid scroll-mt-24 gap-4 sm:gap-5')
+    expect(html).not.toContain('grid-cols-2')
+    expect(html).not.toContain('lg:grid-cols-3')
+    expect(html).toContain('grid-cols-[7.5rem_minmax(0,1fr)]')
+    expect(html).toContain('sm:grid-cols-[12rem_minmax(0,1fr)]')
+    expect(html).toContain('lg:grid-cols-[14rem_minmax(0,1fr)]')
   })
 
   it('preloads only the first product image so other cards do not compete with the LCP request', () => {
