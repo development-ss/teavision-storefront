@@ -9,8 +9,8 @@ export function ProductRange({ cards, intro }: ProductRangeProps) {
   return (
     <Section.Root id="product-range" tone="surface">
       <Section.Container>
-        {/* Split section head: Eyebrow + heading left, description right */}
-        <div className="mb-10 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+        {/* Keep supporting copy directly beneath the section title */}
+        <div className="mb-10 flex flex-col gap-5">
           <div>
             {intro.eyebrow && (
               <Eyebrow className="mb-4">{intro.eyebrow}</Eyebrow>
@@ -18,9 +18,7 @@ export function ProductRange({ cards, intro }: ProductRangeProps) {
             <h2 className="type-heading-01">{intro.title}</h2>
           </div>
           {intro.copy && (
-            <p className="text-ink-soft max-w-[34ch] lg:text-right">
-              {intro.copy}
-            </p>
+            <p className="text-ink-soft max-w-[60ch]">{intro.copy}</p>
           )}
         </div>
         <ul className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
