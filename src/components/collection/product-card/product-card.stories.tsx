@@ -87,7 +87,7 @@ export default meta
 
 type Story = StoryObj<typeof ProductCard>
 
-/** Default single-variant card: eyebrow, title, quick-add button */
+/** Default single-variant card: eyebrow, title, quantity, and add-to-cart */
 export const Default: Story = {
   args: {
     product: stubProduct,
@@ -106,12 +106,15 @@ export const Default: Story = {
       canvas.queryByRole('link', { name: /more info/i }),
     ).not.toBeInTheDocument()
 
-    // Quick-add present for single-variant
+    // Tile-level purchase controls are present for single-variant products.
     await expect(
-      canvas.getByRole('button', {
-        name: /Add Tea Masters Sencha Green Tea to cart/,
+      canvas.getByRole('spinbutton', {
+        name: 'Quantity for Tea Masters Sencha Green Tea',
       }),
-    ).toBeInTheDocument()
+    ).toBeVisible()
+    await expect(
+      canvas.getByRole('button', { name: 'Add to cart' }),
+    ).toBeVisible()
 
     // Price renders
     await expect(canvas.getByText('$12.00')).toBeVisible()
@@ -131,8 +134,8 @@ export const NoImage: Story = {
   },
 }
 
-/** Multi-variant card: shows Quick View trigger, no quick-add (CQA-02) */
-export const MultiVariantFallback: Story = {
+/** Multi-variant card: size, quantity, and add-to-cart stay on the listing */
+export const MultiVariantPurchase: Story = {
   args: {
     product: {
       ...stubProduct,
@@ -145,15 +148,19 @@ export const MultiVariantFallback: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
 
-    // Quick View dialog trigger (CQA-02)
     await expect(
-      canvas.getByRole('button', { name: /quick view/i }),
-    ).toHaveAttribute('aria-haspopup', 'dialog')
-
-    // No add-to-cart button
+      canvas.getByRole('combobox', {
+        name: 'Select pack size for Tea Masters Breakfast Blend',
+      }),
+    ).toBeVisible()
     await expect(
-      canvas.queryByRole('button', { name: /add to cart/i }),
-    ).not.toBeInTheDocument()
+      canvas.getByRole('spinbutton', {
+        name: 'Quantity for Tea Masters Breakfast Blend',
+      }),
+    ).toBeVisible()
+    await expect(
+      canvas.getByRole('button', { name: 'Add to cart' }),
+    ).toBeVisible()
   },
 }
 
@@ -222,8 +229,8 @@ export const NoBrandingInfo: Story = {
   },
 }
 
-/** Variant limit fallback: 8+ variants → Quick View (CQA-02) */
-export const VariantLimitFallback: Story = {
+/** All variants returned by the listing query remain directly selectable. */
+export const ManyVariants: Story = {
   args: {
     product: {
       ...stubProduct,
@@ -233,10 +240,14 @@ export const VariantLimitFallback: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
 
-    // Multi-variant → Quick View dialog trigger
     await expect(
-      canvas.getByRole('button', { name: /quick view/i }),
-    ).toHaveAttribute('aria-haspopup', 'dialog')
+      canvas.getByRole('combobox', {
+        name: 'Select pack size for Tea Masters Sencha Green Tea',
+      }),
+    ).toBeVisible()
+    await expect(
+      canvas.getByRole('button', { name: 'Add to cart' }),
+    ).toBeVisible()
   },
 }
 

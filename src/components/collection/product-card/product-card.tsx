@@ -11,7 +11,7 @@ import { getSizedShopifyImageUrl } from '@/lib/shopify/image-url'
 import { ProductQuickView } from '@/components/product/product-quick-view'
 import { cn } from '@/lib/utils'
 
-import { QuickAddButton } from './quick-add-button'
+import { ProductPurchaseForm } from './product-purchase-form'
 
 // Tag heuristics for certification badges (CARD-03)
 function getCertBadges(tags: string[]): { organic: boolean; gold: boolean } {
@@ -41,16 +41,14 @@ export function ProductCard({
   const productUrl = `/products/${product.handle}`
   const isSoldOut = product.availableForSale === false
   const variants = product.variants ?? []
-
-  // Single-variant available: quick-add; multi-variant or unknown: PDP link (CQA-02)
-  const singleAvailableVariant =
-    variants.length === 1 && variants[0]?.availableForSale ? variants[0] : null
+  const hasKnownVariants = variants.length > 0
+  const canPurchaseFromCard = !isSoldOut && hasKnownVariants
 
   const { organic, gold } = getCertBadges(product.tags ?? [])
   const featuredImage = product.featuredImage
 
   return (
-    <article className={cn('group relative flex flex-col', className)}>
+    <article className={cn('group relative flex h-full flex-col', className)}>
       {/* Media block */}
       <div className="relative aspect-square overflow-hidden rounded-lg bg-white">
         <Link
@@ -92,8 +90,8 @@ export function ProductCard({
           </div>
         )}
 
-        {/* Quick-add overlay pinned to bottom of media */}
-        {!isSoldOut && (
+        {/* Recommendation feeds without variant data retain Quick View. */}
+        {!isSoldOut && !hasKnownVariants && (
           <div
             className={cn(
               'absolute right-0 bottom-0 left-0 p-2.5',
@@ -101,24 +99,17 @@ export function ProductCard({
               'group-hover:opacity-100 focus-within:opacity-100 max-lg:opacity-100',
             )}
           >
-            {singleAvailableVariant ? (
-              <QuickAddButton
-                productTitle={product.title}
-                variantId={singleAvailableVariant.id}
-              />
-            ) : (
-              <ProductQuickView
-                product={product}
-                buttonVariant="primary"
-                buttonFullWidth
-              />
-            )}
+            <ProductQuickView
+              product={product}
+              buttonVariant="primary"
+              buttonFullWidth
+            />
           </div>
         )}
       </div>
 
       {/* Body: identity + price (CARD-05) */}
-      <div className="pt-4">
+      <div className="flex flex-1 flex-col pt-4">
         {/* Origin/type eyebrow (CARD-02) */}
         {product.productType && (
           <p className="type-mono-meta text-ink-faint mb-1">
@@ -146,14 +137,22 @@ export function ProductCard({
           />
         )}
 
-        {/* Price row */}
-        <div className="mt-1.5 flex items-baseline gap-2">
-          <Price
-            price={product.priceRange.minVariantPrice}
-            size="sm"
-            className="font-sans font-bold"
+        {canPurchaseFromCard ? (
+          <ProductPurchaseForm
+            variants={variants}
+            productTitle={product.title}
+            layout="card"
+            className="mt-auto pt-3"
           />
-        </div>
+        ) : (
+          <div className="mt-auto flex items-baseline gap-2 pt-1.5">
+            <Price
+              price={product.priceRange.minVariantPrice}
+              size="sm"
+              className="font-sans font-bold"
+            />
+          </div>
+        )}
       </div>
     </article>
   )

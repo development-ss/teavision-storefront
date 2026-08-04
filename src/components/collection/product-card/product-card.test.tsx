@@ -103,7 +103,7 @@ describe('ProductCard', () => {
     expect(html).toContain('group-hover:scale-[1.02]')
     expect(html).not.toContain('object-cover')
     expect(html).not.toContain('group-hover:scale-[1.06]')
-    expect(html).not.toContain('p-3')
+    expect(html).not.toContain('class="p-3')
     expect(html).not.toContain('sm:p-4')
     // Price rendered
     expect(html).toContain('$12.00')
@@ -112,16 +112,16 @@ describe('ProductCard', () => {
     expect(html).toContain('Green tea')
     // motion-reduce trio on scale animation
     expect(html).toContain('motion-reduce:group-hover:scale-100')
-    // Single-variant card quick-adds; no Quick View trigger needed (CQA-02)
+    // Known variants purchase directly from the listing; no Quick View needed.
     expect(html).not.toContain('Quick View')
     // Star rating row renders when rating data is available
     expect(html).toContain('out of 5 stars')
   })
 
-  it('shows quick-add button for single-variant available products', () => {
+  it('shows quantity and add-to-cart controls for single-variant products', () => {
     const html = renderToStaticMarkup(<ProductCard product={product} />)
     expect(html).toContain('Add to cart')
-    expect(html).toContain('Add Tea Masters Sencha Green Tea to cart')
+    expect(html).toContain('Quantity for Tea Masters Sencha Green Tea')
   })
 
   it('preloads priority product imagery for above-the-fold LCP candidates', () => {
@@ -146,7 +146,7 @@ describe('ProductCard', () => {
     expect(html).not.toContain('fetchPriority="auto"')
   })
 
-  it('shows Quick View trigger for multi-variant products (CQA-02)', () => {
+  it('shows size, quantity, and add-to-cart controls for multi-variant products', () => {
     const multiVariantProduct: CollectionProductSummary = {
       ...product,
       variants: multiVariants,
@@ -154,9 +154,10 @@ describe('ProductCard', () => {
     const html = renderToStaticMarkup(
       <ProductCard product={multiVariantProduct} />,
     )
-    expect(html).toContain('Quick View')
-    expect(html).toContain('aria-haspopup="dialog"')
-    expect(html).not.toContain('Add to cart')
+    expect(html).not.toContain('Quick View')
+    expect(html).toContain('Select pack size for Tea Masters Sencha Green Tea')
+    expect(html).toContain('Quantity for Tea Masters Sencha Green Tea')
+    expect(html).toContain('Add to cart')
   })
 
   it('shows organic certification badge from tags (CARD-03)', () => {
@@ -197,10 +198,16 @@ describe('ProductCard', () => {
     expect(html).not.toContain('Out of stock')
   })
 
-  it('updates the visible price via the ProductPurchaseForm when used in PDP context', async () => {
-    // The card no longer renders ProductPurchaseForm — price is static from priceRange.
-    // Verify the price is rendered at initial load.
-    const html = renderToStaticMarkup(<ProductCard product={product} />)
-    expect(html).toContain('$12.00')
+  it('keeps sold-out cards non-interactive', () => {
+    const soldOutProduct: CollectionProductSummary = {
+      ...product,
+      availableForSale: false,
+      variants: [{ ...singleVariant, availableForSale: false }],
+    }
+    const html = renderToStaticMarkup(<ProductCard product={soldOutProduct} />)
+
+    expect(html).toContain('Sold out')
+    expect(html).not.toContain('Add to cart')
+    expect(html).not.toContain('name="quantity"')
   })
 })

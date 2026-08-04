@@ -222,6 +222,37 @@ export const InlineQuantityStepper: Story = {
   },
 }
 
+export const CardPurchaseControls: Story = {
+  args: {
+    addToCart: capturePurchasePayload,
+    layout: 'card',
+  },
+  play: async ({ canvasElement }) => {
+    capturedPurchasePayloads.length = 0
+    const canvas = within(canvasElement)
+
+    await userEvent.selectOptions(
+      canvas.getByRole('combobox', {
+        name: 'Select pack size for Tea Masters Sencha',
+      }),
+      'gid://shopify/ProductVariant/tea-masters-sencha-1kg',
+    )
+    await userEvent.click(
+      canvas.getByRole('button', {
+        name: 'Increase quantity for tea masters sencha',
+      }),
+    )
+    await userEvent.click(canvas.getByRole('button', { name: 'Add to cart' }))
+
+    await waitFor(() => {
+      expect(capturedPurchasePayloads.at(-1)).toEqual({
+        variantId: 'gid://shopify/ProductVariant/tea-masters-sencha-1kg',
+        quantity: 2,
+      })
+    })
+  },
+}
+
 export const InlineMinimumQuantityPayload: Story = {
   args: {
     variants: minimumQuantityVariants,

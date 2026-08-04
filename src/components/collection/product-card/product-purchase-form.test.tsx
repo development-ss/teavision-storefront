@@ -65,7 +65,22 @@ describe('ProductPurchaseForm', () => {
     expect(html).toContain('name="quantity"')
   })
 
-  it('updates the displayed inline price when the selected size changes', async () => {
+  it('renders compact card controls beneath a collection tile', () => {
+    const html = renderToStaticMarkup(
+      <ProductPurchaseForm
+        variants={variants}
+        productTitle="Tea Masters Sencha"
+        layout="card"
+      />,
+    )
+
+    expect(html).toContain('Select pack size for Tea Masters Sencha')
+    expect(html).toContain('Quantity for Tea Masters Sencha')
+    expect(html).toContain('Add to cart')
+    expect(html).toContain('grid-cols-[7.5rem_minmax(0,1fr)]')
+  })
+
+  it('updates the displayed card price when the selected size changes', async () => {
     const host = document.createElement('div')
     document.body.append(host)
     const root = createRoot(host)
@@ -75,7 +90,7 @@ describe('ProductPurchaseForm', () => {
         <ProductPurchaseForm
           variants={variants}
           productTitle="Tea Masters Sencha"
-          layout="inline"
+          layout="card"
           showPrice
         />,
       )

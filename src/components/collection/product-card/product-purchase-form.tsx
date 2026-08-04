@@ -21,7 +21,7 @@ type ProductPurchaseFormProps = {
   productTitle: string
   addToCart?: AddToCart
   onCartChanged?: () => void
-  layout?: 'stacked' | 'inline'
+  layout?: 'stacked' | 'inline' | 'card'
   showPrice?: boolean
   hideSubmit?: boolean
   /** When false, omits the quantity stepper and submits quantity 1 (CARD-06). Default: true */
@@ -86,6 +86,8 @@ export function ProductPurchaseForm({
   const hasMultipleVariants = variants.length > 1
 
   const isInlineLayout = layout === 'inline'
+  const isCardLayout = layout === 'card'
+  const isCompactLayout = isInlineLayout || isCardLayout
 
   function handleSelectVariant(nextVariantId: string) {
     const nextVariant =
@@ -119,7 +121,7 @@ export function ProductPurchaseForm({
 
   return (
     <form
-      className={cn('grid', isInlineLayout ? 'gap-2' : 'gap-3', className)}
+      className={cn('grid', isCompactLayout ? 'gap-2' : 'gap-3', className)}
       onSubmit={handleSubmit}
     >
       {showPrice !== false && (
@@ -127,8 +129,8 @@ export function ProductPurchaseForm({
           {selectedVariant && (
             <Price
               price={selectedVariant.price}
-              size={isInlineLayout ? 'sm' : 'lg'}
-              className={cn(isInlineLayout && 'text-ink font-semibold')}
+              size={isCompactLayout ? 'sm' : 'lg'}
+              className={cn(isCompactLayout && 'text-ink font-semibold')}
             />
           )}
           {!canAddToCart && !hideSubmit && (
@@ -137,16 +139,24 @@ export function ProductPurchaseForm({
         </div>
       )}
 
-      {/* Stacked layout (PDP): label above select */}
+      {/* PDP and card layouts keep a persistent label above the select. */}
       {!isInlineLayout && hasMultipleVariants && (
-        <label className="grid gap-2">
-          <span className="type-caption text-ink-soft">Pack size</span>
+        <label className={cn('grid', isCardLayout ? 'gap-1' : 'gap-2')}>
+          <span
+            className={cn(
+              'type-caption text-ink-soft',
+              isCardLayout && 'font-semibold uppercase',
+            )}
+          >
+            {isCardLayout ? 'Size' : 'Pack size'}
+          </span>
           <Select
             name="variantId"
             value={selectedVariantId}
             onChange={(event) => handleSelectVariant(event.currentTarget.value)}
             disabled={isPending}
             aria-label={`Select pack size for ${productTitle}`}
+            className={cn(isCardLayout && 'min-h-11 px-3 py-2.5 pr-8')}
           >
             {variantOptions}
           </Select>
@@ -159,7 +169,9 @@ export function ProductPurchaseForm({
             ? hasMultipleVariants
               ? 'grid grid-cols-[7.5rem_minmax(0,1fr)] items-end gap-2 sm:grid-cols-[8rem_7.5rem_7rem] sm:gap-3'
               : 'grid grid-cols-[7.5rem_minmax(5rem,1fr)] items-end gap-2 sm:grid-cols-[7.5rem_7rem] sm:gap-3'
-            : 'flex flex-wrap items-center gap-2',
+            : isCardLayout
+              ? 'grid grid-cols-[7.5rem_minmax(0,1fr)] items-end gap-2'
+              : 'flex flex-wrap items-center gap-2',
         )}
       >
         {/* Inline layout: controls align to the bottom of the product image. */}
@@ -183,8 +195,14 @@ export function ProductPurchaseForm({
           </label>
         )}
         {!hideSubmit && showQuantity && (
-          <div className={cn('grid gap-1', isInlineLayout && 'w-[7.5rem]')}>
-            {isInlineLayout && (
+          <div
+            className={cn(
+              'grid gap-1',
+              isInlineLayout && 'w-30',
+              isCardLayout && 'w-full min-w-0',
+            )}
+          >
+            {isCompactLayout && (
               <span className="type-caption text-ink-soft font-semibold uppercase">
                 Product Qty
               </span>
@@ -208,6 +226,7 @@ export function ProductPurchaseForm({
           <div
             className={cn(
               isInlineLayout ? 'min-w-0' : 'min-w-36 flex-1 sm:flex-none',
+              isCardLayout && 'min-w-0',
             )}
           >
             <Button
@@ -215,7 +234,7 @@ export function ProductPurchaseForm({
               isLoading={isPending}
               disabled={!canAddToCart || isPending || justAdded}
               variant={justAdded ? 'brand' : 'primary'}
-              size={isInlineLayout ? 'sm' : 'md'}
+              size={isCompactLayout ? 'sm' : 'md'}
               className="w-full"
             >
               {justAdded ? 'Added' : canAddToCart ? 'Add to cart' : 'Sold out'}
