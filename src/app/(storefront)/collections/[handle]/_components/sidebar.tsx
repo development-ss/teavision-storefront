@@ -28,7 +28,7 @@ export function Sidebar({
   visibleFilters,
 }: SidebarProps) {
   return (
-    <aside className="hidden lg:sticky lg:top-32 lg:grid lg:gap-5 lg:self-start">
+    <aside className="hidden lg:sticky lg:top-32 lg:grid lg:max-h-[calc(100dvh-9rem)] lg:gap-5 lg:self-start lg:overflow-y-auto lg:overscroll-contain lg:pr-2">
       {/* Filter panel */}
       <Suspense fallback={null}>
         <FilterPanel
