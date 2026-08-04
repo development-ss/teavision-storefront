@@ -167,4 +167,70 @@ describe('ProductForm', () => {
     })
     host.remove()
   })
+
+  it('resets quantity to the new variant minimum when pack size changes', async () => {
+    capturedAddToCartPayloads.length = 0
+    const host = document.createElement('div')
+    document.body.append(host)
+    const root = createRoot(host)
+    const nextVariant = {
+      ...variants[1],
+      quantityRule: {
+        minimum: 2,
+        maximum: 50,
+        increment: 1,
+      },
+    }
+
+    await act(async () => {
+      root.render(
+        <ProductFormWithInitialVariant
+          variants={[variants[0], nextVariant]}
+          options={options}
+          addToCart={captureAddToCart}
+        />,
+      )
+    })
+
+    const increaseButton = host.querySelector<HTMLButtonElement>(
+      'button[aria-label="Increase quantity"]',
+    )
+    const nextVariantButton = host.querySelector<HTMLButtonElement>(
+      'button[aria-label="250g box"]',
+    )
+    const addToCartButton = Array.from(host.querySelectorAll('button')).find(
+      (button) => button.textContent === 'Add to Cart',
+    )
+
+    if (!increaseButton) {
+      throw new Error('Expected quantity increase button to render')
+    }
+    if (!nextVariantButton) {
+      throw new Error('Expected next variant button to render')
+    }
+    if (!addToCartButton) {
+      throw new Error('Expected add-to-cart button to render')
+    }
+
+    await act(async () => {
+      increaseButton.click()
+      increaseButton.click()
+    })
+    await act(async () => {
+      nextVariantButton.click()
+    })
+    await act(async () => {
+      addToCartButton.click()
+    })
+
+    expect(capturedAddToCartPayloads.at(-1)).toEqual({
+      variantId: nextVariant.id,
+      quantity: 2,
+    })
+
+    await act(async () => {
+      root.unmount()
+    })
+    host.remove()
+  })
 })

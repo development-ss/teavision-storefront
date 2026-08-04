@@ -153,7 +153,10 @@ export function ProductForm({
   }
 
   function handleSelectVariant(nextVariantId: string) {
+    const nextVariant = variants.find((variant) => variant.id === nextVariantId)
+
     setSelectedVariantId(nextVariantId)
+    setQuantity(getVariantMinimumQuantity(nextVariant))
     setSelectedBulkTierQuantity(null)
     resetFeedback()
   }

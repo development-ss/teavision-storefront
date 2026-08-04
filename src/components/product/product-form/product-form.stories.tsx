@@ -257,6 +257,12 @@ export const SelectedVariantPayload: Story = {
     capturedAddToCartPayloads.length = 0
     const canvas = within(canvasElement)
 
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Increase quantity' }),
+    )
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Increase quantity' }),
+    )
     await userEvent.click(canvas.getByRole('button', { name: '1kg' }))
     await userEvent.click(canvas.getByRole('button', { name: 'Add to Cart' }))
 
