@@ -24,6 +24,7 @@ import type {
   SanityImageWithAlt,
   SanitySeo,
 } from '@/lib/sanity/types'
+import { getCollectionDisplayTitle } from '@/lib/shopify/collection-title'
 
 const IMAGE_OPTIONS_CARD: SanityImageUrlOptions = {
   fit: 'max',
@@ -325,10 +326,14 @@ function reshapeImageCard(
     IMAGE_OPTIONS_MARK,
   )
   const body = optionalString(card.body)
+  const href = requireHref(card.href, `${path}.href`)
+  const title = requireString(card.title, `${path}.title`)
 
   return {
-    title: requireString(card.title, `${path}.title`),
-    href: requireHref(card.href, `${path}.href`),
+    title: href.startsWith('/collections/')
+      ? getCollectionDisplayTitle(title)
+      : title,
+    href,
     image: reshapeImage(card.image, `${path}.image`, IMAGE_OPTIONS_CARD),
     action: requireString(card.action, `${path}.action`),
     ...(badge ? { badge } : {}),

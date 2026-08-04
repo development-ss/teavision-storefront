@@ -110,7 +110,7 @@ export function ShopMegaPanel({
               <div className="absolute right-0 bottom-0 left-0 flex flex-col gap-2 p-5">
                 <Badge variant="onDark" label="Featured" />
                 <p className="font-display text-paper text-[1.1rem] leading-[1.1]">
-                  {activeShop.name} Collection
+                  {activeShop.name}
                 </p>
               </div>
             </div>

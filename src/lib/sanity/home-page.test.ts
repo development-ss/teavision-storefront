@@ -268,6 +268,24 @@ describe('getHomepage', () => {
     await expect(getHomepage()).rejects.toThrow(/href/i)
   })
 
+  it('removes Shopify collection suffixes from collection card titles', async () => {
+    const result = makeHomepage()
+    const cards = result.productRange?.cards
+    const firstCard = cards?.[0]
+    if (!cards || !firstCard) {
+      throw new Error('Fixture product range card is required')
+    }
+    cards[0] = {
+      ...firstCard,
+      title: 'Organic Tea Collection',
+    }
+    vi.mocked(sanityFetch).mockResolvedValue(result)
+
+    const homepage = await getHomepage()
+
+    expect(homepage.productRange.cards[0]?.title).toBe('Organic Tea')
+  })
+
   it('rejects required authored images without dimensions', async () => {
     const result = makeHomepage()
     const hero = result.hero

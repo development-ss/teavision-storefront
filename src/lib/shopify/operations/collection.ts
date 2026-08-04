@@ -1,6 +1,7 @@
 import { cacheLife, cacheTag } from 'next/cache'
 
 import { shopifyFetch } from '@/lib/shopify/client'
+import { getCollectionDisplayTitle } from '@/lib/shopify/collection-title'
 import {
   GetCollectionCursorIndexDocument,
   GetCollectionDocument,
@@ -205,7 +206,7 @@ function reshapeCollection(collection: ShopifyCollectionNode): Collection {
   return {
     id: collection.id,
     handle: collection.handle,
-    title: collection.title,
+    title: getCollectionDisplayTitle(collection.title),
     description,
     descriptionHtml,
     featuredImage: collection.image ? reshapeImage(collection.image) : null,
@@ -229,7 +230,7 @@ function reshapeCollectionSummary(
   return {
     id: collection.id,
     handle: collection.handle,
-    title: collection.title,
+    title: getCollectionDisplayTitle(collection.title),
     description,
     featuredImage: collection.image ? reshapeImage(collection.image) : null,
     updatedAt: String(collection.updatedAt),

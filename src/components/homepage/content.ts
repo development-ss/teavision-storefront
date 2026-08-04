@@ -230,7 +230,7 @@ export const PRODUCT_RANGE_FIXTURE = [
     action: 'Shop Now',
   },
   {
-    title: 'Organic Tea Collection',
+    title: 'Organic Tea',
     href: '/collections/australian-certified-organic-tea',
     image: {
       src: '/images/homepage/organic-range.jpg',
@@ -247,7 +247,7 @@ export const PRODUCT_RANGE_FIXTURE = [
     },
   },
   {
-    title: 'Cocktail & Iced Tea Collection',
+    title: 'Cocktail & Iced Tea',
     href: '/collections/dessert-cocktail-inspired-blends',
     image: {
       src: '/images/homepage/iced-tea.jpg',
