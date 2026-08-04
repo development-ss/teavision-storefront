@@ -20,63 +20,9 @@ export function Hero({
   heroImage,
   bannerImage,
 }: HeroProps) {
-  // Banner mode (owner option C): banner art first, then crawlable hierarchy.
-  if (bannerImage) {
-    return (
-      <>
-        {bannerImage.width && bannerImage.height ? (
-          <Section.Root tone="transparent" spacing="none">
-            <Section.Container className="pt-6">
-              <div className="overflow-hidden">
-                <Image
-                  src={getSizedShopifyImageUrl(bannerImage.url, 1440)}
-                  alt={bannerImage.altText ?? collectionTitle}
-                  width={bannerImage.width}
-                  height={bannerImage.height}
-                  sizes="(min-width: 1480px) 1480px, 100vw"
-                  className="w-full object-cover"
-                  loading="eager"
-                  fetchPriority="high"
-                />
-              </div>
-            </Section.Container>
-          </Section.Root>
-        ) : null}
+  const backgroundImage = bannerImage ?? heroImage
 
-        <Section.Root tone="transparent" spacing="none">
-          <Section.Container>
-            <nav
-              aria-label="Breadcrumb"
-              className="type-mono-meta text-ink-faint flex flex-wrap items-center gap-2 pt-5.5"
-            >
-              <Link
-                href="/"
-                className="focus-visible:ring-ring hover:text-brand rounded focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:outline-none"
-              >
-                Home
-              </Link>
-              <span aria-hidden="true">/</span>
-              <Link
-                href="/collections/all"
-                className="focus-visible:ring-ring hover:text-brand rounded focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:outline-none"
-              >
-                Collections
-              </Link>
-              <span aria-hidden="true">/</span>
-              <h1
-                aria-current="page"
-                className="type-mono-meta text-gold-deep m-0 inline"
-              >
-                {collectionTitle}
-              </h1>
-            </nav>
-          </Section.Container>
-        </Section.Root>
-      </>
-    )
-  }
-
-  // Default mode: green brand band with the collection image at 35% opacity.
+  // Banner artwork is decorative; the crawlable H1 remains real page text.
   return (
     <Section.Root
       tone="brand"
@@ -84,10 +30,10 @@ export function Hero({
       className="relative overflow-hidden py-[clamp(40px,5vw,70px)]"
     >
       {/* Background hero image at 35% opacity */}
-      {heroImage?.width && heroImage.height ? (
+      {backgroundImage?.width && backgroundImage.height ? (
         <div className="absolute inset-0 z-0">
           <Image
-            src={getSizedShopifyImageUrl(heroImage.url, 1440)}
+            src={getSizedShopifyImageUrl(backgroundImage.url, 1440)}
             alt=""
             fill
             sizes="100vw"
@@ -136,11 +82,11 @@ export function Hero({
             {collectionTitle}
           </h1>
 
-          {heroDescription && (
+          {heroDescription && !bannerImage ? (
             <p className="text-paper/85 mt-4 max-w-[52ch] text-[1.02rem]">
               {heroDescription}
             </p>
-          )}
+          ) : null}
         </div>
       </Section.Container>
     </Section.Root>
