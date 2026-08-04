@@ -17,6 +17,7 @@ const ignoredDirectories = new Set([
 const extensions = new Set(['.js', '.jsx', '.ts', '.tsx'])
 const classHelperNames = new Set(['cn', 'clsx', 'cx', 'twMerge'])
 const noCssMarkerPattern = /^(group|peer)(\/[a-zA-Z0-9_-]+)?$/
+const rootFontSize = 16
 const spacingUtilityNames = new Set([
   'basis',
   'bottom',
@@ -79,17 +80,6 @@ const spacingUtilityNames = new Set([
   'translate-y',
   'w',
 ])
-const canonicalSpacingExceptions = new Set([
-  path.join('src', 'app', '(storefront)', 'account', 'layout.tsx'),
-  path.join('src', 'app', '(storefront)', 'account', 'loading.tsx'),
-  path.join('src', 'app', '(storefront)', 'account', 'login', 'page.tsx'),
-  path.join('src', 'app', '(storefront)', 'account', 'page.tsx'),
-])
-const canonicalSpacingExceptionTokens = new Set([
-  'min-h-[34rem]',
-  'md:min-h-[32rem]',
-])
-
 function splitClasses(value) {
   return value
     .split(/\s+/)
@@ -137,6 +127,21 @@ function collectClassExpression(
     return
   }
 
+  if (ts.isTemplateExpression(node)) {
+    addClasses(node.head.text, sourceFile, filePath, node.head, results)
+    for (const span of node.templateSpans) {
+      collectClassExpression(
+        span.expression,
+        sourceFile,
+        filePath,
+        results,
+        options,
+      )
+      addClasses(span.literal.text, sourceFile, filePath, span.literal, results)
+    }
+    return
+  }
+
   if (
     ts.isParenthesizedExpression(node) ||
     ts.isAsExpression(node) ||
@@ -150,6 +155,11 @@ function collectClassExpression(
       results,
       options,
     )
+    return
+  }
+
+  if (ts.isBinaryExpression(node)) {
+    collectClassExpression(node.right, sourceFile, filePath, results, options)
     return
   }
 
@@ -306,7 +316,7 @@ function collectFromSource(filePath, sourceText) {
   function visit(node) {
     if (
       ts.isJsxAttribute(node) &&
-      node.name.text === 'className' &&
+      /className$/i.test(node.name.text) &&
       node.initializer
     ) {
       if (ts.isStringLiteral(node.initializer)) {
@@ -499,13 +509,6 @@ function formatIssue(issue) {
   return `${issue.filePath}:${issue.line} ${issue.message}`
 }
 
-function isCanonicalSpacingException(candidate, token) {
-  return (
-    canonicalSpacingExceptions.has(path.normalize(candidate.filePath)) &&
-    canonicalSpacingExceptionTokens.has(token)
-  )
-}
-
 const design = await loadDesignSystem()
 const files = await filesToCheck()
 const invalid = []
@@ -533,17 +536,15 @@ for (const filePath of files) {
       continue
     }
 
-    const designCanonicalToken = design.canonicalizeCandidates([token])[0]
+    const designCanonicalToken = design.canonicalizeCandidates([token], {
+      rem: rootFontSize,
+    })[0]
     const canonicalToken =
       designCanonicalToken !== token
         ? designCanonicalToken
         : canonicalizeSpacingCandidate(token, design)
 
-    if (
-      canonicalToken &&
-      canonicalToken !== token &&
-      !isCanonicalSpacingException(candidate, token)
-    ) {
+    if (canonicalToken && canonicalToken !== token) {
       canonical.push({
         ...candidate,
         token,

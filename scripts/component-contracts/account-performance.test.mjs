@@ -26,10 +26,10 @@ test('account login bridge keeps the shared account geometry stable', async () =
   )
 
   for (const source of wrapperSources) {
-    assert.match(source, /min-h-\[34rem\]/)
-    assert.match(source, /md:min-h-\[32rem\]/)
-    assert.doesNotMatch(source, /min-h-136/)
-    assert.doesNotMatch(source, /md:min-h-128/)
+    assert.match(source, /min-h-136/)
+    assert.match(source, /md:min-h-128/)
+    assert.doesNotMatch(source, /min-h-\[34rem\]/)
+    assert.doesNotMatch(source, /md:min-h-\[32rem\]/)
   }
 
   const login = wrapperSources[3]

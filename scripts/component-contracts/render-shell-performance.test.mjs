@@ -29,10 +29,10 @@ async function readAccountWrapperSources() {
 
 function assertAccountShellContract(wrapperSources, loginPanel) {
   for (const source of wrapperSources) {
-    assert.match(source, /min-h-\[34rem\]/)
-    assert.match(source, /md:min-h-\[32rem\]/)
-    assert.doesNotMatch(source, /min-h-136/)
-    assert.doesNotMatch(source, /md:min-h-128/)
+    assert.match(source, /min-h-136/)
+    assert.match(source, /md:min-h-128/)
+    assert.doesNotMatch(source, /min-h-\[34rem\]/)
+    assert.doesNotMatch(source, /md:min-h-\[32rem\]/)
   }
 
   assert.match(loginPanel, /min-h-72/)
@@ -130,7 +130,10 @@ test('search route streams the hero shell before results resolve', async () => {
 
   assert.match(searchResults, /const result = await resultPromise/)
   assert.match(searchResults, /<SearchAnalytics/)
-  assert.match(searchResults, /<SearchResultsView result=\{result\} state=\{state\} \/>/)
+  assert.match(
+    searchResults,
+    /<SearchResultsView result=\{result\} state=\{state\} \/>/,
+  )
   assert.doesNotMatch(searchResultsView, /<SearchHero\b/)
   assert.match(searchHero, /countLabel\?: string/)
   assert.match(searchHero, /Searching products\.\.\./)

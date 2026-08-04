@@ -3,7 +3,7 @@ import { Skeleton } from '@/components/ui'
 export default function AccountLoading() {
   return (
     <div
-      className="grid min-h-[34rem] gap-8 md:min-h-[32rem] xl:grid-cols-[minmax(0,1fr)_22rem] xl:items-start xl:gap-10"
+      className="grid min-h-136 gap-8 md:min-h-128 xl:grid-cols-[minmax(0,1fr)_22rem] xl:items-start xl:gap-10"
       role="status"
       aria-live="polite"
     >

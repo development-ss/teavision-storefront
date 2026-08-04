@@ -11,7 +11,7 @@ export default function AccountLayout({ children }: AccountLayoutProps) {
     <Section.Root
       tone="surface"
       spacing="compact"
-      className="min-h-[34rem] md:min-h-[32rem]"
+      className="min-h-136 md:min-h-128"
     >
       <Section.Container>{children}</Section.Container>
     </Section.Root>
