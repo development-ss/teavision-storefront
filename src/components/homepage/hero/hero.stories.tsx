@@ -26,5 +26,15 @@ export const Default: Story = {
     await expect(
       canvas.queryByRole('link', { name: 'Open a wholesale account' }),
     ).not.toBeInTheDocument()
+    await expect(
+      canvas.getByRole('img', {
+        name: '4.9 out of 5 stars from 76 Google reviews',
+      }),
+    ).toBeInTheDocument()
+    await expect(canvas.getByText('4.9-star')).toBeInTheDocument()
+    await expect(
+      canvas.getByText('Google rated · 76 reviews'),
+    ).toBeInTheDocument()
+    await expect(canvas.queryByText('Owned & Operated')).not.toBeInTheDocument()
   },
 }

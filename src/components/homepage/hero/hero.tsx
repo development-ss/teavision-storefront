@@ -3,6 +3,7 @@ import {
   ArrowRight,
   FlaskConical,
   Medal,
+  Star,
   Truck,
   type LucideIcon,
 } from 'lucide-react'
@@ -15,6 +16,12 @@ const STRIP_ICON_MAP: Record<string, LucideIcon> = {
   Medal,
   Truck,
 }
+
+const GOOGLE_RATING = {
+  rating: 4.9,
+  reviewCount: 76,
+  stars: [1, 2, 3, 4, 5],
+} as const
 
 export type HomepageHeroProps = {
   hero: HomepageContent['hero']
@@ -73,6 +80,7 @@ export function HomepageHero({ hero }: HomepageHeroProps) {
               const IconComponent = point.icon
                 ? STRIP_ICON_MAP[point.icon]
                 : undefined
+              const isGoogleRating = index === 0
               const isLastInRow2 = index % 2 === 1
               const isLastOverall = index === hero.proofPoints.length - 1
               return (
@@ -87,7 +95,22 @@ export function HomepageHero({ hero }: HomepageHeroProps) {
                   }
                 >
                   <div className="font-display text-paper flex items-center gap-2 text-[1.7rem] leading-none">
-                    {point.image ? (
+                    {isGoogleRating ? (
+                      <span
+                        className="text-rating flex items-center gap-0.5"
+                        role="img"
+                        aria-label={`${GOOGLE_RATING.rating} out of 5 stars from ${GOOGLE_RATING.reviewCount} Google reviews`}
+                      >
+                        {GOOGLE_RATING.stars.map((star) => (
+                          <Star
+                            key={star}
+                            aria-hidden="true"
+                            className="size-3.5 fill-current"
+                            strokeWidth={1.5}
+                          />
+                        ))}
+                      </span>
+                    ) : point.image ? (
                       <Image
                         src={point.image.src}
                         alt={point.image.alt}
@@ -102,10 +125,14 @@ export function HomepageHero({ hero }: HomepageHeroProps) {
                         strokeWidth={1.8}
                       />
                     ) : null}
-                    {point.title}
+                    {isGoogleRating
+                      ? `${GOOGLE_RATING.rating}-star`
+                      : point.title}
                   </div>
                   <div className="text-paper/85 mt-1 text-[0.82rem]">
-                    {point.description}
+                    {isGoogleRating
+                      ? `Google rated · ${GOOGLE_RATING.reviewCount} reviews`
+                      : point.description}
                   </div>
                 </li>
               )

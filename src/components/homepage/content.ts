@@ -73,14 +73,8 @@ export const CATALOGUE_CTA_FIXTURE = {
 
 export const HOMEPAGE_PROOF_POINTS_FIXTURE = [
   {
-    image: {
-      src: '/images/australian-flag.svg',
-      alt: 'Australian flag',
-      width: 1280,
-      height: 640,
-    },
-    title: 'Australian',
-    description: 'Owned & Operated',
+    title: '4.9-star',
+    description: 'Google rated · 76 reviews',
   },
   {
     icon: 'Truck',
