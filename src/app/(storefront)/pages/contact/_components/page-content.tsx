@@ -11,13 +11,13 @@ export function PageContent() {
     <>
       <Hero />
 
-      <Section.Root tone="inverse">
+      <Section.Root tone="sunken">
         <Section.Container>
           <LocationMap />
         </Section.Container>
       </Section.Root>
 
-      <Section.Root tone="inverse">
+      <Section.Root tone="surface">
         <Section.Container>
           <div className="grid gap-10 lg:grid-cols-2 lg:items-start">
             <Sidebar />
