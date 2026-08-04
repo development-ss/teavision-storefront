@@ -163,6 +163,21 @@ describe('ProductContent heading hierarchy', () => {
     expect(html).toContain('Only Product Title')
   })
 
+  it('uses real Shopify serving guidance in the tasting disclosure', async () => {
+    const html = await renderProductContent(
+      makeProduct({
+        handle: 'wild-berry',
+        descriptionHtml:
+          '<p><strong>Aroma:</strong> Fruity and sweet.</p><p><strong>Serving suggestion:</strong> Add 1-2 teaspoons to hot water for 3-5 minutes.</p>',
+      }),
+    )
+
+    expect(html).toContain('Fruity and sweet.')
+    expect(html).toContain('Add 1-2 teaspoons to hot water for 3-5 minutes.')
+    expect(html).not.toContain('Pack options')
+    expect(html).not.toContain('Available variants')
+  })
+
   it('keeps deep-linked variant selection in the route-local client leaf', () => {
     const html = renderToStaticMarkup(
       <PurchaseForm variants={[]} options={[]} bulkPricingTiers={[]} />,

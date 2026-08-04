@@ -446,6 +446,58 @@ export function plainTextFromHtml(html: string): string {
     .trim()
 }
 
+export type ProductDescriptionDetails = {
+  aroma?: string
+  ingredients?: string
+  origin?: string
+  packaging?: string
+  qualityControl?: string
+  servingSuggestion?: string
+  storage?: string
+  warning?: string
+}
+
+const PRODUCT_DESCRIPTION_LABELS = [
+  ['origin', 'Origin'],
+  ['ingredients', 'Ingredients'],
+  ['aroma', 'Aroma'],
+  ['servingSuggestion', 'Serving suggestion'],
+  ['packaging', 'Packaging'],
+  ['storage', 'Storage'],
+  ['qualityControl', 'Quality Control'],
+  ['warning', 'Warning'],
+] as const satisfies ReadonlyArray<
+  readonly [keyof ProductDescriptionDetails, string]
+>
+
+export function extractProductDescriptionDetails(
+  html: string,
+): ProductDescriptionDetails {
+  const text = plainTextFromHtml(html)
+  const labelPattern = PRODUCT_DESCRIPTION_LABELS.map(([, label]) =>
+    label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
+  ).join('|')
+  const matches = [
+    ...text.matchAll(new RegExp(`(?:^|\\s)(${labelPattern})\\s*:\\s*`, 'gi')),
+  ]
+
+  return matches.reduce<ProductDescriptionDetails>((details, match, index) => {
+    const matchedLabel = match[1]?.toLowerCase()
+    const field = PRODUCT_DESCRIPTION_LABELS.find(
+      ([, label]) => label.toLowerCase() === matchedLabel,
+    )?.[0]
+    const valueStart = (match.index ?? 0) + match[0].length
+    const valueEnd = matches[index + 1]?.index ?? text.length
+    const value = text.slice(valueStart, valueEnd).trim()
+
+    if (field && value && !details[field]) {
+      details[field] = value
+    }
+
+    return details
+  }, {})
+}
+
 function decodePlainTextEntities(value: string): string {
   return value
     .replace(/\u00a0/g, ' ')

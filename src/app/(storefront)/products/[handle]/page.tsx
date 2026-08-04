@@ -15,7 +15,10 @@ import { serializeInlineJson } from '@/lib/seo/serialize-inline-json'
 import { SITE_URL } from '@/lib/seo/site-url'
 import { getVisibleProductReviewSummary } from '@/lib/reviews/summary'
 import { getTrustooProductRatings } from '@/lib/reviews/trustoo'
-import { sanitizeShopifyCompactHtml } from '@/lib/shopify/html-content'
+import {
+  extractProductDescriptionDetails,
+  sanitizeShopifyCompactHtml,
+} from '@/lib/shopify/html-content'
 import { RichText } from '@/components/ui/rich-text'
 import { Badge, Eyebrow, Section, StarRating } from '@/components/ui'
 import { ProductForm, ProductGallery } from '@/components/product'
@@ -115,6 +118,9 @@ export async function ProductContent({
   const productUrl = `${SITE_URL}/products/${product.handle}`
   const hasAvailableVariant = product.variants.some((v) => v.availableForSale)
   const descriptionHtml = sanitizeShopifyCompactHtml(product.descriptionHtml)
+  const descriptionDetails = extractProductDescriptionDetails(
+    product.descriptionHtml,
+  )
   const productReviewSummaries = await getTrustooProductRatings([
     product.handle,
   ])
@@ -133,9 +139,14 @@ export async function ProductContent({
       kind: 'table',
       title: 'Tasting & brewing',
       rows: [
-        ['Pack options', product.options.map((o) => o.name).join(', ')],
-        ['Available variants', `${product.variants.length}`],
-        ['Availability', hasAvailableVariant ? 'In stock' : 'Out of stock'],
+        ...(descriptionDetails.aroma
+          ? ([['Aroma', descriptionDetails.aroma]] satisfies [string, string][])
+          : []),
+        [
+          'Brewing method',
+          descriptionDetails.servingSuggestion ??
+            'Brewing guidance is being prepared for this product.',
+        ],
       ],
     },
     {
