@@ -3,7 +3,6 @@ import Image from 'next/image'
 import { Eyebrow, Section } from '@/components/ui'
 import { DEFAULT_LISTING_DESCRIPTION } from '@/lib/blog/listing'
 
-import { RssLink } from './rss-link'
 import { SearchForm } from './search-form'
 
 type HeroImage = {
@@ -17,7 +16,6 @@ type HeroProps = {
   headingLevel?: 'h1' | 'p'
   image?: HeroImage | null
   preload?: boolean
-  rssHref?: string
   searchAction?: string
   title?: string
 }
@@ -33,7 +31,6 @@ export function Hero({
   headingLevel: Heading = 'h1',
   image,
   preload = true,
-  rssHref,
   searchAction,
   title = HERO_TITLE,
 }: HeroProps) {
@@ -72,7 +69,6 @@ export function Hero({
         </p>
 
         <SearchForm searchAction={searchAction} />
-        {rssHref ? <RssLink href={rssHref} /> : null}
       </Section.Container>
     </Section.Root>
   )

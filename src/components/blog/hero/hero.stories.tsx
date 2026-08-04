@@ -16,13 +16,6 @@ type Story = StoryObj<typeof Hero>
 
 export const Default: Story = {
   args: {
-    rssHref: '/blogs/teavision-blogs/atom',
-    searchAction: '/blogs/teavision-blogs',
-  },
-}
-
-export const WithoutRss: Story = {
-  args: {
     searchAction: '/blogs/teavision-blogs',
   },
 }
@@ -36,7 +29,6 @@ export const CmsContent: Story = {
       url: 'https://cdn.shopify.com/s/files/1/0786/8339/files/blog-hero.webp?v=1764582604&width=1600',
       altText: 'Loose leaf tea on a tasting bench',
     },
-    rssHref: '/blogs/teavision-blogs/atom',
     searchAction: '/blogs/teavision-blogs',
   },
 }

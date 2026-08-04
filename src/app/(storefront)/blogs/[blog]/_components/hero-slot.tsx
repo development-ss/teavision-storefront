@@ -13,10 +13,6 @@ export async function HeroSlot() {
   const blogData = await getBlog(DEFAULT_BLOG_HANDLE)
 
   return (
-    <Hero
-      image={blogData?.heroImage}
-      rssHref={`${blogPath}/atom`}
-      searchAction={`${blogPath}/search`}
-    />
+    <Hero image={blogData?.heroImage} searchAction={`${blogPath}/search`} />
   )
 }
