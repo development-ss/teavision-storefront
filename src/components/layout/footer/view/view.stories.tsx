@@ -45,11 +45,7 @@ async function expectFooterParity(canvasElement: HTMLElement) {
   const footer = canvasElement.querySelector('footer')
   if (!footer) throw new Error('Footer landmark not found')
 
-  const expectedLinks = [
-    ...MAIN_MENU_LINKS,
-    ...FOOTER_LINKS,
-    ...CONTACT_LINKS,
-  ]
+  const expectedLinks = [...MAIN_MENU_LINKS, ...FOOTER_LINKS, ...CONTACT_LINKS]
   // Exclude the collapsed Popular Searches SEO block — parity covers visible links only.
   const links = Array.from(footer.querySelectorAll('a'))
     .filter((link) => !link.closest('#popular-searches'))
@@ -78,13 +74,15 @@ async function expectFooterParity(canvasElement: HTMLElement) {
   })
 
   const paymentTitles = Array.from(
-    footer.querySelectorAll('[aria-label="Payment methods"] span'),
+    footer.querySelectorAll(
+      '[aria-label="Payment methods"] svg[role="img"] title',
+    ),
   ).map((node) => node.textContent)
 
   const expectedPaymentTitles = PAYMENT_METHODS.map((method) => method.label)
 
   if (paymentTitles.join('|') !== expectedPaymentTitles.join('|')) {
-    throw new Error('Payment methods are not in the live footer order')
+    throw new Error('Payment icons are not in the live footer order')
   }
 
   const canvas = within(canvasElement)
@@ -100,9 +98,7 @@ async function expectFooterParity(canvasElement: HTMLElement) {
   await expect(popularSearchesPanel).toHaveAttribute('hidden')
 
   await userEvent.click(popularSearchesToggle)
-  await expect(popularSearchesToggle).toHaveTextContent(
-    'Hide Popular Searches',
-  )
+  await expect(popularSearchesToggle).toHaveTextContent('Hide Popular Searches')
   await expect(popularSearchesToggle).toHaveAttribute('aria-expanded', 'true')
   await expect(popularSearchesPanel).not.toHaveAttribute('hidden')
 

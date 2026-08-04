@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
+import { expect, within } from 'storybook/test'
 
 import { PAYMENT_METHODS } from '../data'
 import { PaymentMark } from './payment-mark'
@@ -27,4 +28,13 @@ export const AllMethods: Story = {
       ))}
     </ul>
   ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const marks = canvas.getAllByRole('img')
+
+    await expect(marks).toHaveLength(PAYMENT_METHODS.length)
+    PAYMENT_METHODS.forEach((method) => {
+      expect(canvas.getByRole('img', { name: method.label })).toBeVisible()
+    })
+  },
 }
