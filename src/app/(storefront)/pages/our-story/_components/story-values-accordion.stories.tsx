@@ -38,6 +38,19 @@ export const Default: Story = {
     await expect(
       canvas.getByRole('region', { name: 'Sincerity' }),
     ).toBeVisible()
+
+    await userEvent.click(sincerity)
+
+    await expect(sincerity).toHaveAttribute('aria-expanded', 'false')
+    await expect(
+      canvas.queryByRole('region', { name: 'Sincerity' }),
+    ).not.toBeInTheDocument()
+
+    const accordionImages = canvasElement.querySelectorAll('img')
+    await expect(accordionImages).toHaveLength(STORY_VALUES.length)
+    accordionImages.forEach((image) => {
+      expect(image).toHaveAttribute('loading', 'eager')
+    })
   },
 }
 

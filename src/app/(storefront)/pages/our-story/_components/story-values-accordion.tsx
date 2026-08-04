@@ -33,7 +33,11 @@ export function StoryValuesAccordion({ values }: StoryValuesAccordionProps) {
                 id={buttonId}
                 aria-expanded={isOpen}
                 aria-controls={panelId}
-                onClick={() => setOpenValueId(value.id)}
+                onClick={() =>
+                  setOpenValueId((currentId) =>
+                    currentId === value.id ? '' : value.id,
+                  )
+                }
                 className="group text-ink min-h-14 w-full justify-between rounded-none px-4 py-3 text-left"
               >
                 <span>{value.title}</span>
@@ -58,6 +62,7 @@ export function StoryValuesAccordion({ values }: StoryValuesAccordionProps) {
               <div className="aspect-8/3 overflow-hidden rounded-md">
                 <StoryImage
                   image={value.image}
+                  loading="eager"
                   sizes="(min-width: 1480px) 1400px, 100vw"
                   className="rounded-md"
                 />
