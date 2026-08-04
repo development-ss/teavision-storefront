@@ -37,6 +37,7 @@ export {
 
 const WORDS_PER_MINUTE = 220
 const FALLBACK_PUBLISHED_AT = '1970-01-01T00:00:00.000Z'
+const HIDDEN_AUTHOR_PATTERN = /\bking\s+kong\b/i
 
 export const ARTICLES_PER_PAGE = 6
 
@@ -47,6 +48,39 @@ export type BlogImage = {
   height: number | null
   lqip?: string | null
 }
+
+const LEGACY_IMAGE_REPLACEMENTS = {
+  '27246724b4655df9afb51d69f39423b455d3d7a5': {
+    url: '/images/custom-tea-blends/chai-spice-tin.png',
+    width: 1024,
+    height: 1024,
+  },
+  '1d221311bf0dd03cfb81c9d1dcda1fcf00c36a74': {
+    url: '/images/custom-tea-blends/tea-in-jars.webp',
+    width: 1200,
+    height: 1200,
+  },
+  '84c37e0eaf33aa9c905be9ab08c985fe3d8ff647': {
+    url: '/images/custom-tea-blends/custom-blending-lab.jpg',
+    width: 2048,
+    height: 1365,
+  },
+  b93ae98a9d4df6fbfb6553ffa17a3e9b4b10f6c5: {
+    url: '/images/bulk-wholesale-supply/bulk-wholesale-hero.avif',
+    width: 664,
+    height: 500,
+  },
+  c32d122ece2921c64d247827f3f5dda8e21bf28e: {
+    url: '/images/homepage/herbs-and-spices-1c9b15ca-6833-460f-817a-32013fd18e41.jpg',
+    width: 1920,
+    height: 1280,
+  },
+  '790e3df400bb5621dfecff8107006059f4b562e5': {
+    url: '/images/our-story/our-story-awards.webp',
+    width: 2048,
+    height: 1365,
+  },
+} satisfies Record<string, Omit<BlogImage, 'altText'>>
 
 export type BlogSeo = {
   title: string | null
@@ -133,8 +167,8 @@ const IMAGE_OPTIONS_FEATURED_CARD: SanityImageUrlOptions = {
   fit: 'max',
 }
 const IMAGE_OPTIONS_CARD: SanityImageUrlOptions = {
-  width: 640,
-  quality: 68,
+  width: 960,
+  quality: 75,
   fit: 'max',
 }
 
@@ -150,6 +184,18 @@ function truncateText(text: string, maxLength: number): string {
 
 function normalizeBodyText(bodyText: string | null): string {
   return bodyText?.replace(/\s+/g, ' ').trim() ?? ''
+}
+
+export function getPublicArticleAuthorName(
+  name: string | null | undefined,
+): string | null {
+  const normalized = name?.trim()
+
+  if (!normalized || HIDDEN_AUTHOR_PATTERN.test(normalized)) {
+    return null
+  }
+
+  return normalized
 }
 
 function estimateReadingTime(text: string): number {
@@ -183,6 +229,26 @@ function reshapeImage(
     height: asset.metadata?.dimensions?.height ?? null,
     lqip: asset.metadata?.lqip ?? null,
   }
+}
+
+function reshapeArticleImage(
+  article: SanityBlogPostSummary,
+  imageOptions: SanityImageUrlOptions,
+): BlogImage | null {
+  const assetId = article.featuredImage?.image?.asset?._id ?? ''
+  const replacement = Object.entries(LEGACY_IMAGE_REPLACEMENTS).find(
+    ([legacyAssetHash]) => assetId.includes(legacyAssetHash),
+  )?.[1]
+
+  if (replacement) {
+    return {
+      ...replacement,
+      altText: article.title?.trim() || 'Tea Journal article',
+      lqip: null,
+    }
+  }
+
+  return reshapeImage(article.featuredImage, imageOptions)
 }
 
 function reshapeSeo(
@@ -236,10 +302,10 @@ function reshapeArticleSummary(
     handle: article.slug ?? article._id,
     title,
     excerpt,
-    featuredImage: reshapeImage(article.featuredImage, imageOptions),
+    featuredImage: reshapeArticleImage(article, imageOptions),
     publishedAt: article.publishedAt ?? FALLBACK_PUBLISHED_AT,
     tags: reshapeTags(article),
-    authorName: article.author?.name ?? null,
+    authorName: getPublicArticleAuthorName(article.author?.name),
     seo: reshapeSeo(article.seo, excerpt),
     readingTimeMinutes: estimateReadingTime(bodyText || excerpt),
   }

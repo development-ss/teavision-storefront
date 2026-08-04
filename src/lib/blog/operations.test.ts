@@ -19,6 +19,7 @@ import {
   getBlogSearchListing,
   getDefaultBlogListing,
   getHomepageArticles,
+  getPublicArticleAuthorName,
   getTagListing,
 } from './operations'
 
@@ -80,6 +81,14 @@ describe('formatArticleDate', () => {
   })
 })
 
+describe('getPublicArticleAuthorName', () => {
+  it('keeps editorial author names and removes the legacy SEO agency', () => {
+    expect(getPublicArticleAuthorName(' Tea Editor ')).toBe('Tea Editor')
+    expect(getPublicArticleAuthorName(' King Kong ')).toBeNull()
+    expect(getPublicArticleAuthorName('King Kong SEO Agency')).toBeNull()
+  })
+})
+
 describe('getDefaultBlogListing', () => {
   beforeEach(() => {
     vi.mocked(sanityFetch).mockReset()
@@ -124,7 +133,7 @@ describe('getDefaultBlogListing', () => {
     })
     expect(listing?.paginated.articles[0]?.featuredImage).toMatchObject({
       lqip: 'data:image/jpeg;base64,latest',
-      url: expect.stringContaining('w=640'),
+      url: expect.stringContaining('w=960'),
     })
 
     expect(vi.mocked(getSanityImageUrl)).toHaveBeenCalledWith(
@@ -143,9 +152,104 @@ describe('getDefaultBlogListing', () => {
       expect.objectContaining({
         asset: expect.objectContaining({ _id: 'image-latest' }),
       }),
-      { fit: 'max', quality: 68, width: 640 },
+      { fit: 'max', quality: 75, width: 960 },
     )
   })
+
+  it('removes the legacy SEO agency attribution from article summaries', async () => {
+    const agencyPost = makePost('agency-authored')
+    agencyPost.author = { name: '  King Kong  ' }
+
+    const result: SanityDefaultBlogListingResult = {
+      allTagArrays: [],
+      articles: [agencyPost],
+      blog: {
+        _id: 'blog',
+        description: 'Tea journal',
+        featuredPosts: [],
+        heroImage: null,
+        seo: null,
+        slug: 'teavision-blogs',
+        title: 'Tea Journal',
+      },
+      totalCount: 1,
+    }
+    vi.mocked(sanityFetch).mockResolvedValue(result)
+
+    const listing = await getDefaultBlogListing('teavision-blogs', 1)
+
+    expect(listing?.paginated.articles[0]?.authorName).toBeNull()
+  })
+
+  it.each([
+    [
+      '27246724b4655df9afb51d69f39423b455d3d7a5',
+      '/images/custom-tea-blends/chai-spice-tin.png',
+      1024,
+      1024,
+    ],
+    [
+      '1d221311bf0dd03cfb81c9d1dcda1fcf00c36a74',
+      '/images/custom-tea-blends/tea-in-jars.webp',
+      1200,
+      1200,
+    ],
+    [
+      '84c37e0eaf33aa9c905be9ab08c985fe3d8ff647',
+      '/images/custom-tea-blends/custom-blending-lab.jpg',
+      2048,
+      1365,
+    ],
+    [
+      'b93ae98a9d4df6fbfb6553ffa17a3e9b4b10f6c5',
+      '/images/bulk-wholesale-supply/bulk-wholesale-hero.avif',
+      664,
+      500,
+    ],
+    [
+      'c32d122ece2921c64d247827f3f5dda8e21bf28e',
+      '/images/homepage/herbs-and-spices-1c9b15ca-6833-460f-817a-32013fd18e41.jpg',
+      1920,
+      1280,
+    ],
+    [
+      '790e3df400bb5621dfecff8107006059f4b562e5',
+      '/images/our-story/our-story-awards.webp',
+      2048,
+      1365,
+    ],
+  ])(
+    'replaces known mismatched legacy image %s until Sanity receives a new asset',
+    async (assetHash, url, width, height) => {
+      const legacyPost = makePost('legacy-image')
+      legacyPost.featuredImage = makeImage(assetHash, null)
+
+      const result: SanityDefaultBlogListingResult = {
+        allTagArrays: [],
+        articles: [legacyPost],
+        blog: {
+          _id: 'blog',
+          description: 'Tea journal',
+          featuredPosts: [],
+          heroImage: null,
+          seo: null,
+          slug: 'teavision-blogs',
+          title: 'Tea Journal',
+        },
+        totalCount: 1,
+      }
+      vi.mocked(sanityFetch).mockResolvedValue(result)
+
+      const listing = await getDefaultBlogListing('teavision-blogs', 1)
+
+      expect(listing?.paginated.articles[0]?.featuredImage).toMatchObject({
+        altText: 'legacy-image title',
+        url,
+        width,
+        height,
+      })
+    },
+  )
 
   it('clamps an out-of-range page and refetches the last page of articles', async () => {
     const emptyWindow: SanityDefaultBlogListingResult = {

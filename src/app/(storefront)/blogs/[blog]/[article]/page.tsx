@@ -13,6 +13,7 @@ import {
   getArticlePath,
   getBlog,
   getCanonicalBlogListingPath,
+  getPublicArticleAuthorName,
   getTagPath,
   normalizeBlogHandle,
 } from '@/lib/blog/operations'
@@ -73,6 +74,7 @@ async function ArticleContent({ params }: Props) {
 
   if (!article || !blogData) notFound()
 
+  const authorName = getPublicArticleAuthorName(article.authorName)
   const articleIndex = blogData.articles.findIndex(
     (item) => item.handle === article.handle,
   )
@@ -92,7 +94,7 @@ async function ArticleContent({ params }: Props) {
     dateModified: article.updatedAt,
     author: {
       '@type': 'Person',
-      name: article.authorName ?? 'Teavision Team',
+      name: authorName ?? 'Teavision Team',
     },
     publisher: {
       '@type': 'Organization',
@@ -109,7 +111,7 @@ async function ArticleContent({ params }: Props) {
         dangerouslySetInnerHTML={{ __html: serializeInlineJson(jsonLd) }}
       />
 
-      <article className="mx-auto max-w-prose px-4 py-12">
+      <article className="max-w-wide px-gutter mx-auto w-full py-12 lg:py-16">
         <nav
           aria-label="Breadcrumb"
           className="type-mono-meta text-ink-faint mb-8"
@@ -131,7 +133,7 @@ async function ArticleContent({ params }: Props) {
         </nav>
 
         {article.tags.length > 0 && (
-          <div className="mx-auto mb-5 flex max-w-prose flex-wrap gap-2">
+          <div className="mb-5 flex flex-wrap gap-2">
             {article.tags.map((tag) => (
               <Link
                 key={tag}
@@ -144,20 +146,20 @@ async function ArticleContent({ params }: Props) {
           </div>
         )}
 
-        <h1 className="font-display text-ink mx-auto max-w-prose text-[clamp(2rem,4vw,3.4rem)] leading-[1.04] tracking-[-0.01em]">
+        <h1 className="font-display text-ink text-[clamp(2rem,4vw,3.4rem)] leading-[1.04] tracking-[-0.01em] text-pretty">
           {article.title}
         </h1>
 
-        <div className="type-mono-meta text-ink-faint mx-auto mt-5 flex max-w-prose flex-wrap items-center gap-3">
+        <div className="type-mono-meta text-ink-faint mt-5 flex flex-wrap items-center gap-3">
           <time dateTime={article.publishedAt}>
             {formatArticleDate(article.publishedAt)}
           </time>
           <span aria-hidden="true">·</span>
           <span>{article.readingTimeMinutes} min read</span>
-          {article.authorName && (
+          {authorName && (
             <>
               <span aria-hidden="true">·</span>
-              <span>{article.authorName}</span>
+              <span>{authorName}</span>
             </>
           )}
         </div>
@@ -172,27 +174,24 @@ async function ArticleContent({ params }: Props) {
                 width={article.featuredImage.width}
                 height={article.featuredImage.height}
                 preload
-                sizes="(min-width: 1024px) 896px, 100vw"
+                sizes="(min-width: 1280px) 1152px, (min-width: 1024px) calc(100vw - 4rem), 100vw"
                 className="h-auto w-full object-cover"
               />
             </div>
           )}
 
         {article.excerpt && (
-          <Card className="mx-auto mt-8 max-w-prose" padding="md">
+          <Card className="mt-8" padding="md">
             <p className="type-lede text-ink-soft italic">{article.excerpt}</p>
           </Card>
         )}
 
-        <PortableTextContent
-          value={article.body}
-          className="mx-auto mt-10 max-w-prose"
-        />
+        <PortableTextContent value={article.body} className="mt-10" />
 
         {(newerArticle || olderArticle) && (
           <nav
             aria-label="Adjacent articles"
-            className="border-hairline mx-auto mt-12 grid max-w-prose gap-4 border-t pt-8 sm:grid-cols-2"
+            className="border-hairline mt-12 grid gap-4 border-t pt-8 sm:grid-cols-2"
           >
             {olderArticle ? (
               <Card interactive>
@@ -254,7 +253,7 @@ async function ArticleContent({ params }: Props) {
           </Section.Root>
         )}
 
-        <div className="border-hairline mx-auto mt-12 max-w-prose border-t pt-8">
+        <div className="border-hairline mt-12 border-t pt-8">
           <Link
             href={getCanonicalBlogListingPath(normalizedBlog)}
             className="type-label text-brand hover:text-brand-deep focus-visible:ring-ring inline-flex min-h-11 items-center hover:underline focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
@@ -272,7 +271,7 @@ export default function ArticlePage({ params }: Props) {
     <Suspense
       fallback={
         <div
-          className="type-body text-ink-soft mx-auto max-w-4xl px-4 py-12"
+          className="type-body text-ink-soft max-w-wide px-gutter mx-auto py-12"
           role="status"
           aria-live="polite"
         >
