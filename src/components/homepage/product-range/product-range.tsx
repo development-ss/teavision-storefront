@@ -7,7 +7,7 @@ export type ProductRangeProps = HomepageContent['productRange']
 
 export function ProductRange({ cards, intro }: ProductRangeProps) {
   return (
-    <Section.Root tone="surface">
+    <Section.Root id="product-range" tone="surface">
       <Section.Container>
         {/* Split section head: Eyebrow + heading left, description right */}
         <div className="mb-10 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">

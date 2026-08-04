@@ -22,6 +22,9 @@ export const Default: Story = {
     const canvas = within(canvasElement)
 
     await expect(
+      canvasElement.querySelector('#product-range'),
+    ).toBeInTheDocument()
+    await expect(
       canvas.queryByText(/apply for a bulk wholesale account/i),
     ).not.toBeInTheDocument()
   },

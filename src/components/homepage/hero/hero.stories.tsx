@@ -21,6 +21,9 @@ export const Default: Story = {
     const canvas = within(canvasElement)
 
     await expect(
+      canvas.getByRole('link', { name: 'Explore Our Teas' }),
+    ).toHaveAttribute('href', '#product-range')
+    await expect(
       canvas.queryByRole('link', { name: 'Open a wholesale account' }),
     ).not.toBeInTheDocument()
   },

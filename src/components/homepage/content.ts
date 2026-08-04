@@ -105,7 +105,7 @@ export const HOMEPAGE_HERO_FIXTURE = {
   copy: "Discover a world of tea mastery in every cup. Handpicked from the finest leaves, our loose leaf teas, bulk tea bags, and organic herbs deliver rich flavor and freshness. Trusted by Australia's leading cafes, retailers, and wellness brands.",
   cta: {
     children: 'Explore Our Teas',
-    href: '/collections',
+    href: '#product-range',
   },
   image: {
     src: '/images/homepage/homepage-hero-tea-harvest.png',

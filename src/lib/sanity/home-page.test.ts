@@ -316,6 +316,7 @@ describe('getHomepage', () => {
       linkLabel: 'View all',
       maxPosts: 3,
     })
+    expect(homepage.hero.cta.href).toBe('#product-range')
     expect(homepage.seo).toMatchObject({
       canonicalPath: '/',
       description: 'Homepage description',

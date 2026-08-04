@@ -343,12 +343,16 @@ function reshapeImageCard(
 
 function reshapeHero(hero: SanityHomeHero | null): HomepageContent['hero'] {
   const requiredHero = requireObject(hero, 'hero')
+  const cta = reshapeLink(requiredHero.cta, 'hero.cta')
 
   return {
     eyebrow: requireString(requiredHero.eyebrow, 'hero.eyebrow'),
     title: requireString(requiredHero.title, 'hero.title'),
     copy: requireString(requiredHero.copy, 'hero.copy'),
-    cta: reshapeLink(requiredHero.cta, 'hero.cta'),
+    cta: {
+      ...cta,
+      href: cta.href === '/collections' ? '#product-range' : cta.href,
+    },
     // Keep the CMS upload as the single high-quality master. Next/Image owns
     // responsive sizing and final AVIF/WebP encoding for this LCP asset.
     image: reshapeImage(requiredHero.image, 'hero.image', 'original'),
