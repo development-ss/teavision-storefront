@@ -1,6 +1,6 @@
 import Image from 'next/image'
 
-import { Eyebrow, Section } from '@/components/ui'
+import { Eyebrow, Section, StarRating } from '@/components/ui'
 import type { HomepageContent } from '@/lib/sanity/home-page'
 
 import { TESTIMONIALS_FIXTURE } from '../content'
@@ -54,6 +54,7 @@ export function Testimonials({
                   </div>
 
                   <blockquote>
+                    <StarRating rating={5} size="lg" className="mb-5" />
                     <div
                       className="text-gold font-display mb-4 text-6xl leading-none opacity-60"
                       aria-hidden="true"
