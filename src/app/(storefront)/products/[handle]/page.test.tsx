@@ -130,6 +130,9 @@ describe('ProductContent heading hierarchy', () => {
     )
     expect(html).not.toContain('<h1>Imported product title</h1>')
     expect(html).not.toContain('<h2>Imported section</h2>')
+    expect(html.indexOf('Body copy')).toBeLessThan(
+      html.indexOf('data-testid="product-form"'),
+    )
 
     const detailTags = html.match(/<details\b[^>]*>/g) ?? []
     const disclosureTitles = [

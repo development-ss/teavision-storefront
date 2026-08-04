@@ -330,8 +330,16 @@ export async function ProductContent({
             ) : null}
           </div>
 
-          {/* ProductForm first — buy controls (size, qty, add-to-cart, bulk savings)
-              precede the description, matching the original site's PDP order */}
+          {/* Leading SEO description — keep this crawlable copy near the title */}
+          {descriptionHtml ? (
+            <RichText
+              html={descriptionHtml}
+              variant="compact"
+              className="text-ink-soft mt-5.5 max-w-prose text-[1.02rem]"
+            />
+          ) : null}
+
+          {/* Buy controls: size, quantity, add-to-cart, and bulk savings */}
           <Suspense
             fallback={
               <ProductForm
@@ -349,15 +357,6 @@ export async function ProductContent({
               className="mt-6.5"
             />
           </Suspense>
-
-          {/* Description: follows the buy section */}
-          {descriptionHtml ? (
-            <RichText
-              html={descriptionHtml}
-              variant="compact"
-              className="text-ink-soft mt-5.5 max-w-prose text-[1.02rem]"
-            />
-          ) : null}
 
           {/* Disclosures: 32px below ProductForm (design .specs mt-32px = verified match) */}
           <div className="mt-8">
