@@ -115,17 +115,17 @@ type JsonLdNode = Record<string, unknown>
 const SECTION_ORDER = [
   'HomepageHero',
   'ProductRange',
-  'HomepageNewsletter',
+  'Testimonials',
   'PrivateLabel',
   'OrganicHerbs',
   'SupplyChain',
   'CertificationCoverage',
   'SupplyChainProtection',
-  'Testimonials',
   'TeaJournal',
   'ContactSection',
   'Cta',
   'Faq',
+  'HomepageNewsletter',
 ] as const
 
 function image(id: string): HomepageContent['hero']['image'] {

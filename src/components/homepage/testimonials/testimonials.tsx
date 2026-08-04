@@ -16,14 +16,16 @@ export function Testimonials({
   items = TESTIMONIALS_FIXTURE.items,
 }: TestimonialsProps = {}) {
   return (
-    <Section.Root tone="surface">
+    <Section.Root tone="inverse">
       <Section.Container>
         <div className="mx-auto max-w-3xl text-center">
           {intro.eyebrow && (
-            <Eyebrow className="mb-4 justify-center">{intro.eyebrow}</Eyebrow>
+            <Eyebrow tone="gold" className="mb-4 justify-center">
+              {intro.eyebrow}
+            </Eyebrow>
           )}
-          <h2 className="type-heading-01 text-ink">{intro.title}</h2>
-          {intro.copy && <p className="text-ink-soft mt-4">{intro.copy}</p>}
+          <h2 className="type-heading-01 text-paper">{intro.title}</h2>
+          {intro.copy && <p className="text-paper/75 mt-4">{intro.copy}</p>}
         </div>
 
         <TestimonialsSlider slideCount={items.length}>
@@ -35,7 +37,7 @@ export function Testimonials({
               aria-roledescription="slide"
               aria-label={`${testimonial.name} testimonial`}
             >
-              <article className="border-hairline-2 bg-card shadow-1 mx-auto max-w-5xl rounded-lg border p-5 sm:p-6 md:p-8">
+              <article className="border-paper/15 mx-auto max-w-5xl border-y py-6 md:py-8">
                 <div className="grid gap-6 md:grid-cols-[9rem_1fr] md:gap-9">
                   <div className="flex items-center justify-between gap-4 md:flex-col md:items-start md:justify-start">
                     <Image
@@ -44,9 +46,9 @@ export function Testimonials({
                       width={testimonial.logo.width}
                       height={testimonial.logo.height}
                       sizes="(min-width: 768px) 128px, 96px"
-                      className="border-hairline bg-paper size-24 shrink-0 rounded-md border object-contain md:size-32"
+                      className="border-paper/20 bg-paper size-24 shrink-0 rounded-md border object-contain md:size-32"
                     />
-                    <span className="type-eyebrow text-brand shrink-0">
+                    <span className="type-eyebrow text-gold shrink-0">
                       Partner
                     </span>
                   </div>
@@ -58,15 +60,15 @@ export function Testimonials({
                     >
                       &ldquo;
                     </div>
-                    <p className="text-ink-soft text-base leading-relaxed md:text-[1.04rem]">
+                    <p className="text-paper/85 text-base leading-relaxed md:text-[1.04rem]">
                       {testimonial.quote}
                     </p>
-                    <footer className="border-hairline mt-6 border-t pt-4">
+                    <footer className="border-paper/15 mt-6 border-t pt-4">
                       <cite className="not-italic">
-                        <span className="font-display text-ink block text-[1.25rem] leading-tight">
+                        <span className="font-display text-paper block text-[1.25rem] leading-tight">
                           {testimonial.name}
                         </span>
-                        <span className="text-ink-faint mt-1 block text-sm">
+                        <span className="text-paper/65 mt-1 block text-sm">
                           {testimonial.role ? `${testimonial.role}` : null}
                           {testimonial.role && testimonial.brand ? ', ' : null}
                           {testimonial.brand ?? null}

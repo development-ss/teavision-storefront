@@ -76,10 +76,7 @@ export default async function HomePage() {
           cards={homepage.productRange.cards}
           intro={homepage.productRange.intro}
         />
-        <HomepageNewsletter
-          action={sendNewsletterSignupAction}
-          intro={homepage.newsletter.intro}
-        />
+        <Testimonials {...homepage.testimonials} />
         <PrivateLabel
           cards={homepage.privateLabel.cards}
           intro={homepage.privateLabel.intro}
@@ -88,11 +85,17 @@ export default async function HomePage() {
         <SupplyChain {...homepage.supplyChain} />
         <CertificationCoverage {...homepage.certificationCoverage} />
         <SupplyChainProtection {...homepage.supplyChainProtection} />
-        <Testimonials {...homepage.testimonials} />
         <TeaJournal {...homepage.teaJournal} />
-        <ContactSection action={submitContactFormAction} {...homepage.contact} />
+        <ContactSection
+          action={submitContactFormAction}
+          {...homepage.contact}
+        />
         <Cta {...homepage.catalogueCta} />
         <Faq {...homepage.faq} />
+        <HomepageNewsletter
+          action={sendNewsletterSignupAction}
+          intro={homepage.newsletter.intro}
+        />
       </div>
     </>
   )
