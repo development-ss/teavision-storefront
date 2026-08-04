@@ -28,7 +28,7 @@ export function Sidebar({
   visibleFilters,
 }: SidebarProps) {
   return (
-    <aside className="hidden lg:sticky lg:top-32 lg:grid lg:max-h-[calc(100dvh-9rem)] lg:gap-5 lg:self-start lg:overflow-y-auto lg:overscroll-contain lg:pr-2">
+    <aside className="hidden lg:grid lg:gap-5">
       {/* Filter panel */}
       <Suspense fallback={null}>
         <FilterPanel
@@ -46,10 +46,7 @@ export function Sidebar({
             <summary className="type-mono-meta text-ink-faint focus-visible:ring-ring flex min-h-11 cursor-pointer list-none items-center rounded uppercase focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none">
               You Might Like
             </summary>
-            <nav
-              aria-label="You might like collections"
-              className="mt-3 max-h-96 overflow-y-auto pr-1"
-            >
+            <nav aria-label="You might like collections" className="mt-3">
               <ul className="grid gap-1" role="list">
                 {sidebarCollections.map((sidebarCollection) => {
                   const isActive = sidebarCollection.handle === handle

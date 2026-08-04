@@ -584,6 +584,32 @@ describe('Collection hero and page content rendering', () => {
     expect(html).toContain('Wholesale collection')
   })
 
+  it('keeps the collection sidebar in the document scroll flow', async () => {
+    shopifyMocks.getCollection.mockResolvedValue(collectionFixture())
+    shopifyMocks.getCollectionSummaries.mockResolvedValue([
+      {
+        id: 'gid://shopify/Collection/related',
+        handle: 'related-tea',
+        title: 'Related Tea',
+        description: 'A related collection',
+        featuredImage: null,
+        updatedAt: '2026-08-04T00:00:00Z',
+        seo: { title: null, description: null },
+      },
+    ])
+
+    const element = await PageContent({
+      params: Promise.resolve({ handle: 'bulk-tea-bags' }),
+      searchParams: Promise.resolve({}),
+    })
+    const html = renderToStaticMarkup(element)
+
+    expect(html).toContain('aria-label="You might like collections"')
+    expect(html).not.toContain('overflow-y-auto')
+    expect(html).not.toContain('overscroll-contain')
+    expect(html).not.toContain('lg:sticky')
+  })
+
   it('renders banner H1 visibly and places read-more story after product grid', async () => {
     shopifyMocks.getCollection.mockResolvedValue(
       collectionFixture({
