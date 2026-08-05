@@ -2,12 +2,12 @@ import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { Suspense } from 'react'
 
 import { PortableTextContent } from '@/components/blog'
 import { RichText } from '@/components/ui/rich-text'
 import { Card, Section } from '@/components/ui'
 import {
+  DEFAULT_BLOG_HANDLE,
   formatArticleDate,
   getArticle,
   getArticlePath,
@@ -27,6 +27,19 @@ type Props = {
 
 function articleDescription(article: Awaited<ReturnType<typeof getArticle>>) {
   return article?.seo.description ?? article?.excerpt.slice(0, 160) ?? ''
+}
+
+export async function generateStaticParams(): Promise<
+  Array<{ blog: string; article: string }>
+> {
+  const blog = await getBlog(DEFAULT_BLOG_HANDLE)
+
+  return (
+    blog?.articles.map((article) => ({
+      blog: DEFAULT_BLOG_HANDLE,
+      article: article.handle,
+    })) ?? []
+  )
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -64,7 +77,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   })
 }
 
-async function ArticleContent({ params }: Props) {
+export default async function ArticlePage({ params }: Props) {
   const { blog, article: handle } = await params
   const normalizedBlog = normalizeBlogHandle(blog)
   const [article, blogData] = await Promise.all([
@@ -263,23 +276,5 @@ async function ArticleContent({ params }: Props) {
         </div>
       </article>
     </div>
-  )
-}
-
-export default function ArticlePage({ params }: Props) {
-  return (
-    <Suspense
-      fallback={
-        <div
-          className="type-body text-ink-soft max-w-wide px-gutter mx-auto py-12"
-          role="status"
-          aria-live="polite"
-        >
-          Loading article…
-        </div>
-      }
-    >
-      <ArticleContent params={params} />
-    </Suspense>
   )
 }
