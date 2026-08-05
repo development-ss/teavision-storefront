@@ -2,6 +2,7 @@ import Image from 'next/image'
 
 import { Eyebrow, Section, StarRating } from '@/components/ui'
 import type { HomepageContent } from '@/lib/sanity/home-page'
+import { cn } from '@/lib/utils'
 
 import { TESTIMONIALS_FIXTURE } from '../content'
 import { TestimonialsSlider } from './testimonials-slider'
@@ -38,27 +39,30 @@ export function Testimonials({
               aria-label={`${testimonial.name} testimonial`}
             >
               <article className="border-paper/15 mx-auto max-w-5xl border-y py-6 md:py-8">
-                <div className="grid gap-6 md:grid-cols-[9rem_1fr] md:gap-9">
-                  <div className="flex items-center justify-between gap-4 md:flex-col md:items-start md:justify-start">
-                    <Image
-                      src={testimonial.logo.src}
-                      alt={testimonial.logo.alt}
-                      width={testimonial.logo.width}
-                      height={testimonial.logo.height}
-                      sizes="(min-width: 768px) 128px, 96px"
-                      className="border-paper/20 bg-paper size-24 shrink-0 rounded-md border object-contain md:size-32"
-                    />
-                    <span className="type-eyebrow text-gold shrink-0">
-                      Partner
-                    </span>
+                <div className="grid gap-6 md:grid-cols-[9rem_minmax(0,1fr)] md:items-start md:gap-12">
+                  <div className="flex flex-col items-start">
+                    <div className="border-paper/20 bg-paper size-24 shrink-0 overflow-hidden rounded-md border md:size-32">
+                      <Image
+                        src={testimonial.logo.src}
+                        alt={testimonial.logo.alt}
+                        width={testimonial.logo.width}
+                        height={testimonial.logo.height}
+                        sizes="(min-width: 768px) 128px, 96px"
+                        className={cn(
+                          'size-full object-contain',
+                          testimonial.logo.src.includes('st-ali-logo') &&
+                            'scale-[1.55]',
+                        )}
+                      />
+                    </div>
+                    <StarRating rating={5} size="lg" className="mt-4" />
                   </div>
 
                   <blockquote>
-                    <StarRating rating={5} size="lg" className="mb-5" />
-                    <p className="text-paper/85 text-base leading-relaxed md:text-[1.04rem]">
+                    <p className="text-paper/85 max-w-[70ch] text-base leading-relaxed md:text-[1.04rem]">
                       {testimonial.quote}
                     </p>
-                    <footer className="border-paper/15 mt-6 border-t pt-4">
+                    <footer className="mt-6">
                       <cite className="not-italic">
                         <span className="font-display text-paper block text-[1.25rem] leading-tight">
                           {testimonial.name}
