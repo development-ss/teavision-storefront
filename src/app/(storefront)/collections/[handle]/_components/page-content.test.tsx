@@ -593,7 +593,7 @@ describe('Collection hero and page content rendering', () => {
     expect(heroHtml).not.toContain('Read more about Wholesale Bulk Tea')
     expect(storyHtml).toContain('Read more about Wholesale Bulk Tea')
     expect(storyHtml).toContain(
-      '<section class="bg-paper text-ink py-8 md:py-12" aria-label="About Wholesale Bulk Tea">',
+      '<section class="py-8 md:py-12" aria-label="About Wholesale Bulk Tea">',
     )
   })
 
@@ -680,7 +680,7 @@ describe('Collection hero and page content rendering', () => {
     expect(heroHtml).toContain('aria-label="Breadcrumb"')
     expect(heroHtml).not.toContain('Read more about Wholesale Bulk Tea')
     expect(storyHtml).toContain(
-      '<section class="bg-paper text-ink py-8 md:py-12" aria-label="About Wholesale Bulk Tea">',
+      '<section class="py-8 md:py-12" aria-label="About Wholesale Bulk Tea">',
     )
     expect(storyHtml).toContain(
       '<h2 class="type-heading-05 text-ink mt-5">Why hospitality teams choose Teavision</h2>',

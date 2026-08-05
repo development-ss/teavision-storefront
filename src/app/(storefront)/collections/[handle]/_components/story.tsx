@@ -36,7 +36,7 @@ export async function CollectionStory({ params }: CollectionStoryProps) {
   return (
     <Section.Root
       aria-label={`About ${collection.title}`}
-      tone="surface"
+      tone="transparent"
       spacing="compact"
     >
       <Section.Container>
