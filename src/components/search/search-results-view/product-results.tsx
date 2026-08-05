@@ -3,7 +3,7 @@ import type { SearchaniseSearchResult } from '@/lib/searchanise/types'
 
 import { SearchAlert } from './search-alert'
 
-const FIRST_VISIBLE_PRODUCT_ROW_COUNT = 3
+const PRODUCT_IMAGE_PRELOAD_COUNT = 1
 
 export function ProductResults({
   clearHref,
@@ -24,15 +24,13 @@ export function ProductResults({
   }
 
   return (
-    <ul
-      className="grid grid-cols-2 gap-x-4.5 gap-y-5.5 sm:grid-cols-2 lg:grid-cols-3"
-      role="list"
-    >
+    <ul className="grid gap-4 sm:gap-5" role="list">
       {result.products.map((product, index) => (
         <li key={product.id}>
           <ProductCard
             product={product}
-            priority={index < FIRST_VISIBLE_PRODUCT_ROW_COUNT}
+            layout="list"
+            priority={index < PRODUCT_IMAGE_PRELOAD_COUNT}
           />
         </li>
       ))}
