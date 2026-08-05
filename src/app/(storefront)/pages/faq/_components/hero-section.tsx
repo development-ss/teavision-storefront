@@ -1,4 +1,4 @@
-import { Button, Section } from '@/components/ui'
+import { Section } from '@/components/ui'
 
 import { FAQ_HERO_SUBHEADING } from '../_lib/data'
 
@@ -6,10 +6,7 @@ export function HeroSection() {
   return (
     <Section.Root tone="brand">
       <Section.Container variant="base" className="text-center">
-        <Button href="/collections" variant="brand" size="sm">
-          Wholesale Partnership
-        </Button>
-        <h1 className="type-display text-paper mx-auto mt-6 max-w-[14ch] text-balance">
+        <h1 className="type-display text-paper mx-auto max-w-[14ch] text-balance">
           Wholesale Tea Supplier FAQ
         </h1>
         <p className="type-lede text-paper/85 mx-auto mt-6 max-w-prose">
