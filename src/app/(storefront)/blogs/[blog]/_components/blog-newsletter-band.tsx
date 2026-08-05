@@ -1,6 +1,6 @@
 import { HomepageNewsletterForm } from '@/components/homepage/newsletter/newsletter-form'
 import { AnimatedElement, Eyebrow, Section } from '@/components/ui'
-import { sendNewsletterSignupAction } from '@/lib/contact/actions'
+import { sendNewsletterSignupFormAction } from '@/lib/contact/actions'
 
 export function BlogNewsletterBand() {
   return (
@@ -31,7 +31,7 @@ export function BlogNewsletterBand() {
               suppliers in Australia and beyond.
             </p>
             <div className="mt-7">
-              <HomepageNewsletterForm action={sendNewsletterSignupAction} />
+              <HomepageNewsletterForm action={sendNewsletterSignupFormAction} />
             </div>
           </div>
 

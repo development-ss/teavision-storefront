@@ -300,6 +300,49 @@ describe('sendWholesaleAccountAction', () => {
   })
 })
 
+describe('email field delivery', () => {
+  test('includes the contact email in the message and reply-to address', async () => {
+    const result = await submitContactFormAction(
+      formData(VALID_CONTACT_SUBMISSION),
+    )
+
+    expect(result.success).toBe(true)
+    expect(resendSendMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        replyTo: 'ada@example.com',
+        text: expect.stringContaining('Email: ada@example.com'),
+      }),
+    )
+  })
+
+  test('uses the custom blend email as the reply-to address', async () => {
+    const result = await sendCustomTeaBlendAction(
+      formData(VALID_CUSTOM_TEA_BLEND_SUBMISSION),
+    )
+
+    expect(result.success).toBe(true)
+    expect(resendSendMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        replyTo: 'grace@example.com',
+      }),
+    )
+  })
+
+  test('uses the newsletter email as the reply-to address', async () => {
+    const result = await sendNewsletterSignupAction(
+      formData({ email: 'newsletter@example.com', website: '' }),
+    )
+
+    expect(result.success).toBe(true)
+    expect(resendSendMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        replyTo: 'newsletter@example.com',
+        text: expect.stringContaining('newsletter@example.com'),
+      }),
+    )
+  })
+})
+
 describe('sendNpdOrderAction', () => {
   test('accepts an Australian date and includes it in the staff email', async () => {
     const result = await sendNpdOrderAction(
@@ -309,8 +352,11 @@ describe('sendNpdOrderAction', () => {
     expect(result.success).toBe(true)
     expect(resendSendMock).toHaveBeenCalledWith(
       expect.objectContaining({
+        replyTo: 'katherine@example.com',
         subject: 'New Teavision NPD form submission',
-        text: expect.stringContaining('Date: 01/07/2026'),
+        text: expect.stringMatching(
+          /Date: 01\/07\/2026[\s\S]*Email: katherine@example\.com/,
+        ),
       }),
     )
   })

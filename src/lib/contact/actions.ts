@@ -112,10 +112,12 @@ async function getRateLimitKey(): Promise<string> {
   return getClientIpFromHeaders(requestHeaders)
 }
 
-async function isRateLimited(): Promise<boolean> {
+async function isRateLimited(
+  surface: ContactProviderSurface,
+): Promise<boolean> {
   const identifier = await getRateLimitKey()
   const result = await checkRateLimit({
-    namespace: 'contact',
+    namespace: `contact:${surface}`,
     identifier,
     limit: RATE_LIMIT_MAX_SUBMISSIONS,
     windowMs: RATE_LIMIT_WINDOW_MS,
@@ -345,7 +347,7 @@ async function submitContactSubmission(
     return { success: false, error: VALIDATION_ERROR }
   }
 
-  if (await isRateLimited()) {
+  if (await isRateLimited(surface)) {
     return { success: false, error: RATE_LIMIT_ERROR }
   }
 
@@ -429,7 +431,7 @@ export async function sendWholesaleAccountAction(
     return { success: false, error: VALIDATION_ERROR }
   }
 
-  if (await isRateLimited()) {
+  if (await isRateLimited('wholesale-account')) {
     return { success: false, error: RATE_LIMIT_ERROR }
   }
 
@@ -696,7 +698,7 @@ export async function sendNpdOrderAction(
     return { success: false, error: VALIDATION_ERROR }
   }
 
-  if (await isRateLimited()) {
+  if (await isRateLimited('npd-order')) {
     return { success: false, error: RATE_LIMIT_ERROR }
   }
 
@@ -746,7 +748,7 @@ export async function sendNewsletterSignupAction(
     return { success: false, error: NEWSLETTER_VALIDATION_ERROR }
   }
 
-  if (await isRateLimited()) {
+  if (await isRateLimited('newsletter')) {
     return { success: false, error: RATE_LIMIT_ERROR }
   }
 

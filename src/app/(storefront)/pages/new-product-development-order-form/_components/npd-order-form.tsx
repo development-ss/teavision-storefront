@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition, type SubmitEvent } from 'react'
+import { useActionState, useEffect, useState } from 'react'
 
 import {
   Button,
@@ -13,6 +13,7 @@ import {
 import { dispatchClientAnalyticsEvent } from '@/lib/analytics/client'
 import { createLeadSubmitEvent } from '@/lib/analytics/events'
 import { sendNpdOrderAction } from '@/lib/contact/actions'
+import type { ContactActionResult } from '@/lib/contact/types'
 import {
   NPD_BLEND_DEVELOPMENT_COST,
   NPD_NATUROPATH_COST,
@@ -37,43 +38,54 @@ const MULTI_BLEND_COUNTS = Array.from(
   (_, index) => index + 2,
 )
 
+type NpdSubmissionState = ContactActionResult & {
+  submissionCount: number
+}
+
+const INITIAL_STATE: NpdSubmissionState = {
+  success: false,
+  submissionCount: 0,
+}
+
 export function NpdOrderForm() {
-  const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle')
-  const [error, setError] = useState('')
+  const [dismissedSubmissionCount, setDismissedSubmissionCount] = useState<
+    number | null
+  >(null)
   const [timeframe, setTimeframe] = useState('')
   const [blendMode, setBlendMode] = useState<'one' | 'multiple'>('one')
   const [multiBlendCount, setMultiBlendCount] = useState(2)
-  const [isPending, startTransition] = useTransition()
+  const [state, formAction, isPending] = useActionState(
+    async (
+      previousState: NpdSubmissionState,
+      formData: FormData,
+    ): Promise<NpdSubmissionState> => {
+      try {
+        const result = await sendNpdOrderAction(formData)
+
+        return {
+          ...result,
+          submissionCount: previousState.submissionCount + 1,
+        }
+      } catch {
+        return {
+          success: false,
+          error: DEFAULT_ERROR,
+          submissionCount: previousState.submissionCount + 1,
+        }
+      }
+    },
+    INITIAL_STATE,
+  )
 
   const blendCount = blendMode === 'one' ? 1 : multiBlendCount
 
-  function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
-    event.preventDefault()
-    const formData = new FormData(event.currentTarget)
+  useEffect(() => {
+    if (!state.success || state.submissionCount === 0) return
 
-    startTransition(async () => {
-      try {
-        const result = await sendNpdOrderAction(formData)
-        if (result.success) {
-          setStatus('success')
-          setError('')
-          setTimeframe('')
-          setBlendMode('one')
-          setMultiBlendCount(2)
-          void dispatchClientAnalyticsEvent(createLeadSubmitEvent('npd'))
-          return
-        }
+    void dispatchClientAnalyticsEvent(createLeadSubmitEvent('npd'))
+  }, [state.submissionCount, state.success])
 
-        setStatus('error')
-        setError(result.error ?? DEFAULT_ERROR)
-      } catch {
-        setStatus('error')
-        setError(DEFAULT_ERROR)
-      }
-    })
-  }
-
-  if (status === 'success') {
+  if (state.success && dismissedSubmissionCount !== state.submissionCount) {
     return (
       <div className="border-brand/30 bg-brand-tint rounded-lg border p-6">
         <p className={labelClassName}>Form received</p>
@@ -88,7 +100,12 @@ export function NpdOrderForm() {
           type="button"
           variant="secondary"
           className="mt-6"
-          onClick={() => setStatus('idle')}
+          onClick={() => {
+            setTimeframe('')
+            setBlendMode('one')
+            setMultiBlendCount(2)
+            setDismissedSubmissionCount(state.submissionCount)
+          }}
         >
           Submit another form
         </Button>
@@ -98,7 +115,7 @@ export function NpdOrderForm() {
 
   return (
     <form
-      onSubmit={handleSubmit}
+      action={formAction}
       className="flex flex-col gap-6"
       aria-label="New product development order form"
     >
@@ -364,13 +381,13 @@ export function NpdOrderForm() {
         />
       </div>
 
-      {status === 'error' && error ? (
+      {!state.success && state.error ? (
         <p
           id="npd-form-error"
           role="alert"
           className="type-body-sm border-danger/30 bg-danger-tint text-danger rounded border p-4"
         >
-          {error}
+          {state.error}
         </p>
       ) : null}
 
@@ -384,7 +401,9 @@ export function NpdOrderForm() {
           size="lg"
           isLoading={isPending}
           disabled={isPending}
-          aria-describedby={status === 'error' ? 'npd-form-error' : undefined}
+          aria-describedby={
+            !state.success && state.error ? 'npd-form-error' : undefined
+          }
         >
           {isPending ? 'Sending form...' : 'Submit NPD form'}
         </Button>

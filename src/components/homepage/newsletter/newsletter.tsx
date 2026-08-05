@@ -6,7 +6,10 @@ import { HomepageNewsletterForm } from './newsletter-form'
 
 export type HomepageNewsletterProps = {
   intro: HomepageContent['newsletter']['intro']
-  action: (formData: FormData) => Promise<NewsletterSignupActionResult>
+  action: (
+    previousState: NewsletterSignupActionResult,
+    formData: FormData,
+  ) => Promise<NewsletterSignupActionResult> | NewsletterSignupActionResult
 }
 
 export function HomepageNewsletter({ action, intro }: HomepageNewsletterProps) {

@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState, useTransition, type SubmitEvent } from 'react'
+import { useActionState, useEffect, useState } from 'react'
 
 import {
   Button,
@@ -13,6 +13,7 @@ import {
 import { dispatchClientAnalyticsEvent } from '@/lib/analytics/client'
 import { createLeadSubmitEvent } from '@/lib/analytics/events'
 import { sendWholesaleAccountAction } from '@/lib/contact/actions'
+import type { ContactActionResult } from '@/lib/contact/types'
 import {
   WHOLESALE_ACCOUNT_LIMITS,
   WHOLESALE_ACCOUNT_START_OPTIONS,
@@ -24,38 +25,49 @@ const DEFAULT_ERROR =
 
 const labelClassName = 'type-mono-meta text-ink-faint'
 
+type WholesaleSubmissionState = ContactActionResult & {
+  submissionCount: number
+}
+
+const INITIAL_STATE: WholesaleSubmissionState = {
+  success: false,
+  submissionCount: 0,
+}
+
 export function WholesaleAccountForm() {
-  const formRef = useRef<HTMLFormElement>(null)
-  const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle')
-  const [error, setError] = useState('')
-  const [isPending, startTransition] = useTransition()
-
-  function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
-    event.preventDefault()
-    const formData = new FormData(event.currentTarget)
-
-    startTransition(async () => {
+  const [dismissedSubmissionCount, setDismissedSubmissionCount] = useState<
+    number | null
+  >(null)
+  const [state, formAction, isPending] = useActionState(
+    async (
+      previousState: WholesaleSubmissionState,
+      formData: FormData,
+    ): Promise<WholesaleSubmissionState> => {
       try {
         const result = await sendWholesaleAccountAction(formData)
 
-        if (result.success) {
-          formRef.current?.reset()
-          setStatus('success')
-          setError('')
-          void dispatchClientAnalyticsEvent(createLeadSubmitEvent('wholesale'))
-          return
+        return {
+          ...result,
+          submissionCount: previousState.submissionCount + 1,
         }
-
-        setStatus('error')
-        setError(result.error ?? DEFAULT_ERROR)
       } catch {
-        setStatus('error')
-        setError(DEFAULT_ERROR)
+        return {
+          success: false,
+          error: DEFAULT_ERROR,
+          submissionCount: previousState.submissionCount + 1,
+        }
       }
-    })
-  }
+    },
+    INITIAL_STATE,
+  )
 
-  if (status === 'success') {
+  useEffect(() => {
+    if (!state.success || state.submissionCount === 0) return
+
+    void dispatchClientAnalyticsEvent(createLeadSubmitEvent('wholesale'))
+  }, [state.submissionCount, state.success])
+
+  if (state.success && dismissedSubmissionCount !== state.submissionCount) {
     return (
       <Card className="border-brand/30 bg-brand-tint p-6 sm:p-8">
         <p className={labelClassName}>Application received</p>
@@ -70,7 +82,7 @@ export function WholesaleAccountForm() {
           type="button"
           variant="secondary"
           className="mt-6"
-          onClick={() => setStatus('idle')}
+          onClick={() => setDismissedSubmissionCount(state.submissionCount)}
         >
           Submit another request
         </Button>
@@ -80,8 +92,7 @@ export function WholesaleAccountForm() {
 
   return (
     <form
-      ref={formRef}
-      onSubmit={handleSubmit}
+      action={formAction}
       aria-busy={isPending}
       aria-label="Wholesale bulk order account sign up form"
       className="flex flex-col gap-6"
@@ -90,9 +101,7 @@ export function WholesaleAccountForm() {
         <p className={labelClassName}>Your details</p>
         <div className="mt-5 grid gap-5 sm:grid-cols-2">
           <div>
-            <FormLabel htmlFor="wholesale-first-name">
-              First name *
-            </FormLabel>
+            <FormLabel htmlFor="wholesale-first-name">First name *</FormLabel>
             <TextInput
               id="wholesale-first-name"
               name="firstName"
@@ -228,7 +237,7 @@ export function WholesaleAccountForm() {
         />
       </div>
 
-      {status === 'error' && error ? (
+      {!state.success && state.error ? (
         <p
           id="wholesale-account-form-error"
           role="alert"
@@ -237,7 +246,7 @@ export function WholesaleAccountForm() {
             'border-danger/30 bg-danger-tint text-danger',
           )}
         >
-          {error}
+          {state.error}
         </p>
       ) : null}
 
@@ -253,7 +262,9 @@ export function WholesaleAccountForm() {
           isLoading={isPending}
           disabled={isPending}
           aria-describedby={
-            status === 'error' ? 'wholesale-account-form-error' : undefined
+            !state.success && state.error
+              ? 'wholesale-account-form-error'
+              : undefined
           }
           className="w-full sm:w-auto"
         >

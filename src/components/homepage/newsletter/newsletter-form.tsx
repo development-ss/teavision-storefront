@@ -1,59 +1,46 @@
 'use client'
 
-import { useId, useRef, useState, useTransition, type SubmitEvent } from 'react'
+import { useActionState, useEffect, useId, useRef } from 'react'
 import { ArrowRight } from 'lucide-react'
 
 import { Button } from '@/components/ui'
+import { dispatchClientAnalyticsEvent } from '@/lib/analytics/client'
+import { createLeadSubmitEvent } from '@/lib/analytics/events'
 import type { NewsletterSignupActionResult } from '@/lib/contact/types'
 import { cn } from '@/lib/utils'
 
 type HomepageNewsletterFormProps = {
-  action: (formData: FormData) => Promise<NewsletterSignupActionResult>
+  action: (
+    previousState: NewsletterSignupActionResult,
+    formData: FormData,
+  ) => Promise<NewsletterSignupActionResult> | NewsletterSignupActionResult
 }
 
 const DEFAULT_ERROR =
   'Unable to send your signup right now. Please try again shortly.'
+const INITIAL_STATE: NewsletterSignupActionResult = { success: false }
 
 export function HomepageNewsletterForm({
   action,
 }: HomepageNewsletterFormProps) {
   const id = useId()
   const formRef = useRef<HTMLFormElement>(null)
-  const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle')
-  const [error, setError] = useState('')
-  const [isPending, startTransition] = useTransition()
+  const [state, formAction, isPending] = useActionState(action, INITIAL_STATE)
 
-  function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
-    event.preventDefault()
-    const formData = new FormData(event.currentTarget)
+  useEffect(() => {
+    if (!state.success) return
 
-    startTransition(async () => {
-      try {
-        const result = await action(formData)
+    formRef.current?.reset()
+    void dispatchClientAnalyticsEvent(createLeadSubmitEvent('newsletter'))
+  }, [state.success])
 
-        if (result.success) {
-          formRef.current?.reset()
-          setStatus('success')
-          setError('')
-          return
-        }
-
-        setStatus('error')
-        setError(result.error ?? DEFAULT_ERROR)
-      } catch {
-        setStatus('error')
-        setError(DEFAULT_ERROR)
-      }
-    })
-  }
-
-  const messageId = status === 'success' ? `${id}-success` : `${id}-error`
-  const hasMessage = status === 'success' || Boolean(error)
+  const messageId = state.success ? `${id}-success` : `${id}-error`
+  const hasMessage = state.success || Boolean(state.error)
 
   return (
     <form
       ref={formRef}
-      onSubmit={handleSubmit}
+      action={formAction}
       aria-busy={isPending}
       className="mt-7 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap"
     >
@@ -94,16 +81,18 @@ export function HomepageNewsletterForm({
       {hasMessage ? (
         <p
           id={messageId}
-          role={status === 'success' ? 'status' : 'alert'}
+          role={state.success ? 'status' : 'alert'}
           aria-live="polite"
           className={cn(
             'type-body-sm w-full rounded-md border p-3 text-center',
-            status === 'success'
+            state.success
               ? 'border-paper/25 text-paper'
               : 'border-gold bg-paper text-ink',
           )}
         >
-          {status === 'success' ? 'Thanks for signing up.' : error}
+          {state.success
+            ? 'Thanks for signing up.'
+            : (state.error ?? DEFAULT_ERROR)}
         </p>
       ) : null}
     </form>

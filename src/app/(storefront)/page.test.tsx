@@ -14,7 +14,7 @@ const routeMocks = vi.hoisted(() => ({
   draftMode: vi.fn(),
   getDraftHomepage: vi.fn(),
   getHomepage: vi.fn(),
-  sendNewsletterSignupAction: vi.fn(),
+  sendNewsletterSignupFormAction: vi.fn(),
   submitContactFormAction: vi.fn(),
   withNoindexRobots: vi.fn((metadata: unknown) => metadata),
 }))
@@ -31,7 +31,7 @@ vi.mock('next/headers', () => ({
 }))
 
 vi.mock('@/lib/contact/actions', () => ({
-  sendNewsletterSignupAction: routeMocks.sendNewsletterSignupAction,
+  sendNewsletterSignupFormAction: routeMocks.sendNewsletterSignupFormAction,
   submitContactFormAction: routeMocks.submitContactFormAction,
 }))
 
@@ -61,7 +61,7 @@ vi.mock('@/components/homepage', () => ({
   }) => (
     <div data-section="HomepageNewsletter">
       {props.intro.title}
-      {props.action === routeMocks.sendNewsletterSignupAction
+      {props.action === routeMocks.sendNewsletterSignupFormAction
         ? 'newsletter-action'
         : 'wrong-newsletter-action'}
     </div>
@@ -302,7 +302,7 @@ describe('HomePage route cutover', () => {
     routeMocks.getHomepage.mockReset()
     routeMocks.getDraftHomepage.mockReset()
     routeMocks.draftMode.mockReset()
-    routeMocks.sendNewsletterSignupAction.mockReset()
+    routeMocks.sendNewsletterSignupFormAction.mockReset()
     routeMocks.submitContactFormAction.mockReset()
     routeMocks.withNoindexRobots.mockReset()
     routeMocks.withNoindexRobots.mockImplementation((metadata) => metadata)

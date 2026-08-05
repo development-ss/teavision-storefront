@@ -17,7 +17,7 @@ import {
   Testimonials,
 } from '@/components/homepage'
 import {
-  sendNewsletterSignupAction,
+  sendNewsletterSignupFormAction,
   submitContactFormAction,
 } from '@/lib/contact/actions'
 import { getDraftHomepage, getHomepage } from '@/lib/sanity/home-page'
@@ -93,7 +93,7 @@ export default async function HomePage() {
         <Cta {...homepage.catalogueCta} />
         <Faq {...homepage.faq} />
         <HomepageNewsletter
-          action={sendNewsletterSignupAction}
+          action={sendNewsletterSignupFormAction}
           intro={homepage.newsletter.intro}
         />
       </div>
