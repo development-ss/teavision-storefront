@@ -55,12 +55,6 @@ export function Testimonials({
 
                   <blockquote>
                     <StarRating rating={5} size="lg" className="mb-5" />
-                    <div
-                      className="text-gold font-display mb-4 text-6xl leading-none opacity-60"
-                      aria-hidden="true"
-                    >
-                      &ldquo;
-                    </div>
                     <p className="text-paper/85 text-base leading-relaxed md:text-[1.04rem]">
                       {testimonial.quote}
                     </p>
