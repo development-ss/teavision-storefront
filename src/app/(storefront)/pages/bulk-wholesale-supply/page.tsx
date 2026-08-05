@@ -4,7 +4,6 @@ import { ContactSection } from '@/components/contact'
 import { submitContactFormAction } from '@/lib/contact/actions'
 import { withNoindexRobots } from '@/lib/seo/noindex'
 
-import { BannerSection } from './_components/banner-section'
 import { CtaSection } from './_components/cta-section'
 import { FaqSection } from './_components/faq-section'
 import { FeaturesGrid3 } from './_components/features-grid-3'
@@ -32,25 +31,23 @@ export default function Page() {
   return (
     <>
       <JsonLd />
-      {/* Section 1 — Wholesale account banner */}
-      <BannerSection />
-      {/* Section 2 — Hero split */}
+      {/* Section 1 — Hero split */}
       <HeroSection />
-      {/* Section 3 — Features grid 3-col */}
+      {/* Section 2 — Features grid 3-col */}
       <FeaturesGrid3 />
-      {/* Section 4 — Freight & logistics */}
+      {/* Section 3 — Freight & logistics */}
       <LogisticsSection />
-      {/* Section 5 — What you can import */}
+      {/* Section 4 — What you can import */}
       <ImportFeaturesSection />
-      {/* Section 6 — Why choose Teavision */}
+      {/* Section 5 — Why choose Teavision */}
       <WhyChooseSection />
-      {/* Section 7 — How it works */}
+      {/* Section 6 — How it works */}
       <ProcessSection />
-      {/* Section 8 — FAQ */}
+      {/* Section 7 — FAQ */}
       <FaqSection />
-      {/* Section 9 — CTA banner */}
+      {/* Section 8 — CTA banner */}
       <CtaSection />
-      {/* Section 10 — Contact */}
+      {/* Section 9 — Contact */}
       <ContactSection action={submitContactFormAction} />
     </>
   )
