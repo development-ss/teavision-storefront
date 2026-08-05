@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { notFound } from 'next/navigation'
 
 import { Toolbar } from '@/components/collection'
+import { SearchPageSearchForm } from '@/components/search/search-results-view/search-page-search-form'
 import { Section } from '@/components/ui'
 import { getVisibleProductReviewSummary } from '@/lib/reviews/summary'
 import { getTrustooProductRatings } from '@/lib/reviews/trustoo'
@@ -268,7 +269,20 @@ export async function Results({
             filters={visibleFilters}
             selectedFilters={activeSelectedFilters}
             clearHref={clearFiltersHref}
-            className="mb-6"
+            className="mb-8"
+            search={
+              <SearchPageSearchForm
+                className="mt-0 max-w-none"
+                filter={{
+                  attribute: 'collections',
+                  value: collection.title,
+                }}
+                inputId="collection-search-query"
+                label={`Search ${collection.title}`}
+                labelClassName="type-label text-ink block sm:col-span-2"
+                placeholder="Search this collection…"
+              />
+            }
           />
 
           <div className="grid gap-10 lg:grid-cols-[252px_1fr] lg:items-start">

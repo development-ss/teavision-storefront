@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 
+import { SearchPageSearchForm } from '@/components/search/search-results-view/search-page-search-form'
 import { FilterType, type CollectionProductFilter } from '@/lib/shopify/types'
 
 import { Toolbar } from './toolbar'
@@ -53,5 +54,24 @@ export const WithActiveFilter: Story = {
     productCount: 8,
     filters,
     selectedFilters: [filters[0].values[1].input],
+  },
+}
+
+export const WithCollectionSearch: Story = {
+  args: {
+    currentSort: 'featured',
+    productCount: 20,
+    filters,
+    selectedFilters: [],
+    search: (
+      <SearchPageSearchForm
+        className="mt-0 max-w-none"
+        filter={{ attribute: 'collections', value: 'Wholesale Bulk Tea' }}
+        inputId="collection-search-query"
+        label="Search Wholesale Bulk Tea"
+        labelClassName="type-label text-ink block sm:col-span-2"
+        placeholder="Search this collection…"
+      />
+    ),
   },
 }

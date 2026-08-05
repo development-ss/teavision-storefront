@@ -623,6 +623,29 @@ describe('Collection hero and page content rendering', () => {
     expect(html).not.toContain('lg:sticky')
   })
 
+  it('renders collection-scoped search for every collection PLP', async () => {
+    shopifyMocks.getCollection.mockResolvedValue(
+      collectionFixture({
+        handle: 'black-tea',
+        title: 'Wholesale Black Tea',
+      }),
+    )
+
+    const element = await PageContent({
+      params: Promise.resolve({ handle: 'black-tea' }),
+      searchParams: Promise.resolve({}),
+    })
+    const html = renderToStaticMarkup(element)
+
+    expect(html).toContain('action="/search"')
+    expect(html).toContain('name="q"')
+    expect(html).toContain('Search Wholesale Black Tea')
+    expect(html).toContain('placeholder="Search this collection…"')
+    expect(html).toContain('name="filter"')
+    expect(html).toContain('value="collections:Wholesale Black Tea"')
+    expect(html).not.toContain('Search the Superfood range')
+  })
+
   it('renders banner H1 visibly and places read-more story below the breadcrumb', async () => {
     shopifyMocks.getCollection.mockResolvedValue(
       collectionFixture({
@@ -796,5 +819,7 @@ describe('DefaultResults fallback', () => {
 
     expect(html).toContain('Tea Masters Sencha Green Tea')
     expect(html).not.toContain('Unrelated Product')
+    expect(html).toContain('action="/search"')
+    expect(html).toContain('value="collections:Bulk Tea Bags"')
   })
 })

@@ -1,8 +1,10 @@
+import type { ReactNode } from 'react'
 import { Suspense } from 'react'
 import { SlidersHorizontal, X } from 'lucide-react'
 
 import type { CollectionProductFilter } from '@/lib/shopify/types'
 import { getSelectedCollectionFilterLabels } from '@/lib/shopify/filters'
+import { cn } from '@/lib/utils'
 
 import { FilterPanel } from '../filter-panel'
 import { SortSelect } from '../sort-select'
@@ -14,6 +16,7 @@ type ToolbarProps = {
   selectedFilters: string[]
   clearHref?: string
   className?: string
+  search?: ReactNode
 }
 
 export function Toolbar({
@@ -23,6 +26,7 @@ export function Toolbar({
   selectedFilters,
   clearHref,
   className,
+  search,
 }: ToolbarProps) {
   const selectedFilterLabels = getSelectedCollectionFilterLabels(
     filters,
@@ -30,20 +34,31 @@ export function Toolbar({
   )
 
   return (
-    <div className={className}>
-      {/* Top bar: count + sort */}
-      <div className="mb-4 flex items-center justify-between gap-4">
-        <span className="type-mono-meta text-ink-faint">
-          {productCount} {productCount === 1 ? 'product' : 'products'}
-        </span>
-        <Suspense fallback={null}>
-          <SortSelect currentSort={currentSort} />
-        </Suspense>
+    <div className={cn('border-hairline border-y py-5 md:py-6', className)}>
+      <div
+        className={cn(
+          'flex items-center justify-between gap-4',
+          search && 'grid items-end gap-5 lg:grid-cols-[minmax(0,1fr)_auto]',
+        )}
+      >
+        {search ? <div className="min-w-0">{search}</div> : null}
+        <div
+          className={cn(
+            'flex items-center justify-between gap-4',
+            search && 'lg:min-w-72',
+          )}
+        >
+          <span className="type-mono-meta text-ink-faint">
+            {productCount} {productCount === 1 ? 'product' : 'products'}
+          </span>
+          <Suspense fallback={null}>
+            <SortSelect currentSort={currentSort} />
+          </Suspense>
+        </div>
       </div>
 
-      {/* Active filter chips */}
       {selectedFilterLabels.length > 0 && (
-        <div className="mb-4 flex flex-wrap gap-2">
+        <div className="mt-4 flex flex-wrap gap-2">
           {selectedFilterLabels.map((filter) => (
             <span
               key={filter.input}
@@ -56,8 +71,7 @@ export function Toolbar({
         </div>
       )}
 
-      {/* Mobile filter toggle */}
-      <details className="bg-paper border-hairline mt-2 rounded-lg border lg:hidden">
+      <details className="bg-paper border-hairline mt-4 rounded-lg border lg:hidden">
         <summary className="type-label text-ink focus-visible:ring-ring flex min-h-12 cursor-pointer list-none items-center justify-between gap-4 rounded-lg px-4 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none">
           <span className="inline-flex items-center gap-2">
             <SlidersHorizontal className="size-4" aria-hidden="true" />
