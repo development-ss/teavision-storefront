@@ -10,8 +10,9 @@ import type {
 } from '@/lib/shopify/types'
 
 import { DefaultResults } from './default-results'
-import { PageContent } from './page-content'
 import { HeroContent } from './hero-content'
+import { PageContent } from './page-content'
+import { CollectionStory } from './story'
 
 const shopifyMocks = vi.hoisted(() => ({
   getCollection: vi.fn<() => Promise<Collection | null>>(),
@@ -543,10 +544,12 @@ describe('Collection hero and page content rendering', () => {
       }),
     )
 
-    const element = await HeroContent({
-      params: Promise.resolve({ handle: 'bulk-tea-bags' }),
-    })
-    const html = renderToStaticMarkup(element)
+    const params = Promise.resolve({ handle: 'bulk-tea-bags' })
+    const [heroElement, storyElement] = await Promise.all([
+      HeroContent({ params }),
+      CollectionStory({ params }),
+    ])
+    const html = renderToStaticMarkup(heroElement)
 
     expect(html).toContain('data-testid="collection-rich-hero"')
     expect(html).toContain('Ready-Made Bulk Tea Bags for Cafes')
@@ -559,12 +562,13 @@ describe('Collection hero and page content rendering', () => {
       /<link(?=[^>]*rel="preload")(?=[^>]*as="image")(?=[^>]*fetchPriority="high")[^>]*>/,
     )
     expect(html).not.toContain('Read more about Bulk Tea Bags')
+    expect(storyElement).toBeNull()
     expect(
       htmlContentMocks.sanitizeShopifyCollectionStoryHtml,
     ).not.toHaveBeenCalled()
   })
 
-  it('keeps the existing hero path for normal collection descriptions', async () => {
+  it('renders normal collection stories separately from the hero', async () => {
     shopifyMocks.getCollection.mockResolvedValue(
       collectionFixture({
         handle: 'wholesale-bulk-tea',
@@ -575,18 +579,21 @@ describe('Collection hero and page content rendering', () => {
       }),
     )
 
-    const element = await HeroContent({
-      params: Promise.resolve({ handle: 'wholesale-bulk-tea' }),
-    })
-    const html = renderToStaticMarkup(element)
+    const params = Promise.resolve({ handle: 'wholesale-bulk-tea' })
+    const [heroElement, storyElement] = await Promise.all([
+      HeroContent({ params }),
+      CollectionStory({ params }),
+    ])
+    const heroHtml = renderToStaticMarkup(heroElement)
+    const storyHtml = renderToStaticMarkup(storyElement)
 
-    expect(html).not.toContain('data-testid="collection-rich-hero"')
-    expect(html.indexOf('aria-label="Breadcrumb"')).toBeGreaterThan(-1)
-    expect(html.indexOf('aria-label="Breadcrumb"')).toBeLessThan(
-      html.indexOf('Read more about Wholesale Bulk Tea'),
-    )
-    expect(html.indexOf('Read more about Wholesale Bulk Tea')).toBeLessThan(
-      html.indexOf('Wholesale collection'),
+    expect(heroHtml).not.toContain('data-testid="collection-rich-hero"')
+    expect(heroHtml).toContain('aria-label="Breadcrumb"')
+    expect(heroHtml).toContain('Wholesale collection')
+    expect(heroHtml).not.toContain('Read more about Wholesale Bulk Tea')
+    expect(storyHtml).toContain('Read more about Wholesale Bulk Tea')
+    expect(storyHtml).toContain(
+      '<section class="bg-paper text-ink py-8 md:py-12" aria-label="About Wholesale Bulk Tea">',
     )
   })
 
@@ -642,11 +649,13 @@ describe('Collection hero and page content rendering', () => {
     )
 
     const params = Promise.resolve({ handle: 'wholesale-bulk-tea' })
-    const [heroElement, pageElement] = await Promise.all([
+    const [heroElement, storyElement, pageElement] = await Promise.all([
       HeroContent({ params }),
+      CollectionStory({ params }),
       PageContent({ params, searchParams: Promise.resolve({}) }),
     ])
     const heroHtml = renderToStaticMarkup(heroElement)
+    const storyHtml = renderToStaticMarkup(storyElement)
     const pageHtml = renderToStaticMarkup(pageElement)
 
     expect(heroHtml.match(/<h1\b/g)).toHaveLength(1)
@@ -668,13 +677,15 @@ describe('Collection hero and page content rendering', () => {
       /<link(?=[^>]*rel="preload")(?=[^>]*as="image")(?=[^>]*fetchPriority="high")[^>]*>/,
     )
     expect(heroHtml.indexOf('aria-label="Breadcrumb"')).toBeGreaterThan(-1)
-    expect(heroHtml.indexOf('aria-label="Breadcrumb"')).toBeLessThan(
-      heroHtml.indexOf('Read more about Wholesale Bulk Tea'),
+    expect(heroHtml).toContain('aria-label="Breadcrumb"')
+    expect(heroHtml).not.toContain('Read more about Wholesale Bulk Tea')
+    expect(storyHtml).toContain(
+      '<section class="bg-paper text-ink py-8 md:py-12" aria-label="About Wholesale Bulk Tea">',
     )
-    expect(heroHtml).toContain(
+    expect(storyHtml).toContain(
       '<h2 class="type-heading-05 text-ink mt-5">Why hospitality teams choose Teavision</h2>',
     )
-    expect(heroHtml).toContain(
+    expect(storyHtml).toContain(
       '<h3 class="type-label text-ink mt-5">Flexible wholesale ordering</h3>',
     )
     expect(pageHtml.indexOf('id="product-grid"')).toBeGreaterThan(-1)

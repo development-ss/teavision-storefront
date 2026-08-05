@@ -1,9 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 
-import { StoryDisclosure } from '@/components/collection'
 import { Eyebrow, Section } from '@/components/ui'
-import type { SanitizedHtml } from '@/lib/shopify/html-content'
 import { getSizedShopifyImageUrl } from '@/lib/shopify/image-url'
 import { cn } from '@/lib/utils'
 
@@ -14,7 +12,6 @@ type HeroProps = {
   heroDescription: string
   heroImage: HeroImage | null
   bannerImage: HeroImage | null
-  storyHtml: SanitizedHtml | null
 }
 
 export function Hero({
@@ -22,7 +19,6 @@ export function Hero({
   heroDescription,
   heroImage,
   bannerImage,
-  storyHtml,
 }: HeroProps) {
   // Banner mode (owner option C): banner art first, then crawlable hierarchy.
   if (bannerImage) {
@@ -74,14 +70,6 @@ export function Hero({
                 {collectionTitle}
               </h1>
             </nav>
-
-            {storyHtml ? (
-              <StoryDisclosure
-                title={`Read more about ${collectionTitle}`}
-                html={storyHtml}
-                className="mt-5.5"
-              />
-            ) : null}
           </Section.Container>
         </Section.Root>
       </>
@@ -135,14 +123,6 @@ export function Hero({
             {collectionTitle}
           </span>
         </nav>
-
-        {storyHtml ? (
-          <StoryDisclosure
-            title={`Read more about ${collectionTitle}`}
-            html={storyHtml}
-            className="mb-6"
-          />
-        ) : null}
 
         <div className="max-w-[52ch]">
           <Eyebrow tone="gold">Wholesale collection</Eyebrow>
