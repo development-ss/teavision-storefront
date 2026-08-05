@@ -1,12 +1,11 @@
 import { redirect } from 'next/navigation'
 import { notFound } from 'next/navigation'
 
-import { StoryDisclosure, Toolbar } from '@/components/collection'
+import { Toolbar } from '@/components/collection'
 import { Section } from '@/components/ui'
 import { getVisibleProductReviewSummary } from '@/lib/reviews/summary'
 import { getTrustooProductRatings } from '@/lib/reviews/trustoo'
 import { SITE_URL } from '@/lib/seo/site-url'
-import { sanitizeShopifyCollectionStoryHtml } from '@/lib/shopify/html-content'
 import {
   COLLECTION_PRODUCT_PAGE_SIZE,
   getCollection,
@@ -35,9 +34,6 @@ import {
   isPriceFilter,
   isVendorFilter,
   matchCategoryTag,
-  normalizeHtml,
-  parseCollectionRichHero,
-  shouldRenderRichDescription,
   SORT_MAP,
 } from '../_lib/page-helpers'
 import { JsonLd } from './json-ld'
@@ -231,12 +227,6 @@ export async function Results({
     ? `${getPath(handle)}/${category}`
     : getPath(handle)
   const collectionUrl = `${SITE_URL}${collectionPath}`
-  const richDescriptionHtml = normalizeHtml(collection.descriptionHtml)
-  const hasRichDescription = shouldRenderRichDescription(
-    collection.descriptionHtml,
-    collection.description,
-  )
-  const richHero = parseCollectionRichHero(collection.descriptionHtml)
   const collectionHeroImage = getHeroImage(
     collection.featuredImage,
     collection.descriptionHtml,
@@ -310,17 +300,6 @@ export async function Results({
           </div>
         </Section.Container>
       </Section.Root>
-
-      {hasRichDescription && !richHero ? (
-        <Section.Root tone="transparent" spacing="compact">
-          <Section.Container>
-            <StoryDisclosure
-              title={`Read more about ${collection.title}`}
-              html={sanitizeShopifyCollectionStoryHtml(richDescriptionHtml)}
-            />
-          </Section.Container>
-        </Section.Root>
-      ) : null}
     </>
   )
 }

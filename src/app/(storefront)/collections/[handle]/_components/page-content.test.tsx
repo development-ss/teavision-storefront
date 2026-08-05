@@ -581,7 +581,13 @@ describe('Collection hero and page content rendering', () => {
     const html = renderToStaticMarkup(element)
 
     expect(html).not.toContain('data-testid="collection-rich-hero"')
-    expect(html).toContain('Wholesale collection')
+    expect(html.indexOf('aria-label="Breadcrumb"')).toBeGreaterThan(-1)
+    expect(html.indexOf('aria-label="Breadcrumb"')).toBeLessThan(
+      html.indexOf('Read more about Wholesale Bulk Tea'),
+    )
+    expect(html.indexOf('Read more about Wholesale Bulk Tea')).toBeLessThan(
+      html.indexOf('Wholesale collection'),
+    )
   })
 
   it('keeps the collection sidebar in the document scroll flow', async () => {
@@ -610,7 +616,7 @@ describe('Collection hero and page content rendering', () => {
     expect(html).not.toContain('lg:sticky')
   })
 
-  it('renders banner H1 visibly and places read-more story after product grid', async () => {
+  it('renders banner H1 visibly and places read-more story below the breadcrumb', async () => {
     shopifyMocks.getCollection.mockResolvedValue(
       collectionFixture({
         handle: 'wholesale-bulk-tea',
@@ -661,18 +667,18 @@ describe('Collection hero and page content rendering', () => {
     expect(heroHtml).toMatch(
       /<link(?=[^>]*rel="preload")(?=[^>]*as="image")(?=[^>]*fetchPriority="high")[^>]*>/,
     )
-    expect(pageHtml.indexOf('id="product-grid"')).toBeGreaterThan(-1)
-    expect(pageHtml.indexOf('id="product-grid"')).toBeLessThan(
-      pageHtml.indexOf('Read more about Wholesale Bulk Tea'),
+    expect(heroHtml.indexOf('aria-label="Breadcrumb"')).toBeGreaterThan(-1)
+    expect(heroHtml.indexOf('aria-label="Breadcrumb"')).toBeLessThan(
+      heroHtml.indexOf('Read more about Wholesale Bulk Tea'),
     )
-    expect(pageHtml.indexOf('Read more about Wholesale Bulk Tea')).toBeLessThan(
-      pageHtml.indexOf(
-        '<h2 class="type-heading-05 text-ink mt-5">Why hospitality teams choose Teavision</h2>',
-      ),
+    expect(heroHtml).toContain(
+      '<h2 class="type-heading-05 text-ink mt-5">Why hospitality teams choose Teavision</h2>',
     )
-    expect(pageHtml).toContain(
+    expect(heroHtml).toContain(
       '<h3 class="type-label text-ink mt-5">Flexible wholesale ordering</h3>',
     )
+    expect(pageHtml.indexOf('id="product-grid"')).toBeGreaterThan(-1)
+    expect(pageHtml).not.toContain('Read more about Wholesale Bulk Tea')
   })
 
   it('preloads the first product image when incomplete hero dimensions prevent the hero from rendering', async () => {

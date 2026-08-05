@@ -1,12 +1,15 @@
 import { notFound } from 'next/navigation'
 
+import { sanitizeShopifyCollectionStoryHtml } from '@/lib/shopify/html-content'
 import { getCollection } from '@/lib/shopify/operations/collection'
 
 import {
   cleanHeroDescription,
   getDescriptionHeroImage,
   getHeroImage,
+  normalizeHtml,
   parseCollectionRichHero,
+  shouldRenderRichDescription,
 } from '../_lib/page-helpers'
 import type { RouteParams } from '../_lib/page-types'
 import { CollectionRichHero } from './collection-rich-hero'
@@ -26,6 +29,15 @@ export async function HeroContent({ params }: HeroContentProps) {
 
   if (richHero) return <CollectionRichHero richHero={richHero} />
 
+  const storyHtml = shouldRenderRichDescription(
+    collection.descriptionHtml,
+    collection.description,
+  )
+    ? sanitizeShopifyCollectionStoryHtml(
+        normalizeHtml(collection.descriptionHtml),
+      )
+    : null
+
   return (
     <Hero
       collectionTitle={collection.title}
@@ -35,6 +47,7 @@ export async function HeroContent({ params }: HeroContentProps) {
         collection.descriptionHtml,
       )}
       bannerImage={getDescriptionHeroImage(collection.descriptionHtml)}
+      storyHtml={storyHtml}
     />
   )
 }
