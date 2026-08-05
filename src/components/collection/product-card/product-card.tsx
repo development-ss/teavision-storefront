@@ -76,7 +76,7 @@ export function ProductCard({
   return (
     <article
       className={cn(
-        'group relative',
+        'group relative min-w-0',
         isListLayout
           ? 'border-hairline bg-card grid grid-cols-[7.5rem_minmax(0,1fr)] gap-x-4 gap-y-4 rounded-lg border p-4 sm:grid-cols-[12rem_minmax(0,1fr)] sm:gap-x-6 sm:p-5 lg:grid-cols-[14rem_minmax(0,1fr)]'
           : 'flex h-full flex-col',

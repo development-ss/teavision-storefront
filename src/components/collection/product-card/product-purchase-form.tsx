@@ -121,7 +121,11 @@ export function ProductPurchaseForm({
 
   return (
     <form
-      className={cn('grid', isCompactLayout ? 'gap-2' : 'gap-3', className)}
+      className={cn(
+        'grid min-w-0',
+        isCompactLayout ? 'gap-2' : 'gap-3',
+        className,
+      )}
       onSubmit={handleSubmit}
     >
       {showPrice !== false && (
@@ -170,7 +174,7 @@ export function ProductPurchaseForm({
               ? 'grid grid-cols-[7.5rem_minmax(0,1fr)] items-end gap-2 sm:grid-cols-[8rem_7.5rem_7rem] sm:gap-3'
               : 'grid grid-cols-[7.5rem_minmax(5rem,1fr)] items-end gap-2 sm:grid-cols-[7.5rem_7rem] sm:gap-3'
             : isCardLayout
-              ? 'grid grid-cols-[7.5rem_minmax(0,1fr)] items-end gap-2'
+              ? 'grid grid-cols-1 items-end gap-2 sm:grid-cols-[7.5rem_minmax(0,1fr)]'
               : 'flex flex-wrap items-center gap-2',
         )}
       >
@@ -235,7 +239,7 @@ export function ProductPurchaseForm({
               disabled={!canAddToCart || isPending || justAdded}
               variant={justAdded ? 'brand' : 'primary'}
               size={isCompactLayout ? 'sm' : 'md'}
-              className="w-full"
+              className="min-w-0 w-full"
             >
               {justAdded ? 'Added' : canAddToCart ? 'Add to cart' : 'Sold out'}
             </Button>
