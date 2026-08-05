@@ -597,6 +597,38 @@ describe('Collection hero and page content rendering', () => {
     )
   })
 
+  it('uses the production image without dropping the collection hero content', async () => {
+    shopifyMocks.getCollection.mockResolvedValue(
+      collectionFixture({
+        handle: 'aniseed-tea',
+        title: 'Aniseed Tea',
+        description: 'Aniseed collection description.',
+        descriptionHtml: `
+          <div id="kk-collection-banner" style="background-image: url('https://cdn.shopify.com/s/files/1/0786/8339/files/iStock-1828083790.jpg?v=1707454172');">
+            <div id="kk-collection-banner-overlay"></div>
+            <h1>Aniseed Tea</h1>
+          </div>
+        `,
+      }),
+    )
+
+    const heroElement = await HeroContent({
+      params: Promise.resolve({ handle: 'aniseed-tea' }),
+    })
+    const html = renderToStaticMarkup(heroElement)
+
+    expect(html.match(/<h1\b/g)).toHaveLength(1)
+    expect(html).toContain('>Aniseed Tea</h1>')
+    expect(html).toContain('bg-brand-deep text-paper relative overflow-hidden')
+    expect(html).toContain('object-cover opacity-35')
+    expect(html).toContain(
+      'iStock-1828083790.jpg%3Fv%3D1707454172%26width%3D1440',
+    )
+    expect(html).toContain('Wholesale collection')
+    expect(html).toContain('aria-label="Breadcrumb"')
+    expect(html).toContain('Aniseed collection description.')
+  })
+
   it('keeps the collection sidebar in the document scroll flow', async () => {
     shopifyMocks.getCollection.mockResolvedValue(collectionFixture())
     shopifyMocks.getCollectionSummaries.mockResolvedValue([

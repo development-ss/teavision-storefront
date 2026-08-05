@@ -78,6 +78,44 @@ describe('normalizeHtml', () => {
   })
 })
 
+describe('getLegacyCollectionBannerImage', () => {
+  it('extracts the production collection hero background image', () => {
+    const descriptionHtml = `
+      <div id="kk-collection-banner" style="background-image: url('https://cdn.shopify.com/s/files/1/0786/8339/files/iStock-1828083790.jpg?v=1707454172');">
+        <div id="kk-collection-banner-overlay"></div>
+        <h1>Aniseed Tea</h1>
+      </div>
+    `
+
+    expect(pageHelpers.getLegacyCollectionBannerImage(descriptionHtml)).toEqual(
+      {
+        altText: null,
+        height: 200,
+        url: 'https://cdn.shopify.com/s/files/1/0786/8339/files/iStock-1828083790.jpg?v=1707454172',
+        width: 1130,
+      },
+    )
+  })
+
+  it('prefers the production banner over the collection thumbnail', () => {
+    const featuredImage = {
+      altText: 'Aniseed thumbnail',
+      height: 800,
+      url: 'https://cdn.shopify.com/s/files/1/0786/8339/collections/org_aniseed.jpg',
+      width: 800,
+    }
+    const descriptionHtml = `
+      <div id="kk-collection-banner" style="background-image: url(&quot;//cdn.shopify.com/s/files/1/0786/8339/files/aniseed-banner.jpg&quot;);">
+        <h1>Aniseed Tea</h1>
+      </div>
+    `
+
+    expect(pageHelpers.getHeroImage(featuredImage, descriptionHtml)?.url).toBe(
+      'https://cdn.shopify.com/s/files/1/0786/8339/files/aniseed-banner.jpg',
+    )
+  })
+})
+
 describe('parsePageParam', () => {
   it('returns 1 for undefined', () => {
     expect(pageHelpers.parsePageParam(undefined)).toBe(1)

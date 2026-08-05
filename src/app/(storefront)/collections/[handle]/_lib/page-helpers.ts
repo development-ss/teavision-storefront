@@ -32,6 +32,12 @@ export type CollectionRichHero = {
 const LEGACY_COLLECTION_BANNER_BLOCK_PATTERN =
   /<div\b[^>]*\bid=["']kk-collection-banner["'][^>]*>[\s\S]*?<h1\b[\s\S]*?<\/h1>\s*<\/div>/gi
 
+const LEGACY_COLLECTION_BANNER_OPENING_TAG_PATTERN =
+  /<div\b(?=[^>]*\bid=["']kk-collection-banner["'])[^>]*>/i
+
+const CSS_BACKGROUND_IMAGE_URL_PATTERN =
+  /background-image\s*:\s*url\(\s*(?:"([^"]+)"|'([^']+)'|([^)\s]+))\s*\)/i
+
 const LEGACY_READ_MORE_LINK_PATTERN =
   /<a\b(?=[^>]*(?:\bid=["']show-(?:more|less)["']|\bhref=["']#read-(?:more|less)["']))[^>]*>[\s\S]*?<\/a>/gi
 
@@ -43,6 +49,10 @@ const ATTRIBUTE_PATTERN =
 const DEFAULT_DESCRIPTION_HERO_IMAGE = {
   width: 1600,
   height: 577,
+}
+const DEFAULT_LEGACY_COLLECTION_BANNER_IMAGE = {
+  width: 1130,
+  height: 200,
 }
 
 export const SORT_MAP: Record<
@@ -238,6 +248,30 @@ export function getDescriptionHeroImage(
       parsePositiveInteger(getHtmlAttribute(imageTag, 'height')) ??
       sourceSize.height ??
       DEFAULT_DESCRIPTION_HERO_IMAGE.height,
+  }
+}
+
+export function getLegacyCollectionBannerImage(
+  descriptionHtml: string,
+): HeroImage | null {
+  const openingTag = descriptionHtml.match(
+    LEGACY_COLLECTION_BANNER_OPENING_TAG_PATTERN,
+  )?.[0]
+  if (!openingTag) return null
+
+  const style = getHtmlAttribute(openingTag, 'style')
+  if (!style) return null
+
+  const backgroundImage = style.match(CSS_BACKGROUND_IMAGE_URL_PATTERN)
+  const source =
+    backgroundImage?.[1] ?? backgroundImage?.[2] ?? backgroundImage?.[3]
+  if (!source) return null
+
+  return {
+    url: normalizeImageSource(source),
+    altText: null,
+    width: DEFAULT_LEGACY_COLLECTION_BANNER_IMAGE.width,
+    height: DEFAULT_LEGACY_COLLECTION_BANNER_IMAGE.height,
   }
 }
 
@@ -744,5 +778,9 @@ export function getHeroImage(
   featuredImage: HeroImage | null,
   descriptionHtml = '',
 ): HeroImage | null {
-  return getDescriptionHeroImage(descriptionHtml) ?? featuredImage
+  return (
+    getLegacyCollectionBannerImage(descriptionHtml) ??
+    getDescriptionHeroImage(descriptionHtml) ??
+    featuredImage
+  )
 }
