@@ -1,6 +1,6 @@
 'use client'
 
-import { useId, useRef, useState, useTransition, type SubmitEvent } from 'react'
+import { useActionState, useEffect, useId, useRef } from 'react'
 
 import { Button, FormLabel, Textarea, TextInput } from '@/components/ui'
 import type { ContactActionResult } from '@/lib/contact/types'
@@ -13,44 +13,35 @@ type ContactSectionFormProps = {
 const DEFAULT_ERROR =
   'Unable to send your message right now. Please try again shortly.'
 
+const INITIAL_ACTION_STATE: ContactActionResult = { success: false }
+
 export function ContactSectionForm({ action }: ContactSectionFormProps) {
   const id = useId()
   const formRef = useRef<HTMLFormElement>(null)
-  const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle')
-  const [error, setError] = useState('')
-  const [isPending, startTransition] = useTransition()
-
-  function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
-    event.preventDefault()
-    const formData = new FormData(event.currentTarget)
-
-    startTransition(async () => {
+  const [state, formAction, isPending] = useActionState(
+    async (_previousState: ContactActionResult, formData: FormData) => {
       try {
-        const result = await action(formData)
-
-        if (result.success) {
-          formRef.current?.reset()
-          setStatus('success')
-          setError('')
-          return
-        }
-
-        setStatus('error')
-        setError(result.error ?? DEFAULT_ERROR)
+        return await action(formData)
       } catch {
-        setStatus('error')
-        setError(DEFAULT_ERROR)
+        return { success: false, error: DEFAULT_ERROR }
       }
-    })
-  }
+    },
+    INITIAL_ACTION_STATE,
+  )
 
-  const messageId = status === 'success' ? `${id}-success` : `${id}-error`
-  const hasMessage = status === 'success' || Boolean(error)
+  useEffect(() => {
+    if (state.success) {
+      formRef.current?.reset()
+    }
+  }, [state.success])
+
+  const messageId = state.success ? `${id}-success` : `${id}-error`
+  const hasMessage = state.success || Boolean(state.error)
 
   return (
     <form
       ref={formRef}
-      onSubmit={handleSubmit}
+      action={formAction}
       aria-busy={isPending}
       className="grid gap-4"
     >
@@ -122,18 +113,18 @@ export function ContactSectionForm({ action }: ContactSectionFormProps) {
       {hasMessage ? (
         <p
           id={messageId}
-          role={status === 'success' ? 'status' : 'alert'}
+          role={state.success ? 'status' : 'alert'}
           aria-live="polite"
           className={cn(
             'type-body-sm rounded-md border p-3',
-            status === 'success'
+            state.success
               ? 'border-brand bg-brand-tint text-brand'
               : 'border-danger bg-danger-tint text-danger',
           )}
         >
-          {status === 'success'
+          {state.success
             ? 'Thanks. The Teavision team will review your enquiry shortly.'
-            : error}
+            : state.error}
         </p>
       ) : null}
     </form>

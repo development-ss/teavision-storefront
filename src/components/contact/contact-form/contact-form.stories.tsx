@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
+import { expect, userEvent, within } from 'storybook/test'
 
 import { ContactForm } from './contact-form'
 
@@ -30,6 +31,28 @@ export default meta
 type Story = StoryObj<typeof ContactForm>
 
 export const Default: Story = {}
+
+export const SubmittedSuccess: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    await userEvent.type(canvas.getByLabelText('Name'), 'Buyer')
+    await userEvent.type(canvas.getByLabelText('Email'), 'buyer@example.com')
+    await userEvent.type(canvas.getByLabelText('Message'), 'Please contact me.')
+    await userEvent.click(canvas.getByRole('button', { name: 'Send enquiry' }))
+
+    await expect(
+      await canvas.findByRole('heading', { name: 'Thanks for your message.' }),
+    ).toBeVisible()
+
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Send another enquiry' }),
+    )
+    await expect(
+      canvas.getByRole('button', { name: 'Send enquiry' }),
+    ).toBeVisible()
+  },
+}
 
 export const Success: Story = {
   args: {

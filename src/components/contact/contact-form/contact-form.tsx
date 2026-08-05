@@ -1,11 +1,6 @@
 'use client'
 
-import {
-  useState,
-  useTransition,
-  type ChangeEvent,
-  type SubmitEvent,
-} from 'react'
+import { useActionState, useEffect, useState } from 'react'
 
 import { Button, FormLabel, Textarea, TextInput } from '@/components/ui'
 import { dispatchClientAnalyticsEvent } from '@/lib/analytics/client'
@@ -25,20 +20,8 @@ type ContactFormProps = {
   pendingLabel?: string
 }
 
-type FormValues = {
-  name: string
-  phone: string
-  email: string
-  message: string
-  website: string
-}
-
-const INITIAL_FORM_VALUES: FormValues = {
-  name: '',
-  phone: '',
-  email: '',
-  message: '',
-  website: '',
+type ContactSubmissionState = ContactActionResult & {
+  submissionCount: number
 }
 
 const DEFAULT_ERROR =
@@ -56,44 +39,44 @@ export function ContactForm({
   submitLabel = 'Send enquiry',
   pendingLabel = 'Sending enquiry...',
 }: ContactFormProps) {
-  const [values, setValues] = useState(INITIAL_FORM_VALUES)
-  const [status, setStatus] = useState(initialState)
-  const [error, setError] = useState(
-    initialState === 'error' ? initialError : '',
-  )
-  const [isPending, startTransition] = useTransition()
-
-  function updateField(field: keyof FormValues) {
-    return (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      setValues((current) => ({ ...current, [field]: event.target.value }))
-    }
+  const initialActionState: ContactSubmissionState = {
+    success: initialState === 'success',
+    error: initialState === 'error' ? initialError : undefined,
+    submissionCount: 0,
   }
-
-  function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
-    event.preventDefault()
-    const formData = new FormData(event.currentTarget)
-
-    startTransition(async () => {
+  const [dismissedSubmissionCount, setDismissedSubmissionCount] = useState<
+    number | null
+  >(null)
+  const [state, formAction, isPending] = useActionState(
+    async (
+      previousState: ContactSubmissionState,
+      formData: FormData,
+    ): Promise<ContactSubmissionState> => {
       try {
         const result = await action(formData)
-        if (result.success) {
-          setValues(INITIAL_FORM_VALUES)
-          setStatus('success')
-          setError('')
-          void dispatchClientAnalyticsEvent(createLeadSubmitEvent('contact'))
-          return
+
+        return {
+          ...result,
+          submissionCount: previousState.submissionCount + 1,
         }
-
-        setStatus('error')
-        setError(result.error ?? DEFAULT_ERROR)
       } catch {
-        setStatus('error')
-        setError(DEFAULT_ERROR)
+        return {
+          success: false,
+          error: DEFAULT_ERROR,
+          submissionCount: previousState.submissionCount + 1,
+        }
       }
-    })
-  }
+    },
+    initialActionState,
+  )
 
-  if (status === 'success') {
+  useEffect(() => {
+    if (!state.success || state.submissionCount === 0) return
+
+    void dispatchClientAnalyticsEvent(createLeadSubmitEvent('contact'))
+  }, [state.submissionCount, state.success])
+
+  if (state.success && dismissedSubmissionCount !== state.submissionCount) {
     return (
       <div className="border-brand/30 bg-brand-tint rounded-lg border p-6">
         <p className={labelClassName}>Enquiry received</p>
@@ -108,7 +91,7 @@ export function ContactForm({
           type="button"
           variant="secondary"
           className="mt-6"
-          onClick={() => setStatus('idle')}
+          onClick={() => setDismissedSubmissionCount(state.submissionCount)}
         >
           Send another enquiry
         </Button>
@@ -118,7 +101,7 @@ export function ContactForm({
 
   return (
     <form
-      onSubmit={handleSubmit}
+      action={formAction}
       className="flex flex-col gap-6"
       aria-label="Contact enquiry form"
     >
@@ -140,8 +123,6 @@ export function ContactForm({
             autoComplete="name"
             required
             maxLength={100}
-            value={values.name}
-            onChange={updateField('name')}
             className="mt-2"
           />
         </div>
@@ -156,8 +137,6 @@ export function ContactForm({
             type="tel"
             autoComplete="tel"
             maxLength={20}
-            value={values.phone}
-            onChange={updateField('phone')}
             className="mt-2"
           />
         </div>
@@ -174,8 +153,6 @@ export function ContactForm({
           autoComplete="email"
           required
           maxLength={254}
-          value={values.email}
-          onChange={updateField('email')}
           className="mt-2"
         />
       </div>
@@ -190,8 +167,6 @@ export function ContactForm({
           required
           rows={6}
           maxLength={2000}
-          value={values.message}
-          onChange={updateField('message')}
           className="mt-2 min-h-40"
           placeholder="Wholesale account, custom blend, private label, sample request, or general supply question."
         />
@@ -205,18 +180,16 @@ export function ContactForm({
           type="text"
           tabIndex={-1}
           autoComplete="off"
-          value={values.website}
-          onChange={updateField('website')}
         />
       </div>
 
-      {status === 'error' && error && (
+      {!state.success && state.error && (
         <p
           id="contact-form-error"
           role="alert"
           className="type-body-sm border-danger/30 bg-danger-tint text-danger rounded border p-4"
         >
-          {error}
+          {state.error}
         </p>
       )}
 
@@ -231,7 +204,7 @@ export function ContactForm({
           isLoading={isPending}
           disabled={isPending}
           aria-describedby={
-            status === 'error' ? 'contact-form-error' : undefined
+            !state.success && state.error ? 'contact-form-error' : undefined
           }
         >
           {isPending ? pendingLabel : submitLabel}
