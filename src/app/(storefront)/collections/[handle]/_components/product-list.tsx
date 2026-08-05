@@ -5,36 +5,38 @@ import { Button, Pagination } from '@/components/ui'
 import type { CollectionProductSummary } from '@/lib/shopify/types'
 
 type ProductListProps = {
+  clearActionLabel?: string
   clearFiltersHref?: string | null
   currentPage?: number
   totalPages?: number
   buildPageHref?: (page: number) => string
   preloadFirstImage?: boolean
   products: CollectionProductSummary[]
+  emptyMessage?: string
 }
 
 const PRODUCT_IMAGE_PRELOAD_COUNT = 1
 
 export function ProductList({
+  clearActionLabel = 'Clear filters',
   clearFiltersHref = null,
   currentPage = 1,
   totalPages = 1,
   buildPageHref,
   preloadFirstImage = true,
   products,
+  emptyMessage = 'Try removing a filter, or reach out — we source to order.',
 }: ProductListProps) {
   if (products.length === 0) {
     return (
       <div className="flex flex-col items-center py-20 text-center">
         <Leaf className="text-ink-faint/50 size-11" aria-hidden="true" />
         <h3 className="font-display text-ink mt-4 text-2xl">No matches</h3>
-        <p className="text-ink-soft mt-2 max-w-sm">
-          Try removing a filter, or reach out — we source to order.
-        </p>
+        <p className="text-ink-soft mt-2 max-w-sm">{emptyMessage}</p>
         <div className="mt-5 flex flex-wrap justify-center gap-3">
           {clearFiltersHref ? (
             <Button href={clearFiltersHref} variant="ghost" size="sm">
-              Clear filters
+              {clearActionLabel}
             </Button>
           ) : null}
           <Button href="/pages/contact" variant="ghost" size="sm">

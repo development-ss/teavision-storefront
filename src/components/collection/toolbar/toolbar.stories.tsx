@@ -65,12 +65,13 @@ export const WithCollectionSearch: Story = {
     selectedFilters: [],
     search: (
       <SearchPageSearchForm
+        action="/collections/wholesale-bulk-tea"
         className="mt-0 max-w-none"
-        filter={{ attribute: 'collections', value: 'Wholesale Bulk Tea' }}
         inputId="collection-search-query"
-        label="Search Wholesale Bulk Tea"
+        label="Filter products on this page"
         labelClassName="type-label text-ink block sm:col-span-2"
-        placeholder="Search this collection…"
+        placeholder="Filter visible products"
+        submitLabel="Filter"
       />
     ),
   },

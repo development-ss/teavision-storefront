@@ -35,26 +35,20 @@ export function Toolbar({
 
   return (
     <div className={cn('border-hairline border-y py-5 md:py-6', className)}>
+      {search ? <div className="max-w-3xl pb-5">{search}</div> : null}
+
       <div
         className={cn(
           'flex items-center justify-between gap-4',
-          search && 'grid items-end gap-5 lg:grid-cols-[minmax(0,1fr)_auto]',
+          search && 'border-hairline border-t pt-4',
         )}
       >
-        {search ? <div className="min-w-0">{search}</div> : null}
-        <div
-          className={cn(
-            'flex items-center justify-between gap-4',
-            search && 'lg:min-w-72',
-          )}
-        >
-          <span className="type-mono-meta text-ink-faint">
-            {productCount} {productCount === 1 ? 'product' : 'products'}
-          </span>
-          <Suspense fallback={null}>
-            <SortSelect currentSort={currentSort} />
-          </Suspense>
-        </div>
+        <span className="type-mono-meta text-ink-faint">
+          {productCount} {productCount === 1 ? 'product' : 'products'}
+        </span>
+        <Suspense fallback={null}>
+          <SortSelect currentSort={currentSort} />
+        </Suspense>
       </div>
 
       {selectedFilterLabels.length > 0 && (

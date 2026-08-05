@@ -623,7 +623,7 @@ describe('Collection hero and page content rendering', () => {
     expect(html).not.toContain('lg:sticky')
   })
 
-  it('renders collection-scoped search for every collection PLP', async () => {
+  it('renders a local product filter for every collection PLP', async () => {
     shopifyMocks.getCollection.mockResolvedValue(
       collectionFixture({
         handle: 'black-tea',
@@ -637,13 +637,47 @@ describe('Collection hero and page content rendering', () => {
     })
     const html = renderToStaticMarkup(element)
 
-    expect(html).toContain('action="/search"')
+    expect(html).toContain('action="/collections/black-tea"')
+    expect(html).toContain('method="get"')
     expect(html).toContain('name="q"')
-    expect(html).toContain('Search Wholesale Black Tea')
-    expect(html).toContain('placeholder="Search this collection…"')
-    expect(html).toContain('name="filter"')
-    expect(html).toContain('value="collections:Wholesale Black Tea"')
-    expect(html).not.toContain('Search the Superfood range')
+    expect(html).toContain('Filter products on this page')
+    expect(html).toContain('placeholder="Filter visible products"')
+    expect(html).not.toContain('value="collections:Wholesale Black Tea"')
+  })
+
+  it('filters only the products already rendered on the collection page', async () => {
+    shopifyMocks.getCollection.mockResolvedValue(
+      collectionFixture({
+        handle: 'black-tea',
+        title: 'Wholesale Black Tea',
+      }),
+    )
+    shopifyMocks.getCollectionProductsPage.mockResolvedValue({
+      filters: [],
+      pageInfo: { endCursor: null, hasNextPage: false },
+      products: [
+        productFixture({ title: 'Tea Masters Sencha Green Tea' }),
+        productFixture({
+          id: 'gid://shopify/Product/english-breakfast',
+          handle: 'english-breakfast',
+          title: 'English Breakfast Black Tea',
+        }),
+      ],
+    })
+    shopifyMocks.getCollectionPageIndex.mockResolvedValue(
+      pageIndexFixture({ totalCount: 2, totalPages: 1 }),
+    )
+
+    const element = await PageContent({
+      params: Promise.resolve({ handle: 'black-tea' }),
+      searchParams: Promise.resolve({ q: 'sencha' }),
+    })
+    const html = renderToStaticMarkup(element)
+
+    expect(html).toContain('Tea Masters Sencha Green Tea')
+    expect(html).not.toContain('href="/products/english-breakfast"')
+    expect(html).toContain('1 product')
+    expect(html).toContain('value="sencha"')
   })
 
   it('renders banner H1 visibly and places read-more story below the breadcrumb', async () => {
@@ -819,7 +853,9 @@ describe('DefaultResults fallback', () => {
 
     expect(html).toContain('Tea Masters Sencha Green Tea')
     expect(html).not.toContain('Unrelated Product')
-    expect(html).toContain('action="/search"')
-    expect(html).toContain('value="collections:Bulk Tea Bags"')
+    expect(html).toContain(
+      'action="/collections/bulk-tea-bags/categories_herbs"',
+    )
+    expect(html).not.toContain('value="collections:Bulk Tea Bags"')
   })
 })

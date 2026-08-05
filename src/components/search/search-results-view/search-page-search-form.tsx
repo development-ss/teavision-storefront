@@ -1,14 +1,13 @@
-import Form from 'next/form'
+import type { ReactNode } from 'react'
 import { Search } from 'lucide-react'
 
 import { Button, TextInput } from '@/components/ui'
-import { encodeSearchFilter } from '@/lib/searchanise/params'
-import type { SearchFilterSelection } from '@/lib/searchanise/types'
 import { cn } from '@/lib/utils'
 
 export function SearchPageSearchForm({
+  action = '/search',
+  children,
   query = '',
-  filter,
   label = 'Search query',
   labelClassName,
   placeholder = 'Find products…',
@@ -16,8 +15,9 @@ export function SearchPageSearchForm({
   inputId = 'search-page-query',
   submitLabel = 'Search',
 }: {
+  action?: string
+  children?: ReactNode
   query?: string
-  filter?: SearchFilterSelection
   label?: string
   labelClassName?: string
   placeholder?: string
@@ -25,22 +25,24 @@ export function SearchPageSearchForm({
   inputId?: string
   submitLabel?: string
 }) {
+  // Keep search URLs shareable without the extra App Router state headers that
+  // can push header-heavy browser sessions over server limits.
   return (
-    <Form
-      action="/search"
+    <form
+      action={action}
+      method="get"
       className={cn(
         'mt-7 grid max-w-2xl gap-3 sm:grid-cols-[minmax(0,1fr)_auto]',
         className,
       )}
     >
-      {filter ? (
-        <input type="hidden" name="filter" value={encodeSearchFilter(filter)} />
-      ) : null}
+      {children}
       <label htmlFor={inputId} className={labelClassName ?? 'sr-only'}>
         {label}
       </label>
       <TextInput
         id={inputId}
+        className="rounded-full px-5"
         name="q"
         type="search"
         defaultValue={query}
@@ -52,6 +54,6 @@ export function SearchPageSearchForm({
         <Search className="size-4" aria-hidden="true" />
         {submitLabel}
       </Button>
-    </Form>
+    </form>
   )
 }

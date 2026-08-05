@@ -26,7 +26,11 @@ export function SearchHero({
               ? (countLabel ?? 'Searching products...')
               : 'Search bulk teas, herbs, and spices.'}
           </p>
-          {!hasQuery && <SearchPageSearchForm />}
+          <SearchPageSearchForm
+            query={state.query}
+            label="Search products"
+            placeholder="Search products"
+          />
         </div>
       </Section.Container>
     </Section.Root>

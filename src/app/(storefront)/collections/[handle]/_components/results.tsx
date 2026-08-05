@@ -44,6 +44,7 @@ import { Sidebar } from './sidebar'
 type ResultsProps = {
   handle: string
   category?: string
+  query?: string
   sort: string
   page: number
   selectedFilters: string[]
@@ -57,6 +58,7 @@ type ResultsProps = {
 export async function Results({
   handle,
   category,
+  query = '',
   sort,
   page,
   selectedFilters,
@@ -200,6 +202,12 @@ export async function Results({
       reviewCount: visibleRating?.reviewCount,
     }
   })
+  const normalizedQuery = query.toLocaleLowerCase()
+  const displayedProducts = normalizedQuery
+    ? productsWithRatings.filter((product) =>
+        product.title.toLocaleLowerCase().includes(normalizedQuery),
+      )
+    : productsWithRatings
 
   const clearFiltersHref = getHref(handle, sort)
   const categoryFilter = buildCategoryFilter({
@@ -228,6 +236,13 @@ export async function Results({
     ? `${getPath(handle)}/${category}`
     : getPath(handle)
   const collectionUrl = `${SITE_URL}${collectionPath}`
+  const clearSearchHref = getPaginationHref({
+    category,
+    handle,
+    page: 1,
+    selectedFilters,
+    sort,
+  })
   const collectionHeroImage = getHeroImage(
     collection.featuredImage,
     collection.descriptionHtml,
@@ -265,23 +280,36 @@ export async function Results({
         <Section.Container>
           <Toolbar
             currentSort={sort}
-            productCount={products.length}
+            productCount={
+              normalizedQuery ? displayedProducts.length : pageIndex.totalCount
+            }
             filters={visibleFilters}
             selectedFilters={activeSelectedFilters}
             clearHref={clearFiltersHref}
             className="mb-8"
             search={
               <SearchPageSearchForm
+                action={collectionPath}
                 className="mt-0 max-w-none"
-                filter={{
-                  attribute: 'collections',
-                  value: collection.title,
-                }}
                 inputId="collection-search-query"
-                label={`Search ${collection.title}`}
+                label="Filter products on this page"
                 labelClassName="type-label text-ink block sm:col-span-2"
-                placeholder="Search this collection…"
-              />
+                placeholder="Filter visible products"
+                query={query}
+                submitLabel="Filter"
+              >
+                {sort !== 'featured' ? (
+                  <input type="hidden" name="sort" value={sort} />
+                ) : null}
+                {selectedFilters.map((filter) => (
+                  <input
+                    key={filter}
+                    type="hidden"
+                    name="filter"
+                    value={filter}
+                  />
+                ))}
+              </SearchPageSearchForm>
             }
           />
 
@@ -290,26 +318,39 @@ export async function Results({
               activeSelectedFilters={activeSelectedFilters}
               clearFiltersHref={clearFiltersHref}
               handle={handle}
-              productsLength={products.length}
+              productsLength={displayedProducts.length}
               sidebarCollections={sidebarCollections}
               visibleFilters={visibleFilters}
             />
 
             <ProductList
-              clearFiltersHref={clearFiltersHref}
+              clearActionLabel={
+                normalizedQuery ? 'Clear search' : 'Clear filters'
+              }
+              clearFiltersHref={
+                normalizedQuery ? clearSearchHref : clearFiltersHref
+              }
               currentPage={currentPage}
-              totalPages={totalPages}
-              buildPageHref={(p) =>
-                getPaginationHref({
-                  category,
-                  handle,
-                  page: p,
-                  selectedFilters,
-                  sort,
-                })
+              emptyMessage={
+                normalizedQuery
+                  ? 'No products on this page match your search.'
+                  : undefined
+              }
+              totalPages={normalizedQuery ? 1 : totalPages}
+              buildPageHref={
+                normalizedQuery
+                  ? undefined
+                  : (p) =>
+                      getPaginationHref({
+                        category,
+                        handle,
+                        page: p,
+                        selectedFilters,
+                        sort,
+                      })
               }
               preloadFirstImage={!hasRenderableCollectionHeroImage}
-              products={productsWithRatings}
+              products={displayedProducts}
             />
           </div>
         </Section.Container>

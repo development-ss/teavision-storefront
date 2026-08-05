@@ -16,6 +16,7 @@ export async function PageContent({ params, searchParams }: PageProps) {
 
   const sortParam = firstParam(resolvedSearchParams.sort)
   const sort = sortParam && sortParam in SORT_MAP ? sortParam : 'featured'
+  const query = (firstParam(resolvedSearchParams.q) ?? '').trim().slice(0, 128)
   const page = parsePageParam(resolvedSearchParams.page)
   const { selectedFilters, productFilters } = parseSelectedFilterParams(
     paramValues(resolvedSearchParams.filter),
@@ -24,6 +25,7 @@ export async function PageContent({ params, searchParams }: PageProps) {
   return Results({
     handle,
     category,
+    query,
     sort,
     page,
     selectedFilters,

@@ -46,12 +46,9 @@ export default function SearchPage({ searchParams }: Props) {
         const resultPromise = getSearchaniseSearchResults(state)
 
         return (
-          <>
-            <SearchHero state={state} />
-            <Suspense fallback={null}>
-              <SearchResults resultPromise={resultPromise} state={state} />
-            </Suspense>
-          </>
+          <Suspense fallback={<SearchHero state={state} />}>
+            <SearchResults resultPromise={resultPromise} state={state} />
+          </Suspense>
         )
       })}
     </Suspense>
