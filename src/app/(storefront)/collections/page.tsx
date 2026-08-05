@@ -3,18 +3,18 @@ import Link from 'next/link'
 
 import { Eyebrow, Section } from '@/components/ui'
 import { ContactSection } from '@/components/contact'
-import { getCollectionSummaries } from '@/lib/shopify/operations/collection'
-import type { CollectionSummary } from '@/lib/shopify/types'
 import { submitContactFormAction } from '@/lib/contact/actions'
 import { withNoindexRobots } from '@/lib/seo/noindex'
 import { serializeInlineJson } from '@/lib/seo/serialize-inline-json'
 import { SITE_URL } from '@/lib/seo/site-url'
+import { SHOPIFY_COLLECTIONS_INDEX_MENU_HANDLE } from '@/lib/shopify/env'
+import { getCollectionMenuSummaries } from '@/lib/shopify/operations/collection'
 
 import { CollectionCardImage } from './_components/collection-card-image'
 
 const COLLECTIONS_TITLE = 'Wholesale Tea Collections | Teavision'
 const COLLECTIONS_DESCRIPTION =
-  'Browse Teavision wholesale tea, herbs, spices, tea bags, superfood powders, wellness blends, and Australian native ingredient collections.'
+  'Browse Teavision wholesale tea, tea bag, herb, and spice collections.'
 
 export const metadata: Metadata = withNoindexRobots({
   title: { absolute: COLLECTIONS_TITLE },
@@ -31,22 +31,10 @@ function hrefForHandle(handle: string): string {
   return `/collections/${handle}`
 }
 
-function sortByTitle(
-  collectionA: CollectionSummary,
-  collectionB: CollectionSummary,
-): number {
-  if (collectionA.handle === 'all') return -1
-  if (collectionB.handle === 'all') return 1
-  return collectionA.title.localeCompare(collectionB.title)
-}
-
 export default async function Page() {
-  const collections = await getCollectionSummaries()
-
-  // Full grid: include 'all', exclude 'frontpage', sorted alphabetically
-  const gridCollections = collections
-    .filter((collection) => collection.handle !== 'frontpage')
-    .sort(sortByTitle)
+  const collections = await getCollectionMenuSummaries(
+    SHOPIFY_COLLECTIONS_INDEX_MENU_HANDLE,
+  )
 
   const structuredData = {
     '@context': 'https://schema.org',
@@ -56,14 +44,12 @@ export default async function Page() {
     url: `${SITE_URL}/collections`,
     mainEntity: {
       '@type': 'ItemList',
-      itemListElement: gridCollections
-        .slice(0, 120)
-        .map((collection, index) => ({
-          '@type': 'ListItem',
-          position: index + 1,
-          name: collection.title,
-          url: `${SITE_URL}${hrefForHandle(collection.handle)}`,
-        })),
+      itemListElement: collections.map((collection, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        name: collection.title,
+        url: `${SITE_URL}${hrefForHandle(collection.handle)}`,
+      })),
     },
   }
 
@@ -97,20 +83,20 @@ export default async function Page() {
 
           <Eyebrow tone="gold">Wholesale range</Eyebrow>
           <h1 className="type-heading-01 text-paper mt-4 max-w-4xl text-balance">
-            Tea, herb, spice, and ingredient collections
+            Wholesale tea collections
           </h1>
           <p className="text-paper/85 mt-4 max-w-prose text-[1.02rem]">
-            Start with a category, compare adjacent ranges, then move into
+            Browse our tea, tea bag, and herbs and spices ranges, then move into
             samples or bulk ordering with the Teavision team.
           </p>
         </Section.Container>
       </Section.Root>
 
-      {/* Full collection card grid — All first, then alphabetical */}
+      {/* Shopify navigation collections in merchant-defined order */}
       <Section.Root tone="transparent">
         <Section.Container>
           <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" role="list">
-            {gridCollections.map((collection) => (
+            {collections.map((collection) => (
               <li
                 key={collection.id}
                 className="group relative aspect-[1/1.08] overflow-hidden rounded-lg"
