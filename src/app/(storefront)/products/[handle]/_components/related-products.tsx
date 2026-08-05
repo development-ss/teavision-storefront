@@ -1,4 +1,5 @@
 import { getTrustooProductRatings } from '@/lib/reviews/trustoo'
+import { getVisibleProductReviewSummary } from '@/lib/reviews/summary'
 import { getCollectionProducts } from '@/lib/shopify/operations/collection'
 import { getProductRecommendations } from '@/lib/shopify/operations/product'
 import type { Product, ProductSummary } from '@/lib/shopify/types'
@@ -43,13 +44,14 @@ async function getRelatedProducts(product: Product): Promise<ProductSummary[]> {
   )
 
   return products.map((relatedProduct) => {
-    const reviewSummary = reviewSummaries[relatedProduct.handle]
-    if (!reviewSummary) return relatedProduct
+    const visibleReviewSummary = getVisibleProductReviewSummary(
+      reviewSummaries[relatedProduct.handle] ?? relatedProduct,
+    )
 
     return {
       ...relatedProduct,
-      rating: reviewSummary.rating,
-      reviewCount: reviewSummary.reviewCount,
+      rating: visibleReviewSummary?.rating,
+      reviewCount: visibleReviewSummary?.reviewCount,
     }
   })
 }

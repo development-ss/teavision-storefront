@@ -7,6 +7,7 @@ import type {
   ProductSummary,
 } from '@/lib/shopify/types'
 import { Badge, Price, StarRating } from '@/components/ui'
+import { getVisibleProductReviewSummary } from '@/lib/reviews/summary'
 import { getSizedShopifyImageUrl } from '@/lib/shopify/image-url'
 import { ProductQuickView } from '@/components/product/product-quick-view'
 import { cn } from '@/lib/utils'
@@ -49,6 +50,7 @@ export function ProductCard({
 
   const { organic, gold } = getCertBadges(product.tags ?? [])
   const featuredImage = product.featuredImage
+  const visibleReviewSummary = getVisibleProductReviewSummary(product)
   const purchaseContent = canPurchaseFromCard ? (
     <ProductPurchaseForm
       variants={variants}
@@ -177,11 +179,11 @@ export function ProductCard({
           </Link>
         </h3>
 
-        {/* Star rating row — shown when rating data is available */}
-        {product.rating !== undefined && (
+        {/* Star rating row — shown only for a complete, non-zero summary */}
+        {visibleReviewSummary && (
           <StarRating
-            rating={product.rating}
-            count={product.reviewCount}
+            rating={visibleReviewSummary.rating}
+            count={visibleReviewSummary.reviewCount}
             size="md"
             className={cn(isListLayout ? 'mt-2' : 'mt-1')}
           />
