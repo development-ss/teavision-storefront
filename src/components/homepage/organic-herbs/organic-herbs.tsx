@@ -13,48 +13,44 @@ export function OrganicHerbs({
   intro,
 }: OrganicHerbsProps) {
   return (
-    <Section.Root tone="sunken" spacing="none" className="overflow-hidden">
-      <div className="relative isolate min-h-110 overflow-hidden md:min-h-120 lg:min-h-130">
-        <Image
-          src={image.src}
-          alt={image.alt}
-          fill
-          sizes="100vw"
-          className="absolute inset-0 -z-20 object-cover object-right"
-        />
-        {/* Left-to-right fade keeps the copy legible at every width. */}
-        <div
-          aria-hidden="true"
-          className="from-paper-2 via-paper-2/90 absolute inset-0 -z-10 bg-linear-to-r via-45% to-transparent"
-        />
-        <Section.Container className="flex min-h-110 items-center py-10 md:min-h-120 md:py-12 lg:min-h-130 lg:py-14">
-          <div className="max-w-xl">
-            {intro.eyebrow && (
-              <Eyebrow className="mb-4">{intro.eyebrow}</Eyebrow>
-            )}
-            <h2 className="type-heading-02">{intro.title}</h2>
-            {intro.copy && (
-              <p className="type-lede text-ink-soft mt-4">{intro.copy}</p>
-            )}
-            <ul className="mt-6 flex flex-col gap-3">
-              {checklist.map((item) => (
-                <li key={item} className="flex items-start gap-3">
-                  <Check
-                    className="text-brand mt-0.5 size-4 shrink-0"
-                    aria-hidden="true"
-                  />
-                  <p className="type-body">{item}</p>
-                </li>
-              ))}
-            </ul>
-            <div className="mt-7">
-              <Button href={cta.href} variant="brand" size="lg">
-                {cta.children}
-              </Button>
-            </div>
+    <Section.Root tone="sunken" spacing="none">
+      <Section.Container
+        variant="base"
+        className="grid items-center gap-10 py-12 md:py-16 lg:grid-cols-2 lg:gap-16 lg:py-20 xl:gap-20"
+      >
+        <div className="max-w-xl">
+          {intro.eyebrow && <Eyebrow className="mb-4">{intro.eyebrow}</Eyebrow>}
+          <h2 className="type-heading-02">{intro.title}</h2>
+          {intro.copy && (
+            <p className="type-lede text-ink-soft mt-4">{intro.copy}</p>
+          )}
+          <ul className="mt-6 flex flex-col gap-3">
+            {checklist.map((item) => (
+              <li key={item} className="flex items-start gap-3">
+                <Check
+                  className="text-brand mt-0.5 size-4 shrink-0"
+                  aria-hidden="true"
+                />
+                <p className="type-body">{item}</p>
+              </li>
+            ))}
+          </ul>
+          <div className="mt-7">
+            <Button href={cta.href} variant="brand" size="lg">
+              {cta.children}
+            </Button>
           </div>
-        </Section.Container>
-      </div>
+        </div>
+        <div className="border-hairline bg-card relative aspect-square w-full max-w-xl justify-self-center overflow-hidden rounded-lg border lg:max-w-none lg:justify-self-end">
+          <Image
+            src={image.src}
+            alt={image.alt}
+            fill
+            sizes="(min-width: 1024px) 536px, (min-width: 640px) 576px, calc(100vw - 2.5rem)"
+            className="object-cover object-right"
+          />
+        </div>
+      </Section.Container>
     </Section.Root>
   )
 }
