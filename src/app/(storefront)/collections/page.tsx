@@ -7,14 +7,32 @@ import { submitContactFormAction } from '@/lib/contact/actions'
 import { withNoindexRobots } from '@/lib/seo/noindex'
 import { serializeInlineJson } from '@/lib/seo/serialize-inline-json'
 import { SITE_URL } from '@/lib/seo/site-url'
-import { SHOPIFY_COLLECTIONS_INDEX_MENU_HANDLE } from '@/lib/shopify/env'
-import { getCollectionMenuSummaries } from '@/lib/shopify/operations/collection'
+import { getCollectionSummaries } from '@/lib/shopify/operations/collection'
+import type { CollectionSummary } from '@/lib/shopify/types'
 
 import { CollectionCardImage } from './_components/collection-card-image'
 
 const COLLECTIONS_TITLE = 'Wholesale Tea Collections | Teavision'
 const COLLECTIONS_DESCRIPTION =
   'Browse Teavision wholesale tea, tea bag, herb, and spice collections.'
+const COLLECTION_HANDLES = [
+  'australian-native-ingredients',
+  'black-tea',
+  'bulk-tea-bags',
+  'chai',
+  'dessert-cocktail-inspired-blends',
+  'green-tea',
+  'matcha-tea',
+  'organic-tea',
+  'speciality-tea',
+  'superfood-extract-powders-proteins-supplements',
+  'tea-masters-selection-worlds-best-teas',
+  'wellness-functional-tea',
+  'white-tea',
+  'cafe-range',
+  'herbs-and-spices',
+  'wholesale-bulk-tea',
+] as const
 
 export const metadata: Metadata = withNoindexRobots({
   title: { absolute: COLLECTIONS_TITLE },
@@ -31,10 +49,21 @@ function hrefForHandle(handle: string): string {
   return `/collections/${handle}`
 }
 
-export default async function Page() {
-  const collections = await getCollectionMenuSummaries(
-    SHOPIFY_COLLECTIONS_INDEX_MENU_HANDLE,
+function selectCollections(
+  availableCollections: CollectionSummary[],
+): CollectionSummary[] {
+  const collectionsByHandle = new Map(
+    availableCollections.map((collection) => [collection.handle, collection]),
   )
+
+  return COLLECTION_HANDLES.flatMap((handle) => {
+    const collection = collectionsByHandle.get(handle)
+    return collection ? [collection] : []
+  })
+}
+
+export default async function Page() {
+  const collections = selectCollections(await getCollectionSummaries())
 
   const structuredData = {
     '@context': 'https://schema.org',
@@ -92,7 +121,7 @@ export default async function Page() {
         </Section.Container>
       </Section.Root>
 
-      {/* Shopify navigation collections in merchant-defined order */}
+      {/* Curated Shopify collections in the production catalogue order */}
       <Section.Root tone="transparent">
         <Section.Container>
           <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" role="list">

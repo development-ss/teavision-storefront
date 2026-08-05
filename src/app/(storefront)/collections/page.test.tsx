@@ -1,18 +1,15 @@
 import { renderToStaticMarkup } from 'react-dom/server'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { getCollectionMenuSummaries } from '@/lib/shopify/operations/collection'
+import { getCollectionSummaries } from '@/lib/shopify/operations/collection'
+import type { CollectionSummary } from '@/lib/shopify/types'
 
 import Page from './page'
 
 vi.mock('server-only', () => ({}))
 
-vi.mock('@/lib/shopify/env', () => ({
-  SHOPIFY_COLLECTIONS_INDEX_MENU_HANDLE: 'collections-index',
-}))
-
 vi.mock('@/lib/shopify/operations/collection', () => ({
-  getCollectionMenuSummaries: vi.fn(),
+  getCollectionSummaries: vi.fn(),
 }))
 
 vi.mock('@/lib/contact/actions', () => ({
@@ -42,65 +39,66 @@ vi.mock('./_components/collection-card-image', () => ({
 
 describe('Collections index page', () => {
   beforeEach(() => {
-    vi.mocked(getCollectionMenuSummaries).mockReset()
+    vi.mocked(getCollectionSummaries).mockReset()
   })
 
-  it('renders only merchant-curated collection menu entries with their images', async () => {
-    vi.mocked(getCollectionMenuSummaries).mockResolvedValue([
-      {
-        id: 'tea',
-        handle: 'wholesale-bulk-tea',
-        title: 'Wholesale Tea',
-        description: '',
-        featuredImage: {
-          url: 'https://cdn.shopify.com/tea.jpg',
-          altText: 'Tea leaves',
-          width: 1200,
-          height: 1200,
-        },
-        updatedAt: '2026-08-05T00:00:00Z',
-        seo: { title: null, description: null },
-      },
-      {
-        id: 'tea-bags',
-        handle: 'bulk-tea-bags',
-        title: 'Bulk Tea Bags',
-        description: '',
-        featuredImage: {
-          url: 'https://cdn.shopify.com/tea-bags.jpg',
-          altText: 'Tea bags',
-          width: 1200,
-          height: 1200,
-        },
-        updatedAt: '2026-08-05T00:00:00Z',
-        seo: { title: null, description: null },
-      },
-      {
-        id: 'herbs-spices',
-        handle: 'herbs-and-spices',
-        title: 'Wholesale Herbs & Spices',
-        description: '',
-        featuredImage: {
-          url: 'https://cdn.shopify.com/herbs-spices.jpg',
-          altText: 'Herbs and spices',
-          width: 1200,
-          height: 1200,
-        },
-        updatedAt: '2026-08-05T00:00:00Z',
-        seo: { title: null, description: null },
-      },
+  it('renders the genuine production collections in production order', async () => {
+    const expectedHandles = [
+      'australian-native-ingredients',
+      'black-tea',
+      'bulk-tea-bags',
+      'chai',
+      'dessert-cocktail-inspired-blends',
+      'green-tea',
+      'matcha-tea',
+      'organic-tea',
+      'speciality-tea',
+      'superfood-extract-powders-proteins-supplements',
+      'tea-masters-selection-worlds-best-teas',
+      'wellness-functional-tea',
+      'white-tea',
+      'cafe-range',
+      'herbs-and-spices',
+      'wholesale-bulk-tea',
+    ]
+    const ingredientCollections = [
+      collectionSummary('aniseed-tea', 'Aniseed Tea'),
+      collectionSummary('black-peppercorn', 'Black Peppercorn'),
+    ]
+    const curatedCollections = expectedHandles.map((handle) =>
+      collectionSummary(handle, handle),
+    )
+
+    vi.mocked(getCollectionSummaries).mockResolvedValue([
+      ...ingredientCollections,
+      ...curatedCollections.toReversed(),
     ])
-
     const html = renderToStaticMarkup(await Page())
+    const renderedHandles = Array.from(
+      html.matchAll(/href="\/collections\/([^"]+)"/g),
+      (match) => match[1],
+    )
 
-    expect(getCollectionMenuSummaries).toHaveBeenCalledWith('collections-index')
-    expect(html).toContain('href="/collections/wholesale-bulk-tea"')
-    expect(html).toContain('href="/collections/bulk-tea-bags"')
-    expect(html).toContain('href="/collections/herbs-and-spices"')
-    expect(html).toContain('https://cdn.shopify.com/tea.jpg')
-    expect(html).toContain('https://cdn.shopify.com/tea-bags.jpg')
-    expect(html).toContain('https://cdn.shopify.com/herbs-spices.jpg')
+    expect(getCollectionSummaries).toHaveBeenCalledOnce()
+    expect(renderedHandles).toEqual(expectedHandles)
     expect(html).not.toContain('Aniseed Tea')
     expect(html).not.toContain('Black Peppercorn')
   })
 })
+
+function collectionSummary(handle: string, title: string): CollectionSummary {
+  return {
+    id: handle,
+    handle,
+    title,
+    description: '',
+    featuredImage: {
+      url: `https://cdn.shopify.com/${handle}.jpg`,
+      altText: title,
+      width: 1200,
+      height: 1200,
+    },
+    updatedAt: '2026-08-05T00:00:00Z',
+    seo: { title: null, description: null },
+  }
+}
