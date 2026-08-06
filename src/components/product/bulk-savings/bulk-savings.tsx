@@ -45,16 +45,29 @@ function getTierLabel(tier: BulkPricingTier): string {
   return `Buy ${tier.minimumQuantity}+`
 }
 
-function getTierPrice(tier: BulkPricingTier, basePrice: Money): Money | null {
-  if (tier.price) return tier.price
+// Production parity: the tier total is the UNROUNDED discounted unit price
+// multiplied by the tier quantity, rounded once. Rounding the unit first and
+// multiplying drifts totals by cents.
+function getTierUnitAmount(
+  tier: BulkPricingTier,
+  basePrice: Money,
+): number | null {
+  if (tier.price) return parseAmount(tier.price)
   if (tier.discountPercent === undefined) return null
 
   const baseAmount = parseAmount(basePrice)
   if (baseAmount <= 0) return null
 
+  return baseAmount * (1 - tier.discountPercent / 100)
+}
+
+function getTierPrice(tier: BulkPricingTier, basePrice: Money): Money | null {
+  const unitAmount = getTierUnitAmount(tier, basePrice)
+  if (unitAmount === null) return null
+
   return {
-    amount: (baseAmount * (1 - tier.discountPercent / 100)).toFixed(2),
-    currencyCode: basePrice.currencyCode,
+    amount: unitAmount.toFixed(2),
+    currencyCode: tier.price?.currencyCode ?? basePrice.currencyCode,
   }
 }
 
@@ -120,10 +133,15 @@ export function BulkSavings({
       <ul className="grid grid-cols-1 gap-2.5 sm:grid-cols-3" role="list">
         {visibleTiers.map((tier) => {
           const isActive = activeTier?.minimumQuantity === tier.minimumQuantity
+          const tierUnitAmount = getTierUnitAmount(tier, basePrice)
           const tierPrice = getTierPrice(tier, basePrice)
-          const tierTotal = tierPrice
-            ? getTotalPrice(tierPrice, tier.minimumQuantity)
-            : null
+          const tierTotal =
+            tierUnitAmount !== null && tierPrice !== null
+              ? {
+                  amount: (tierUnitAmount * tier.minimumQuantity).toFixed(2),
+                  currencyCode: tierPrice.currencyCode,
+                }
+              : null
           const baseTotal = getTotalPrice(basePrice, tier.minimumQuantity)
 
           return (
