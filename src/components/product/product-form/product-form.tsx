@@ -226,16 +226,28 @@ export function ProductForm({
 
       <div className="flex min-w-0 flex-col gap-3">
         {selectedVariant && (
-          <div className="flex flex-wrap items-baseline gap-2">
-            <Price
-              price={selectedVariant.price}
-              size="lg"
-              priceClassName="text-[1.6rem] font-normal"
-            />
-            <span className="text-ink-faint font-mono text-[11px] tracking-[0.06em] uppercase">
-              selected pack
-            </span>
-          </div>
+          <>
+            <div className="flex flex-wrap items-baseline gap-2">
+              <Price
+                price={selectedVariant.price}
+                size="lg"
+                priceClassName="text-[1.6rem] font-normal"
+              />
+              <span className="text-ink-faint font-mono text-[11px] tracking-[0.06em] uppercase">
+                selected pack
+              </span>
+            </div>
+            <p
+              className={cn(
+                'type-caption',
+                canAddToCart ? 'text-brand' : 'text-danger',
+              )}
+            >
+              {canAddToCart
+                ? 'In stock! Usually ships within 24 hours.'
+                : 'Sorry! This product is currently out of stock.'}
+            </p>
+          </>
         )}
       </div>
 
