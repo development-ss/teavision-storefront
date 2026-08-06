@@ -76,6 +76,60 @@ const captureAddToCart = async (variantId: string, quantity: number) => {
 }
 
 describe('ProductForm', () => {
+  it('shows the production in-stock message for an available selected variant', () => {
+    const html = renderToStaticMarkup(
+      <ProductFormWithInitialVariant variants={variants} options={options} />,
+    )
+
+    expect(html).toContain('In stock! Usually ships within 24 hours.')
+    expect(html).not.toContain('Sorry! This product is currently out of stock.')
+  })
+
+  it('shows the production sold-out message for a sold-out selected variant', () => {
+    const html = renderToStaticMarkup(
+      <ProductFormWithInitialVariant
+        variants={[{ ...variants[0], availableForSale: false }]}
+        options={options}
+      />,
+    )
+
+    expect(html).toContain('Sorry! This product is currently out of stock.')
+    expect(html).not.toContain('In stock! Usually ships within 24 hours.')
+  })
+
+  it('follows the selected variant availability on a mixed-availability product', () => {
+    const mixedVariants = [
+      variants[0],
+      { ...variants[1], availableForSale: false },
+    ]
+
+    const inStockHtml = renderToStaticMarkup(
+      <ProductFormWithInitialVariant
+        variants={mixedVariants}
+        options={options}
+        initialVariantId={variants[0].id}
+      />,
+    )
+    const soldOutHtml = renderToStaticMarkup(
+      <ProductFormWithInitialVariant
+        variants={mixedVariants}
+        options={options}
+        initialVariantId="41503540936791"
+      />,
+    )
+
+    expect(inStockHtml).toContain('In stock! Usually ships within 24 hours.')
+    expect(inStockHtml).not.toContain(
+      'Sorry! This product is currently out of stock.',
+    )
+    expect(soldOutHtml).toContain(
+      'Sorry! This product is currently out of stock.',
+    )
+    expect(soldOutHtml).not.toContain(
+      'In stock! Usually ships within 24 hours.',
+    )
+  })
+
   it('uses a deep-linked numeric Shopify variant id for initial bulk pricing', () => {
     const html = renderToStaticMarkup(
       <ProductFormWithInitialVariant
