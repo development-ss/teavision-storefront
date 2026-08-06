@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import Script from 'next/script'
-import { ChevronDown, ChevronRight, Globe2 } from 'lucide-react'
+import { ChevronRight, Globe2 } from 'lucide-react'
 
 import {
   getAllProducts,
@@ -15,10 +15,7 @@ import { serializeInlineJson } from '@/lib/seo/serialize-inline-json'
 import { SITE_URL } from '@/lib/seo/site-url'
 import { getVisibleProductReviewSummary } from '@/lib/reviews/summary'
 import { getTrustooProductRatings } from '@/lib/reviews/trustoo'
-import {
-  extractProductDescriptionDetails,
-  sanitizeShopifyCompactHtml,
-} from '@/lib/shopify/html-content'
+import { sanitizeShopifyCompactHtml } from '@/lib/shopify/html-content'
 import { RichText } from '@/components/ui/rich-text'
 import { Badge, Eyebrow, StarRating } from '@/components/ui'
 import { ProductForm, ProductGallery } from '@/components/product'
@@ -50,22 +47,6 @@ function getCategoryLabel(tag: string): string | null {
 
   const categoryMatch = /^categories:\s*(.+)$/i.exec(formattedTag)
   return categoryMatch?.[1]?.trim() || null
-}
-
-function getCertificationLabel(tag: string): string | null {
-  const formattedTag = formatTag(tag)
-  if (!formattedTag) return null
-
-  const certificationMatch = /^(?:certified|certification):\s*(.+)$/i.exec(
-    formattedTag,
-  )
-  if (certificationMatch?.[1]) return certificationMatch[1].trim()
-
-  return /^(?:aco certified|haccp|halal|kosher|organic|usda organic)$/i.test(
-    formattedTag,
-  )
-    ? formattedTag
-    : null
 }
 
 function getBadgeVariant(tag: string): 'gold' | 'organic' | 'certification' {
@@ -103,18 +84,6 @@ export async function generateStaticParams(): Promise<
   return products.map((product) => ({ handle: product.handle }))
 }
 
-type SpecDisclosure =
-  | {
-      kind: 'table'
-      title: string
-      rows: [string, string][]
-    }
-  | {
-      kind: 'text'
-      title: string
-      content: string
-    }
-
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { handle } = await params
   const product = await getProduct(handle, PRODUCT_DETAIL_CACHE_VERSION)
@@ -148,9 +117,6 @@ export async function ProductContent({
   const productUrl = `${SITE_URL}/products/${product.handle}`
   const hasAvailableVariant = product.variants.some((v) => v.availableForSale)
   const descriptionHtml = sanitizeShopifyCompactHtml(product.descriptionHtml)
-  const descriptionDetails = extractProductDescriptionDetails(
-    product.descriptionHtml,
-  )
   const productReviewSummaries = await getTrustooProductRatings([
     product.handle,
   ])
@@ -160,77 +126,25 @@ export async function ProductContent({
   }
   const visibleProductReviewSummary =
     getVisibleProductReviewSummary(productReviewSummary)
+  // PDP-local display values: the visible review line always renders, while
+  // JSON-LD aggregateRating stays gated on the strict shared summary above.
+  const displayRating =
+    typeof productReviewSummary.rating === 'number' &&
+    Number.isFinite(productReviewSummary.rating) &&
+    productReviewSummary.rating > 0 &&
+    productReviewSummary.rating <= 5
+      ? productReviewSummary.rating
+      : 0
+  const displayReviewCount =
+    typeof productReviewSummary.reviewCount === 'number' &&
+    Number.isInteger(productReviewSummary.reviewCount) &&
+    productReviewSummary.reviewCount > 0
+      ? productReviewSummary.reviewCount
+      : 0
   const visibleTags = product.tags
     .map(formatTag)
     .filter((tag): tag is string => tag !== null)
-  const certificationTags = product.tags
-    .map(getCertificationLabel)
-    .filter((tag): tag is string => tag !== null)
   const metaSegments = getMetaSegments(product.tags, product.options[0]?.name)
-  const ingredientRows: [string, string][] = []
-  const packingRows: [string, string][] = []
-
-  if (descriptionDetails.origin) {
-    ingredientRows.push(['Origin', descriptionDetails.origin])
-  }
-  if (descriptionDetails.ingredients) {
-    ingredientRows.push(['Ingredients', descriptionDetails.ingredients])
-  }
-  if (certificationTags.length > 0) {
-    ingredientRows.push(['Certifications', certificationTags.join(' · ')])
-  }
-  if (ingredientRows.length === 0) {
-    ingredientRows.push([
-      'Product details',
-      'Ingredient and certification details have not yet been supplied for this product.',
-    ])
-  }
-
-  if (descriptionDetails.packaging) {
-    packingRows.push(['Packaging', descriptionDetails.packaging])
-  }
-  if (descriptionDetails.storage) {
-    packingRows.push(['Storage', descriptionDetails.storage])
-  }
-  if (descriptionDetails.qualityControl) {
-    packingRows.push(['Quality control', descriptionDetails.qualityControl])
-  }
-  if (descriptionDetails.warning) {
-    packingRows.push(['Warning', descriptionDetails.warning])
-  }
-  if (packingRows.length === 0) {
-    packingRows.push([
-      'Product details',
-      'Packing and storage guidance has not yet been supplied for this product.',
-    ])
-  }
-
-  const specDisclosures: SpecDisclosure[] = [
-    {
-      kind: 'table',
-      title: 'Tasting & brewing',
-      rows: [
-        ...(descriptionDetails.aroma
-          ? ([['Aroma', descriptionDetails.aroma]] satisfies [string, string][])
-          : []),
-        [
-          'Brewing method',
-          descriptionDetails.servingSuggestion ??
-            'Brewing guidance is being prepared for this product.',
-        ],
-      ],
-    },
-    {
-      kind: 'table',
-      title: 'Ingredients & certification',
-      rows: ingredientRows,
-    },
-    {
-      kind: 'table',
-      title: 'Packing, shipping & storage',
-      rows: packingRows,
-    },
-  ]
 
   const productJsonLd = {
     '@context': 'https://schema.org',
@@ -370,21 +284,16 @@ export async function ProductContent({
             <h1 className="font-display text-ink text-[clamp(2rem,3.4vw,2.9rem)] leading-[1.04] font-medium">
               {product.title}
             </h1>
-            {visibleProductReviewSummary ? (
-              <div className="flex flex-wrap items-center gap-2.5">
-                <StarRating
-                  rating={visibleProductReviewSummary.rating}
-                  size="lg"
-                />
-                <span className="type-mono-meta text-ink-faint">
-                  {visibleProductReviewSummary.rating.toFixed(1)} ·{' '}
-                  {visibleProductReviewSummary.reviewCount.toLocaleString()}{' '}
-                  {visibleProductReviewSummary.reviewCount === 1
-                    ? 'review'
-                    : 'reviews'}
-                </span>
-              </div>
-            ) : null}
+            <div className="flex flex-wrap items-center gap-2.5">
+              <StarRating rating={displayRating} size="lg" />
+              <span className="type-mono-meta text-ink-faint">
+                {displayReviewCount === 0
+                  ? '0 Reviews'
+                  : `${displayRating.toFixed(1)} · ${displayReviewCount.toLocaleString()} ${
+                      displayReviewCount === 1 ? 'review' : 'reviews'
+                    }`}
+              </span>
+            </div>
           </div>
 
           {/* Leading SEO description — keep this crawlable copy near the title */}
@@ -415,56 +324,10 @@ export async function ProductContent({
             />
           </Suspense>
 
-          {/* Disclosures: 32px below ProductForm (design .specs mt-32px = verified match) */}
-          <div className="mt-8">
-            {specDisclosures.map((item) => (
-              <details
-                key={item.title}
-                className="group border-hairline border-t last:border-b"
-              >
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-5 py-5 marker:hidden">
-                  <h2 className="font-display text-ink min-w-0 text-[1.15rem] leading-tight wrap-break-word">
-                    {item.title}
-                  </h2>
-                  <ChevronDown
-                    aria-hidden="true"
-                    className="text-brand size-4 shrink-0 transition-transform group-open:rotate-180"
-                  />
-                </summary>
-                {item.kind === 'table' ? (
-                  <table className="mb-5.5 w-full text-left">
-                    <tbody>
-                      {item.rows.map(([label, value]) => (
-                        <tr
-                          key={label}
-                          className="border-hairline-2 border-b last:border-b-0"
-                        >
-                          <th
-                            scope="row"
-                            className="type-mono-meta text-ink-faint w-2/5 py-3 pr-4"
-                          >
-                            {label}
-                          </th>
-                          <td className="text-ink-soft py-3 text-sm">
-                            {value}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                ) : (
-                  <p className="text-ink-soft max-w-prose pb-5.5 text-sm leading-6">
-                    {item.content}
-                  </p>
-                )}
-              </details>
-            ))}
-          </div>
-
-          {/* Tag pills at the foot of the info column (owner directive) */}
+          {/* Tag pills at the foot of the info column (owner directive) — mt-8 keeps the 32px rhythm below the buy panel */}
           {visibleTags.length > 0 ? (
-            <div className="mt-6 flex flex-wrap gap-2">
-              {visibleTags.slice(0, 6).map((label) => (
+            <div className="mt-8 flex flex-wrap gap-2">
+              {visibleTags.map((label) => (
                 <Badge
                   key={label}
                   variant={getBadgeVariant(label)}
