@@ -53,3 +53,7 @@ storybook-static
 
 # generated exports (PDF renders of launch docs)
 output/
+
+# temporary files
+tmp/
+.tmp/
