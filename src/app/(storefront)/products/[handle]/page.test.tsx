@@ -90,6 +90,10 @@ function findJsonLdNode(html: string, schemaType: string) {
   return readJsonLdNodes(html).find((node) => node['@type'] === schemaType)
 }
 
+function countOccurrences(html: string, needle: string): number {
+  return html.split(needle).length - 1
+}
+
 async function renderProductContent(product: Product) {
   vi.mocked(getProduct).mockResolvedValue(product)
 
@@ -114,7 +118,7 @@ describe('ProductContent heading hierarchy', () => {
     )
   })
 
-  it('keeps the product title as the only H1, preserves native disclosures, and demotes imported description headings', async () => {
+  it('keeps the product title as the only H1 and demotes imported description headings', async () => {
     const element = await ProductContent({
       params: Promise.resolve({ handle: 'only-product-title' }),
     })
@@ -133,23 +137,7 @@ describe('ProductContent heading hierarchy', () => {
     expect(html.indexOf('Body copy')).toBeLessThan(
       html.indexOf('data-testid="product-form"'),
     )
-
-    const detailTags = html.match(/<details\b[^>]*>/g) ?? []
-    const disclosureTitles = [
-      ...html.matchAll(
-        /<details\b[^>]*><summary\b[^>]*><h2\b[^>]*>([^<]+)<\/h2>/g,
-      ),
-    ].map((match) => match[1])
-
-    expect(detailTags).toHaveLength(3)
-    expect(detailTags[0]).toContain('open=""')
-    expect(disclosureTitles).toEqual([
-      'Tasting &amp; brewing',
-      'Ingredients &amp; certification',
-      'Packing, shipping &amp; storage',
-    ])
-    expect(html).not.toContain('aria-expanded')
-    expect(html).not.toContain('role="button"')
+    expect(html).not.toContain('<details')
   })
 
   it('renders critical product content independently of runtime search parameters', async () => {
@@ -163,7 +151,7 @@ describe('ProductContent heading hierarchy', () => {
     expect(html).toContain('Only Product Title')
   })
 
-  it('uses real Shopify serving guidance in the tasting disclosure', async () => {
+  it('renders the merchant description once with no derived disclosures', async () => {
     const html = await renderProductContent(
       makeProduct({
         handle: 'wild-berry',
@@ -172,13 +160,16 @@ describe('ProductContent heading hierarchy', () => {
       }),
     )
 
-    expect(html).toContain('Fruity and sweet.')
-    expect(html).toContain('Add 1-2 teaspoons to hot water for 3-5 minutes.')
-    expect(html).not.toContain('Pack options')
-    expect(html).not.toContain('Available variants')
+    expect(html).not.toContain('<details')
+    expect(countOccurrences(html, 'Fruity and sweet.')).toBe(1)
+    expect(
+      countOccurrences(html, 'Add 1-2 teaspoons to hot water for 3-5 minutes.'),
+    ).toBe(1)
+    expect(html).not.toContain('Tasting')
+    expect(html).not.toContain('Brewing guidance is being prepared')
   })
 
-  it('places real ingredients, storage, and quality details in their matching disclosures', async () => {
+  it('renders every labeled description field exactly once without derived spec tables', async () => {
     const html = await renderProductContent(
       makeProduct({
         handle: 'structured-wild-berry',
@@ -188,19 +179,59 @@ describe('ProductContent heading hierarchy', () => {
       }),
     )
 
-    expect(html).toMatch(
-      /Ingredients &amp; certification[\s\S]*Ingredients[\s\S]*Hibiscus, apple pieces, rosehip shells\.[\s\S]*Certifications[\s\S]*Organic/,
+    expect(html).not.toContain('<details')
+    expect(countOccurrences(html, 'Multiple.')).toBe(1)
+    expect(
+      countOccurrences(html, 'Hibiscus, apple pieces, rosehip shells.'),
+    ).toBe(1)
+    expect(countOccurrences(html, 'Sealed, air-tight pouches.')).toBe(1)
+    expect(countOccurrences(html, 'Store below 18ºC in a dry place.')).toBe(1)
+    expect(countOccurrences(html, 'HACCP and ACO accredited facilities.')).toBe(
+      1,
     )
-    expect(html).toMatch(
-      /Packing, shipping &amp; storage[\s\S]*Packaging[\s\S]*Sealed, air-tight pouches\.[\s\S]*Storage[\s\S]*Store below 18ºC in a dry place\.[\s\S]*Quality control[\s\S]*HACCP and ACO accredited facilities\.[\s\S]*Warning[\s\S]*Consult a healthcare professional before use\./,
-    )
-    expect(html).not.toContain(
-      'Packed for bulk tea service and shipped through the existing Teavision checkout flow.',
-    )
+    expect(
+      countOccurrences(html, 'Consult a healthcare professional before use.'),
+    ).toBe(1)
+    expect(html).not.toContain('Tasting')
+    expect(html).not.toContain('Ingredients &amp; certification')
+    expect(html).not.toContain('Packing, shipping')
+    expect(html).not.toContain('Brewing guidance is being prepared')
+    expect(html).not.toContain('have not yet been supplied')
+    expect(html).not.toContain('>Certifications</th>')
     expect(html).not.toContain('categories: Herbal Tea · Premium · Organic')
   })
 
-  it('uses assigned category groups in the product label without treating categories as certifications', async () => {
+  it('renders a pill for every displayable tag while hiding internal Package_ tags', async () => {
+    const html = await renderProductContent(
+      makeProduct({
+        handle: 'many-tags',
+        tags: [
+          'black-tea',
+          'Premium',
+          'Organic',
+          'Wholesale',
+          'Award Winner',
+          'filter_certified_ACO',
+          'Loose Leaf',
+          'Fair Trade',
+          'Package_1kg',
+        ],
+      }),
+    )
+    const pillCount = countOccurrences(
+      html,
+      'inline-flex items-center gap-2 rounded-full',
+    )
+
+    expect(pillCount).toBe(8)
+    expect(html).toContain('Loose Leaf')
+    expect(html).toContain('Fair Trade')
+    expect(html).toContain('certified: ACO')
+    expect(html).not.toContain('Package: 1kg')
+    expect(html).not.toContain('Package_1kg')
+  })
+
+  it('uses assigned category groups in the product label without derived certification rows', async () => {
     const html = await renderProductContent(
       makeProduct({
         handle: 'organic-black-assam',
@@ -219,12 +250,9 @@ describe('ProductContent heading hierarchy', () => {
     )
 
     expect(html).toContain('Organic Black Tea · Size · Assam Tea')
-    expect(html).toContain(
-      '<th scope="row" class="type-mono-meta text-ink-faint w-2/5 py-3 pr-4">Certifications</th><td class="text-ink-soft py-3 text-sm">ACO</td>',
-    )
-    expect(html).not.toContain(
-      '>Certifications</th><td class="text-ink-soft py-3 text-sm">categories: All Organic Tea',
-    )
+    expect(html).not.toContain('>Certifications</th>')
+    expect(html).not.toContain('<details')
+    expect(countOccurrences(html, 'Certified organic black tea.')).toBe(1)
     expect(html).not.toContain('Package: 1kg')
   })
 
@@ -272,7 +300,7 @@ describe('ProductContent aggregateRating JSON-LD', () => {
     })
   })
 
-  it('omits aggregateRating when reviewCount is missing', async () => {
+  it('shows a "0 Reviews" line without aggregateRating when reviewCount is missing', async () => {
     const html = await renderProductContent(
       makeProduct({
         handle: 'missing-review-count',
@@ -283,11 +311,12 @@ describe('ProductContent aggregateRating JSON-LD', () => {
     )
     const productJsonLd = findJsonLdNode(html, 'Product')
 
+    expect(html).toContain('0 Reviews')
     expect(html).not.toMatch(/\d+(?:\.\d+)? · \d[\d,]* reviews?/)
     expect(productJsonLd).not.toHaveProperty('aggregateRating')
   })
 
-  it('omits aggregateRating when reviewCount is zero', async () => {
+  it('shows a "0 Reviews" line without aggregateRating when reviewCount is zero', async () => {
     vi.mocked(getTrustooProductRatings).mockResolvedValue({
       'zero-review-count': { rating: 4.2, reviewCount: 0 },
     })
@@ -302,11 +331,12 @@ describe('ProductContent aggregateRating JSON-LD', () => {
     )
     const productJsonLd = findJsonLdNode(html, 'Product')
 
+    expect(html).toContain('0 Reviews')
     expect(html).not.toContain('0 reviews')
     expect(productJsonLd).not.toHaveProperty('aggregateRating')
   })
 
-  it('omits aggregateRating when review values are outside supported ranges', async () => {
+  it('shows a "0 Reviews" line without aggregateRating when review values are outside supported ranges', async () => {
     vi.mocked(getTrustooProductRatings).mockResolvedValue({
       'invalid-review-values': { rating: 6, reviewCount: 12.5 },
     })
@@ -321,6 +351,7 @@ describe('ProductContent aggregateRating JSON-LD', () => {
     )
     const productJsonLd = findJsonLdNode(html, 'Product')
 
+    expect(html).toContain('0 Reviews')
     expect(html).not.toContain('6.0')
     expect(html).not.toContain('12.5 reviews')
     expect(productJsonLd).not.toHaveProperty('aggregateRating')

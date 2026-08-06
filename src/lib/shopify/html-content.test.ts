@@ -3,7 +3,6 @@ import { describe, expect, it, vi } from 'vitest'
 vi.mock('server-only', () => ({}))
 
 import {
-  extractProductDescriptionDetails,
   sanitizeShopifyCollectionStoryHtml,
   sanitizeShopifyCompactHtml,
 } from './html-content'
@@ -49,20 +48,5 @@ describe('sanitizeShopifyCollectionStoryHtml', () => {
     expect(html).toContain(
       '<h6 class="type-label text-ink mt-4">Fine detail</h6>',
     )
-  })
-})
-
-describe('extractProductDescriptionDetails', () => {
-  it('extracts labeled fields from Shopify description HTML', () => {
-    const details = extractProductDescriptionDetails(
-      '<p><strong>Aroma:</strong> Fruity and sweet.</p><p><strong>Serving suggestion:</strong> Add 1-2 teaspoons to 250ml of hot water for 3-5 minutes.</p><p><strong>Storage:</strong> Keep dry.</p>',
-    )
-
-    expect(details).toEqual({
-      aroma: 'Fruity and sweet.',
-      servingSuggestion:
-        'Add 1-2 teaspoons to 250ml of hot water for 3-5 minutes.',
-      storage: 'Keep dry.',
-    })
   })
 })
