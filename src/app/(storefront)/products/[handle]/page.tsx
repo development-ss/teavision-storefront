@@ -417,11 +417,10 @@ export async function ProductContent({
 
           {/* Disclosures: 32px below ProductForm (design .specs mt-32px = verified match) */}
           <div className="mt-8">
-            {specDisclosures.map((item, index) => (
+            {specDisclosures.map((item) => (
               <details
                 key={item.title}
                 className="group border-hairline border-t last:border-b"
-                open={index === 0}
               >
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-5 py-5 marker:hidden">
                   <h2 className="font-display text-ink min-w-0 text-[1.15rem] leading-tight wrap-break-word">
