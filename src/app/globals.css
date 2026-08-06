@@ -262,6 +262,18 @@
     );
 }
 
+@utility collection-hero-scrim {
+  /* A light left-to-right scrim protects collection copy while leaving most
+     of the ingredient photography unobscured. */
+  background: linear-gradient(
+    90deg,
+    oklch(22.5% 0.016 167 / 0.62),
+    oklch(22.5% 0.016 167 / 0.36) 42%,
+    oklch(22.5% 0.016 167 / 0.08) 72%,
+    transparent
+  );
+}
+
 @keyframes marquee {
   from {
     transform: translateX(0);

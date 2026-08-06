@@ -76,24 +76,30 @@ export function Hero({
     )
   }
 
-  // Default mode: contained green brand band with the collection image at 35% opacity.
+  // Default mode: contained green brand band with an unobscured collection image.
   return (
     <Section.Root tone="transparent" spacing="none" className="pt-6">
       <Section.Container>
         <div className="bg-brand-deep text-paper relative overflow-hidden py-[clamp(40px,5vw,70px)]">
           {heroImage?.width && heroImage.height ? (
-            <div className="absolute inset-0 z-0">
-              <Image
-                src={getSizedShopifyImageUrl(heroImage.url, 1440)}
-                alt=""
-                fill
-                sizes="(min-width: 1480px) 1336px, 90vw"
-                className="object-cover opacity-35"
+            <>
+              <div className="absolute inset-0 z-0">
+                <Image
+                  src={getSizedShopifyImageUrl(heroImage.url, 1440)}
+                  alt=""
+                  fill
+                  sizes="(min-width: 1480px) 1336px, 90vw"
+                  className="object-cover"
+                  aria-hidden="true"
+                  loading="eager"
+                  fetchPriority="high"
+                />
+              </div>
+              <div
                 aria-hidden="true"
-                loading="eager"
-                fetchPriority="high"
+                className="collection-hero-scrim absolute inset-0 z-1"
               />
-            </div>
+            </>
           ) : null}
 
           <div className="px-gutter relative z-10">
