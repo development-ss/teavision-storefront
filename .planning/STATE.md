@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-07-06)
 Phase: 25 (heading-structure-fixes) — AWAITING HUMAN VERIFICATION
 Plan: 1 of 1
 Status: Awaiting human verification
-Last activity: 2026-07-10 -- Phase 25 awaiting human verification
+Last activity: 2026-08-06 - Completed quick task 260806-k98: Fix PDP parity issues vs production (accordion duplication, stock message, tag cap, bulk rounding, zero reviews)
 
 ## Performance Metrics
 
@@ -279,6 +279,7 @@ Recent decisions affecting current work:
 | 260622-h9f | Harden Shopify cart checkout identity sync and retained-cart behavior                                        | 2026-06-22 | 4237cce | [260622-h9f-harden-shopify-cart-checkout-identity-sy](./quick/260622-h9f-harden-shopify-cart-checkout-identity-sy/) |
 | 260623-fmq | Remove the Wholesale upsell card from the collection sidebar                                                 | 2026-06-23 | afa98ce | [260623-fmq-remove-the-wholesale-upsell-card-from-th](./quick/260623-fmq-remove-the-wholesale-upsell-card-from-th/) |
 | 260623-ngx | Smooth the hover background overlay transition in the Explore Our Product Range section                      | 2026-06-23 | 93d9c2f | [260623-ngx-smooth-the-hover-background-overlay-tran](./quick/260623-ngx-smooth-the-hover-background-overlay-tran/) |
+| 260806-k98 | Fix PDP parity issues vs production (accordion duplication, stock message, tag cap, bulk rounding, zero reviews) | 2026-08-06 | 617f3af | [260806-k98-fix-pdp-parity-issues-vs-production-acco](./quick/260806-k98-fix-pdp-parity-issues-vs-production-acco/) |
 
 ## Deferred Items
 
