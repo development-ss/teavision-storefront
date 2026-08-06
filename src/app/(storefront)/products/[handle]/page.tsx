@@ -170,6 +170,14 @@ export async function ProductContent({
     }),
   }
 
+  const descriptionSlotNode = descriptionHtml ? (
+    <RichText
+      html={descriptionHtml}
+      variant="compact"
+      className="text-ink-soft max-w-prose text-[1.02rem]"
+    />
+  ) : null
+
   const breadcrumbJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
@@ -296,22 +304,16 @@ export async function ProductContent({
             </div>
           </div>
 
-          {/* Leading SEO description — keep this crawlable copy near the title */}
-          {descriptionHtml ? (
-            <RichText
-              html={descriptionHtml}
-              variant="compact"
-              className="text-ink-soft mt-5.5 max-w-prose text-[1.02rem]"
-            />
-          ) : null}
-
-          {/* Buy controls: size, quantity, add-to-cart, and bulk savings */}
+          {/* Production element order: buy controls → description → availability → tags.
+              The description renders inside the form's slot so the variant-driven
+              availability line can follow it, matching production's DOM order. */}
           <Suspense
             fallback={
               <ProductForm
                 variants={product.variants}
                 options={product.options}
                 bulkPricingTiers={product.bulkPricingTiers}
+                descriptionSlot={descriptionSlotNode}
                 className="mt-6.5"
               />
             }
@@ -320,6 +322,7 @@ export async function ProductContent({
               variants={product.variants}
               options={product.options}
               bulkPricingTiers={product.bulkPricingTiers}
+              descriptionSlot={descriptionSlotNode}
               className="mt-6.5"
             />
           </Suspense>

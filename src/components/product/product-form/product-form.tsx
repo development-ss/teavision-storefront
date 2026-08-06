@@ -1,6 +1,6 @@
 'use client'
 
-import { useId, useState } from 'react'
+import { useId, useState, type ReactNode } from 'react'
 import { Leaf, ShieldCheck, Truck } from 'lucide-react'
 
 import { Button, Price, QuantityStepper, ToggleButton } from '@/components/ui'
@@ -27,6 +27,9 @@ type ProductFormProps = {
   initialVariantId?: string
   addToCart?: AddToCart
   onCartChanged?: () => void
+  /* Rendered between the bulk-savings block and the availability line so the
+     description keeps production's order while availability stays variant-driven */
+  descriptionSlot?: ReactNode
   className?: string
 }
 
@@ -73,6 +76,7 @@ export function ProductForm({
   initialVariantId,
   addToCart,
   onCartChanged,
+  descriptionSlot,
   className,
 }: ProductFormProps) {
   const quantityErrorId = useId()
@@ -237,16 +241,6 @@ export function ProductForm({
                 selected pack
               </span>
             </div>
-            <p
-              className={cn(
-                'type-caption',
-                canAddToCart ? 'text-brand' : 'text-danger',
-              )}
-            >
-              {canAddToCart
-                ? 'In stock! Usually ships within 24 hours.'
-                : 'Sorry! This product is currently out of stock.'}
-            </p>
           </>
         )}
       </div>
@@ -327,6 +321,21 @@ export function ProductForm({
           onSelectTier={handleSelectBulkTier}
           className="mt-0.5"
         />
+      )}
+
+      {descriptionSlot}
+
+      {selectedVariant && (
+        <p
+          className={cn(
+            'type-caption',
+            canAddToCart ? 'text-brand' : 'text-danger',
+          )}
+        >
+          {canAddToCart
+            ? 'In stock! Usually ships within 24 hours.'
+            : 'Sorry! This product is currently out of stock.'}
+        </p>
       )}
     </div>
   )

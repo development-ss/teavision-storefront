@@ -35,9 +35,16 @@ vi.mock('next/script', () => ({
 }))
 
 vi.mock('@/components/product', () => ({
-  ProductForm: ({ initialVariantId }: { initialVariantId?: string }) => (
+  ProductForm: ({
+    initialVariantId,
+    descriptionSlot,
+  }: {
+    initialVariantId?: string
+    descriptionSlot?: ReactNode
+  }) => (
     <div data-testid="product-form" data-initial-variant={initialVariantId}>
       Buy controls
+      {descriptionSlot}
     </div>
   ),
   ProductGallery: ({ title }: { title: string }) => (
@@ -134,8 +141,9 @@ describe('ProductContent heading hierarchy', () => {
     )
     expect(html).not.toContain('<h1>Imported product title</h1>')
     expect(html).not.toContain('<h2>Imported section</h2>')
-    expect(html.indexOf('Body copy')).toBeLessThan(
-      html.indexOf('data-testid="product-form"'),
+    // Production order: buy controls render before the merchant description
+    expect(html.indexOf('data-testid="product-form"')).toBeLessThan(
+      html.indexOf('Body copy'),
     )
     expect(html).not.toContain('<details')
   })
