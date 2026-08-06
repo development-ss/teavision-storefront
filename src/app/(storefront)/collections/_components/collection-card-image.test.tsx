@@ -61,4 +61,34 @@ describe('CollectionCardImage', () => {
     expect(imageMock).not.toHaveBeenCalled()
     expect(html).toContain('bg-paper-2')
   })
+
+  it('requests a server-side crop instead of an upscaled thumbnail for a Shopify image', () => {
+    renderToStaticMarkup(
+      <CollectionCardImage
+        collection={{
+          id: 'green-tea',
+          handle: 'green-tea',
+          title: 'Green Tea',
+          description: '',
+          featuredImage: {
+            url: 'https://cdn.shopify.com/sencha_green.jpg',
+            altText: null,
+            width: 2372,
+            height: 2298,
+          },
+          updatedAt: '2026-08-05T00:00:00Z',
+          seo: { title: null, description: null },
+        }}
+      />,
+    )
+
+    expect(imageMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        src: 'https://cdn.shopify.com/sencha_green.jpg?crop=center&height=1296&width=1200',
+        width: 1200,
+        height: 1296,
+      }),
+      undefined,
+    )
+  })
 })

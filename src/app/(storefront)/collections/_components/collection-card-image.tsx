@@ -1,6 +1,6 @@
 import Image from 'next/image'
 
-import { getSizedShopifyImageUrl } from '@/lib/shopify/image-url'
+import { getShopifyImageUrl } from '@/lib/shopify/image-url'
 import type { CollectionSummary } from '@/lib/shopify/types'
 
 type FallbackImage = {
@@ -9,6 +9,11 @@ type FallbackImage = {
   src: string
   width: number
 }
+
+// Matches the tile's `aspect-[1/1.08]` class so Shopify crops server-side
+// instead of the browser zoom-cropping an oversized/undersized source.
+const TILE_WIDTH = 1200
+const TILE_HEIGHT = Math.round(TILE_WIDTH * 1.08)
 
 const FALLBACK_IMAGES: Partial<Record<string, FallbackImage>> = {
   'black-tea': {
@@ -38,15 +43,18 @@ export function CollectionCardImage({
 }) {
   const shopifyImage = collection.featuredImage
   const fallbackImage = FALLBACK_IMAGES[collection.handle]
-  const image =
-    shopifyImage?.width && shopifyImage.height
-      ? {
-          alt: shopifyImage.altText ?? collection.title,
-          height: shopifyImage.height,
-          src: getSizedShopifyImageUrl(shopifyImage.url, 640),
-          width: shopifyImage.width,
-        }
-      : fallbackImage
+  const image = shopifyImage
+    ? {
+        alt: shopifyImage.altText ?? collection.title,
+        height: TILE_HEIGHT,
+        src: getShopifyImageUrl(shopifyImage.url, {
+          crop: 'center',
+          height: TILE_HEIGHT,
+          width: TILE_WIDTH,
+        }),
+        width: TILE_WIDTH,
+      }
+    : fallbackImage
 
   if (!image) {
     return <div className="bg-paper-2 aspect-[1/1.08] w-full rounded-lg" />
