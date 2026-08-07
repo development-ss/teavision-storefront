@@ -1,5 +1,8 @@
-import { LoginPanel, type LoginReason } from '../_components/login-panel'
+import { Suspense } from 'react'
+
+import { LoginPanel } from '../_components/login-panel'
 import { getAccountLoginStartHref } from '../_lib/return-path'
+import { LoginPanelSlot } from './_components/panel-slot'
 
 type LoginPageProps = {
   searchParams: Promise<{
@@ -8,27 +11,16 @@ type LoginPageProps = {
   }>
 }
 
-function getLoginReason(reason: string | undefined): LoginReason {
-  if (reason === 'expired') return 'expired'
-  if (reason === 'verification-failed') return 'verification-failed'
-  if (reason === 'logged-out-cart-retained') {
-    return 'logged-out-cart-retained'
-  }
-
-  return 'default'
-}
-
-export default async function AccountLoginPage({
-  searchParams,
-}: LoginPageProps) {
-  const params = await searchParams
-
+// The card shell is static so navigation never falls back to the /account
+// dashboard skeleton; only the reason copy and returnTo href stream in.
+export default function AccountLoginPage({ searchParams }: LoginPageProps) {
   return (
     <div className="min-h-136 md:min-h-128">
-      <LoginPanel
-        loginHref={getAccountLoginStartHref(params.returnTo ?? null)}
-        reason={getLoginReason(params.reason)}
-      />
+      <Suspense
+        fallback={<LoginPanel loginHref={getAccountLoginStartHref(null)} />}
+      >
+        <LoginPanelSlot searchParams={searchParams} />
+      </Suspense>
     </div>
   )
 }
