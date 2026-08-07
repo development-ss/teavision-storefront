@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import Script from 'next/script'
-import { ChevronRight, Globe2 } from 'lucide-react'
+import { ChevronRight, Globe2, Tags } from 'lucide-react'
 
 import {
   getAllProducts,
@@ -49,10 +49,16 @@ function getCategoryLabel(tag: string): string | null {
   return categoryMatch?.[1]?.trim() || null
 }
 
-function getBadgeVariant(tag: string): 'gold' | 'organic' | 'certification' {
-  if (/award|gold/i.test(tag)) return 'gold'
-  if (/organic/i.test(tag)) return 'organic'
-  return 'certification'
+// Mirrors toCategoryPathSegment in the collections route (_lib/page-helpers)
+// so tag links resolve through /collections/all/[category], which matches URL
+// segments against the full collection tag index — not Shopify handleize,
+// which would collapse underscores and break tags like "Certified_ACO".
+function toTagPathSegment(tag: string): string {
+  return tag
+    .toLowerCase()
+    .replace(/[^a-z0-9_]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
 }
 
 function getMetaSegments(tags: string[], optionName?: string): string[] {
@@ -141,9 +147,10 @@ export async function ProductContent({
     productReviewSummary.reviewCount > 0
       ? productReviewSummary.reviewCount
       : 0
-  const visibleTags = product.tags
-    .map(formatTag)
-    .filter((tag): tag is string => tag !== null)
+  const visibleTags = product.tags.flatMap((tag) => {
+    const label = formatTag(tag)
+    return label ? [{ tag, label }] : []
+  })
   const metaSegments = getMetaSegments(product.tags, product.options[0]?.name)
 
   const productJsonLd = {
@@ -329,13 +336,22 @@ export async function ProductContent({
 
           {/* Tag pills at the foot of the info column (owner directive) — mt-8 keeps the 32px rhythm below the buy panel */}
           {visibleTags.length > 0 ? (
-            <div className="mt-8 flex flex-wrap gap-2">
-              {visibleTags.map((label) => (
-                <Badge
-                  key={label}
-                  variant={getBadgeVariant(label)}
-                  label={label}
-                />
+            <div className="mt-8 flex flex-wrap items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-ink">
+                <Tags className="size-4" aria-hidden />
+                Tags :
+              </span>
+              {visibleTags.map(({ tag, label }) => (
+                <Link
+                  key={tag}
+                  href={`/collections/all/${toTagPathSegment(tag)}`}
+                >
+                  <Badge
+                    variant="certification"
+                    label={label}
+                    className="transition-colors hover:border-ink-soft/40 hover:text-ink"
+                  />
+                </Link>
               ))}
             </div>
           ) : null}
