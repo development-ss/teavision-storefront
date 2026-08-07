@@ -18,7 +18,7 @@ export function BlogNewsletterBand() {
             />
           </div>
 
-          <div className="mx-auto max-w-[52ch] text-center">
+          <div className="mx-auto max-w-2xl text-center">
             <Eyebrow tone="gold" className="mb-4 justify-center">
               Monthly newsletter
             </Eyebrow>
@@ -26,7 +26,7 @@ export function BlogNewsletterBand() {
               Explore the World of Tea with{' '}
               <em className="text-gold italic">Monthly Newsletters</em>
             </h2>
-            <p className="type-lede text-paper/75 mt-4">
+            <p className="type-lede text-paper/75 mx-auto mt-4 max-w-[52ch]">
               Market insights, brewing tips and the latest from trusted
               suppliers in Australia and beyond.
             </p>
