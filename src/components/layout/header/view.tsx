@@ -96,10 +96,10 @@ export function Header() {
                 className="hover:bg-brand-tint hover:text-brand lg:hidden"
               >
                 {mobileOpen ? (
-                  <X className="size-4" aria-hidden="true" strokeWidth={1.8} />
+                  <X className="size-5" aria-hidden="true" strokeWidth={1.8} />
                 ) : (
                   <Menu
-                    className="size-4"
+                    className="size-5"
                     aria-hidden="true"
                     strokeWidth={1.8}
                   />
@@ -139,7 +139,7 @@ export function Header() {
                 aria-label="Account"
               >
                 <CircleUserRound
-                  className="size-4"
+                  className="size-5"
                   aria-hidden="true"
                   strokeWidth={1.8}
                 />
@@ -152,7 +152,7 @@ export function Header() {
                 aria-label="Cart"
               >
                 <ShoppingCart
-                  className="size-4"
+                  className="size-5"
                   aria-hidden="true"
                   strokeWidth={1.8}
                 />
