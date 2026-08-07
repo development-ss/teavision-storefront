@@ -58,11 +58,12 @@ export function MobileMegaNav({ open, onClose }: MobileMegaNavProps) {
   if (!open) return null
 
   return (
-    // Overlay starts below the sticky header main bar (top-19 = 76px) so the
-    // burger/X button in the main bar remains visible and tappable above it.
+    // Overlay starts below the sticky mobile header (top-30 = 120px: 64px main
+    // bar + 56px search row) so the burger/X button remains visible and
+    // tappable above it.
     <div
       id="mobile-mega-nav"
-      className="bg-paper fixed inset-x-0 top-19 bottom-0 z-55 overflow-y-auto lg:hidden"
+      className="bg-paper fixed inset-x-0 top-30 bottom-0 z-55 overflow-y-auto lg:hidden"
     >
       {/* Body — the burger/X in the main bar above is the single close control */}
       <div className="flex flex-col">

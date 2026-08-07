@@ -17,8 +17,9 @@ export default meta
 type Story = StoryObj<typeof Header>
 
 /**
- * Full header: ink utility bar (EST. MELBOURNE 2014 ticker) + translucent
- * sticky main bar with pill nav, search, and cart affordances.
+ * Full header: ink utility bar (phone, email, ownership line) + translucent
+ * sticky main bar with prominent search trigger and cart affordances, plus a
+ * dedicated desktop nav row for the mega menus.
  */
 export const Default: Story = {
   play: async ({ canvasElement }) => {

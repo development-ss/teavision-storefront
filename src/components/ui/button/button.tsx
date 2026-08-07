@@ -33,6 +33,10 @@ const buttonVariants = cva(
           'border-[1.5px] border-paper/35 bg-transparent text-paper hover:border-ink hover:bg-ink',
         ghost: 'text-brand hover:bg-brand-tint hover:text-brand-deep',
         quiet: 'bg-transparent text-ink-faint hover:text-gold-deep',
+        // Faux-input look for search/filter triggers — field chrome, placeholder-
+        // weight text, and no icon hover-slide.
+        field:
+          'border-hairline bg-card text-ink-faint justify-start border hover:border-brand hover:text-ink-soft hover:[&_svg]:translate-x-0',
         footerLink:
           'bg-transparent text-paper/75 hover:text-paper focus-visible:ring-offset-ink',
       },
@@ -46,6 +50,8 @@ const buttonVariants = cva(
           'min-h-11 px-0 font-mono text-[10.5px] font-normal tracking-widest uppercase',
         footerLink:
           'min-h-0 px-0 font-mono text-[11px] font-normal tracking-[0.06em] normal-case',
+        // Input-height sizing for the field variant — body-scale text, not label caps
+        field: 'h-11 min-h-11 px-4 text-sm font-normal tracking-normal',
       },
     },
     defaultVariants: {
