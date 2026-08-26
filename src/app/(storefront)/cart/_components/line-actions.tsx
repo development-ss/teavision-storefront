@@ -1,5 +1,6 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import { useOptimistic, useState, useTransition } from 'react'
 
 import { QuantityStepper } from '@/components/ui'
@@ -32,6 +33,7 @@ export function CartLineActions({
   quantityIncrement = 1,
   action = cartLineFormAction,
 }: CartLineActionsProps) {
+  const router = useRouter()
   const [isUpdatePending, startUpdateTransition] = useTransition()
 
   const [stepperState, setStepperState] = useState<CartLineFormState>(
@@ -61,6 +63,7 @@ export function CartLineActions({
       const result = await action(INITIAL_CART_LINE_FORM_STATE, data)
       setStepperState(result)
       if (result.cartChanged) {
+        router.refresh()
         window.dispatchEvent(new Event(CART_CHANGED_EVENT))
         void dispatchClientAnalyticsEvent(
           createCartUpdateEvent({

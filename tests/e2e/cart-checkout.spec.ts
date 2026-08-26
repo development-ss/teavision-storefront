@@ -50,6 +50,11 @@ test('adds a product to cart, updates the cart, removes it, and exposes only fak
   await expect(page.getByRole('list', { name: 'Cart items' })).toContainText(
     'Test Standard Tea',
   )
+  await expect(page.getByRole('list', { name: 'Cart items' })).toContainText(
+    '$120.00',
+  )
+  await expect(page.getByText('$120.00').last()).toBeVisible()
+  await expect(page.getByText('$105.00')).toHaveCount(0)
   await expect(page.locator('form#cart-checkout-form')).toHaveAttribute(
     'action',
     /\/cart\/checkout$/,
@@ -65,6 +70,11 @@ test('adds a product to cart, updates the cart, removes it, and exposes only fak
     .getByRole('button', { name: 'Increase quantity of Test Standard Tea' })
     .click()
   await expect(page.getByText('10 items', { exact: true }).last()).toBeVisible()
+  await expect(page.getByRole('list', { name: 'Cart items' })).toContainText(
+    '$240.00',
+  )
+  await expect(page.getByText('$240.00').last()).toBeVisible()
+  await expect(page.getByText('$210.00')).toHaveCount(0)
 
   await page
     .getByRole('button', { name: 'Remove Test Standard Tea from cart' })

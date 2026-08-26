@@ -102,30 +102,41 @@ function shouldFailBuyerIdentityUpdate(
 }
 
 function setLineTotals(cart: Cart): Cart {
+  const lines = cart.lines.map((line) => {
+    const lineAmount = (
+      Number(line.cost.amountPerQuantity.amount) * line.quantity
+    ).toFixed(2)
+
+    return {
+      ...line,
+      cost: {
+        ...line.cost,
+        subtotalAmount: {
+          amount: lineAmount,
+          currencyCode: line.cost.amountPerQuantity.currencyCode,
+        },
+        totalAmount: {
+          amount: lineAmount,
+          currencyCode: line.cost.amountPerQuantity.currencyCode,
+        },
+      },
+    }
+  })
+  const totalAmount = lines
+    .reduce((total, line) => total + Number(line.cost.totalAmount.amount), 0)
+    .toFixed(2)
+
   return {
     ...cart,
-    totalQuantity: cart.lines.reduce((total, line) => total + line.quantity, 0),
+    lines,
+    totalQuantity: lines.reduce((total, line) => total + line.quantity, 0),
     cost: {
       subtotalAmount: {
-        amount: cart.lines
-          .reduce(
-            (total, line) =>
-              total +
-              Number(line.cost.amountPerQuantity.amount) * line.quantity,
-            0,
-          )
-          .toFixed(2),
+        amount: totalAmount,
         currencyCode: 'AUD',
       },
       totalAmount: {
-        amount: cart.lines
-          .reduce(
-            (total, line) =>
-              total +
-              Number(line.cost.amountPerQuantity.amount) * line.quantity,
-            0,
-          )
-          .toFixed(2),
+        amount: totalAmount,
         currencyCode: 'AUD',
       },
     },
@@ -147,9 +158,6 @@ function makeRawProduct() {
     description: product.description,
     descriptionHtml: product.descriptionHtml,
     tags: product.tags,
-    collections: {
-      nodes: [{ id: 'gid://shopify/Collection/test-collection' }],
-    },
     images: {
       edges: [{ node: fakeProductImage }],
     },
@@ -157,14 +165,6 @@ function makeRawProduct() {
     options: product.options,
     ratingMetafield: { value: JSON.stringify({ value: '4.8' }) },
     ratingCountMetafield: { value: '24' },
-    bulkPricingTiersMetafield: {
-      value: JSON.stringify([
-        {
-          minimumQuantity: 5,
-          price: { amount: '21.00', currencyCode: 'AUD' },
-        },
-      ]),
-    },
     variants: {
       pageInfo: { hasNextPage: false, endCursor: null },
       edges: [
@@ -174,14 +174,7 @@ function makeRawProduct() {
             currentlyNotInStock: false,
             image: fakeProductImage,
             quantityRule: fakeVariantQuantityRule,
-            quantityPriceBreaks: {
-              nodes: [
-                {
-                  minimumQuantity: 5,
-                  price: { amount: '21.00', currencyCode: 'AUD' },
-                },
-              ],
-            },
+            quantityPriceBreaks: { nodes: [] },
           },
         },
       ],
