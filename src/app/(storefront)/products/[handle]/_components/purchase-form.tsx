@@ -4,16 +4,11 @@ import type { ReactNode } from 'react'
 import { useSearchParams } from 'next/navigation'
 
 import { ProductForm } from '@/components/product'
-import type {
-  BulkPricingTier,
-  ProductOption,
-  ProductVariant,
-} from '@/lib/shopify/types'
+import type { ProductOption, ProductVariant } from '@/lib/shopify/types'
 
 type PurchaseFormProps = {
   variants: ProductVariant[]
   options: ProductOption[]
-  bulkPricingTiers: BulkPricingTier[]
   descriptionSlot?: ReactNode
   className?: string
 }
@@ -21,7 +16,6 @@ type PurchaseFormProps = {
 export function PurchaseForm({
   variants,
   options,
-  bulkPricingTiers,
   descriptionSlot,
   className,
 }: PurchaseFormProps) {
@@ -31,7 +25,6 @@ export function PurchaseForm({
     <ProductForm
       variants={variants}
       options={options}
-      bulkPricingTiers={bulkPricingTiers}
       initialVariantId={initialVariantId}
       descriptionSlot={descriptionSlot}
       className={className}

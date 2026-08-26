@@ -9,11 +9,6 @@ export type StorefrontEndpoint = {
   url: string
 }
 
-export const HULK_VOLUME_DISCOUNT_STORE_ID = defaultedEnv(
-  'HULK_VOLUME_DISCOUNT_STORE_ID',
-  'mrteashop-com.myshopify.com',
-)
-
 export const SHOPIFY_COLLECTIONS_INDEX_MENU_HANDLE = defaultedEnv(
   'SHOPIFY_COLLECTIONS_INDEX_MENU_HANDLE',
   'main-menu',

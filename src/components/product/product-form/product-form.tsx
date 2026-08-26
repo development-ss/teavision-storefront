@@ -4,11 +4,7 @@ import { useId, useState, type ReactNode } from 'react'
 import { Leaf, ShieldCheck, Truck } from 'lucide-react'
 
 import { Button, Price, QuantityStepper, ToggleButton } from '@/components/ui'
-import type {
-  BulkPricingTier,
-  ProductOption,
-  ProductVariant,
-} from '@/lib/shopify/types'
+import type { ProductOption, ProductVariant } from '@/lib/shopify/types'
 import {
   clampQuantity,
   getVariantMaximumQuantity,
@@ -23,7 +19,6 @@ import { type AddToCart, useAddToCart } from '../use-add-to-cart'
 type ProductFormProps = {
   variants: ProductVariant[]
   options: ProductOption[]
-  bulkPricingTiers?: BulkPricingTier[]
   initialVariantId?: string
   addToCart?: AddToCart
   onCartChanged?: () => void
@@ -72,7 +67,6 @@ function getInitialSelectedVariantId(
 export function ProductForm({
   variants,
   options,
-  bulkPricingTiers = [],
   initialVariantId,
   addToCart,
   onCartChanged,
@@ -108,10 +102,10 @@ export function ProductForm({
   })
   const canUseSelectedVariantQuantity =
     maximumQuantity === undefined || maximumQuantity >= minimumQuantity
-  const selectedBulkPricingTiers =
-    selectedVariant && selectedVariant.quantityPriceBreaks.length > 0
-      ? selectedVariant.quantityPriceBreaks
-      : bulkPricingTiers
+  // Only Shopify-native variant price breaks are safe to advertise here.
+  // Product-level tiers can come from display-only metafields or legacy apps
+  // that do not apply to Storefront API checkout URLs.
+  const selectedBulkPricingTiers = selectedVariant?.quantityPriceBreaks ?? []
   const activeBulkTier =
     selectedBulkPricingTiers
       .filter((tier) => effectiveQuantity >= tier.minimumQuantity)
@@ -131,14 +125,11 @@ export function ProductForm({
     return true
   }
 
-  function addQuantityToCart(
-    nextQuantity: number,
-    { enforceMaximumQuantity = true } = {},
-  ) {
+  function addQuantityToCart(nextQuantity: number) {
     if (!canAddToCart || !selectedVariant || !canUseSelectedVariantQuantity) {
       return
     }
-    if (enforceMaximumQuantity && !canUseQuantity(nextQuantity)) return
+    if (!canUseQuantity(nextQuantity)) return
 
     addItem(selectedVariant.id, nextQuantity)
   }
@@ -173,7 +164,7 @@ export function ProductForm({
   function handleGrabDeal() {
     if (bulkDealQuantity === null) return
 
-    addQuantityToCart(bulkDealQuantity, { enforceMaximumQuantity: false })
+    addQuantityToCart(bulkDealQuantity)
   }
 
   if (variants.length === 0) {
@@ -315,6 +306,7 @@ export function ProductForm({
           basePrice={selectedVariant.price}
           selectedQuantity={effectiveQuantity}
           selectedTierQuantity={selectedBulkTierQuantity}
+          maximumQuantity={maximumQuantity}
           canAddToCart={canAddToCart && bulkDealQuantity !== null}
           isPending={isPending}
           onGrabDeal={handleGrabDeal}

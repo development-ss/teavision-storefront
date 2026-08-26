@@ -61,19 +61,28 @@ test('codegen fails before building an invalid Shopify schema URL', async () => 
   assert.doesNotMatch(source, /SHOPIFY_STOREFRONT_ACCESS_TOKEN\s*\?\?\s*''/)
 })
 
-test('third-party enrichment failure paths use shorter cache lifetimes', async () => {
+test('third-party review enrichment failures use shorter cache lifetimes', async () => {
   const trustooSource = await readFile(
     sourcePath('src', 'lib', 'reviews', 'trustoo.ts'),
-    'utf8',
-  )
-  const productSource = await readFile(
-    sourcePath('src', 'lib', 'shopify', 'operations', 'product.ts'),
     'utf8',
   )
 
   assert.match(trustooSource, /cacheLife\('minutes'\)/)
   assert.match(trustooSource, /cacheLife\('hours'\)/)
-  assert.match(productSource, /degraded:\s*true/)
-  assert.match(productSource, /cacheLife\('minutes'\)/)
-  assert.match(productSource, /cacheLife\('hours'\)/)
+})
+
+test('storefront pricing uses Shopify-native cart and variant values', async () => {
+  const productSource = await readFile(
+    sourcePath('src', 'lib', 'shopify', 'operations', 'product.ts'),
+    'utf8',
+  )
+  const cartSource = await readFile(
+    sourcePath('src', 'lib', 'shopify', 'operations', 'cart.ts'),
+    'utf8',
+  )
+
+  assert.match(productSource, /quantityPriceBreaks/)
+  assert.match(cartSource, /merchandise\.quantityPriceBreaks\.nodes/)
+  assert.doesNotMatch(productSource, /volumediscount|HULK_VOLUME_DISCOUNT/)
+  assert.doesNotMatch(cartSource, /getProduct|bulkPricingTiers/)
 })

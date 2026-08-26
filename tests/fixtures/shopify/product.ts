@@ -59,7 +59,6 @@ export function makeProduct(overrides: Partial<Product> = {}): Product {
     tags: ['Wholesale', 'Organic'],
     images: summary.featuredImage ? [summary.featuredImage] : [],
     variants: [makeVariant()],
-    bulkPricingTiers: [],
     options: [{ name: 'Pack size', values: ['1kg'] }],
     ...overrides,
   }

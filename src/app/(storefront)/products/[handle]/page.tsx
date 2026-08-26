@@ -319,7 +319,6 @@ export async function ProductContent({
               <ProductForm
                 variants={product.variants}
                 options={product.options}
-                bulkPricingTiers={product.bulkPricingTiers}
                 descriptionSlot={descriptionSlotNode}
                 className="mt-6.5"
               />
@@ -328,7 +327,6 @@ export async function ProductContent({
             <PurchaseForm
               variants={product.variants}
               options={product.options}
-              bulkPricingTiers={product.bulkPricingTiers}
               descriptionSlot={descriptionSlotNode}
               className="mt-6.5"
             />
@@ -337,7 +335,7 @@ export async function ProductContent({
           {/* Tag pills at the foot of the info column (owner directive) — mt-8 keeps the 32px rhythm below the buy panel */}
           {visibleTags.length > 0 ? (
             <div className="mt-8 flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-ink">
+              <span className="text-ink inline-flex items-center gap-1.5 text-sm font-semibold">
                 <Tags className="size-4" aria-hidden />
                 Tags :
               </span>
@@ -349,7 +347,7 @@ export async function ProductContent({
                   <Badge
                     variant="certification"
                     label={label}
-                    className="transition-colors hover:border-ink-soft/40 hover:text-ink"
+                    className="hover:border-ink-soft/40 hover:text-ink transition-colors"
                   />
                 </Link>
               ))}

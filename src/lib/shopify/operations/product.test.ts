@@ -33,7 +33,6 @@ function makeShopifyProductPayload() {
       description: '',
       descriptionHtml: '',
       tags: [],
-      collections: { nodes: [] },
       images: { edges: [] },
       priceRange: {
         minVariantPrice: { amount: '40.65', currencyCode: 'AUD' },
@@ -41,7 +40,6 @@ function makeShopifyProductPayload() {
       options: [{ name: 'Title', values: ['Default Title'] }],
       ratingMetafield: null,
       ratingCountMetafield: null,
-      bulkPricingTiersMetafield: null,
       variants: {
         pageInfo: { hasNextPage: false, endCursor: null },
         edges: [
@@ -54,7 +52,14 @@ function makeShopifyProductPayload() {
               quantityRule: { minimum: 1, maximum: 100, increment: 1 },
               image: null,
               price: { amount: '40.65', currencyCode: 'AUD' },
-              quantityPriceBreaks: { nodes: [] },
+              quantityPriceBreaks: {
+                nodes: [
+                  {
+                    minimumQuantity: 5,
+                    price: { amount: '38.62', currencyCode: 'AUD' },
+                  },
+                ],
+              },
             },
           },
         ],
@@ -70,35 +75,23 @@ describe('Shopify product operations', () => {
     vi.stubGlobal('fetch', fetchMock)
   })
 
-  test('falls back to HulkApps volume tiers from eligible offers', async () => {
+  test('maps only Shopify-native variant quantity price breaks', async () => {
     shopifyFetchMock.mockResolvedValueOnce(makeShopifyProductPayload())
-    fetchMock.mockResolvedValueOnce(
-      new Response(
-        JSON.stringify({
-          eligible_offer: {
-            main_offer_type: 'volume',
-            discount_type: 'each_qty',
-            offer_levels: JSON.stringify([
-              ['5', '5', '% Off', '', '0'],
-              ['10', '10', '% Off', '', '0'],
-              ['20', '12', '% Off', '', '0'],
-              ['40', '15', '% Off', '', '0'],
-            ]),
-          },
-        }),
-        { status: 200 },
-      ),
-    )
 
     await expect(
       getProduct('2003y-mini-ripe-pu-erh-tea-brick-250g-box'),
     ).resolves.toMatchObject({
-      bulkPricingTiers: [
-        { minimumQuantity: 5, discountPercent: 5 },
-        { minimumQuantity: 10, discountPercent: 10 },
-        { minimumQuantity: 20, discountPercent: 12 },
-        { minimumQuantity: 40, discountPercent: 15 },
+      variants: [
+        {
+          quantityPriceBreaks: [
+            {
+              minimumQuantity: 5,
+              price: { amount: '38.62', currencyCode: 'AUD' },
+            },
+          ],
+        },
       ],
     })
+    expect(fetchMock).not.toHaveBeenCalled()
   })
 })

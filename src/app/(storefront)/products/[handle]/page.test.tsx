@@ -266,7 +266,7 @@ describe('ProductContent heading hierarchy', () => {
 
   it('keeps deep-linked variant selection in the route-local client leaf', () => {
     const html = renderToStaticMarkup(
-      <PurchaseForm variants={[]} options={[]} bulkPricingTiers={[]} />,
+      <PurchaseForm variants={[]} options={[]} />,
     )
 
     expect(html).toContain('data-initial-variant="41503540936791"')

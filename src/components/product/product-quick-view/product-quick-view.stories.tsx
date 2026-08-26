@@ -37,7 +37,6 @@ const quickViewProduct: Product = {
       values: ['50g Sample', '1kg', '5kg'],
     },
   ],
-  bulkPricingTiers: [],
   variants: [
     {
       id: 'gid://shopify/ProductVariant/masters-sencha-50g',

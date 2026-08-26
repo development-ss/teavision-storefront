@@ -59,7 +59,7 @@ const variants: ProductVariant[] = [
     quantityPriceBreaks: [
       {
         minimumQuantity: 5,
-        discountPercent: 5,
+        price: { amount: '38.62', currencyCode: 'AUD' },
       },
     ],
     image: null,
@@ -140,11 +140,12 @@ describe('ProductForm', () => {
     )
 
     expect(html).toContain('Buy in Bulk and Save')
-    expect(html).toContain('Buy 5 for 5% Off')
+    expect(html).toContain('Buy 5+')
     expect(html).toContain('$40.65')
+    expect(html).toContain('$38.62')
   })
 
-  it('shows bulk pricing tiers even when current inventory is below the first tier', () => {
+  it('hides native bulk pricing tiers above the available maximum', () => {
     const html = renderToStaticMarkup(
       <ProductFormWithInitialVariant
         variants={[
@@ -163,21 +164,21 @@ describe('ProductForm', () => {
       />,
     )
 
-    expect(html).toContain('Buy in Bulk and Save')
-    expect(html).toContain('Buy 5 for 5% Off')
+    expect(html).not.toContain('Buy in Bulk and Save')
+    expect(html).not.toContain('Buy 5+')
   })
 
-  it('lets bulk deal submissions exceed the storefront quantity maximum', async () => {
+  it('submits a native bulk tier that is within the storefront maximum', async () => {
     capturedAddToCartPayloads.length = 0
     const host = document.createElement('div')
     document.body.append(host)
     const root = createRoot(host)
     const bulkVariant = {
       ...variants[1],
-      quantityAvailable: 1,
+      quantityAvailable: 5,
       quantityRule: {
         minimum: 1,
-        maximum: null,
+        maximum: 5,
         increment: 1,
       },
     }
@@ -194,7 +195,7 @@ describe('ProductForm', () => {
     })
 
     const buyFiveButton = Array.from(host.querySelectorAll('button')).find(
-      (button) => button.textContent?.includes('Buy 5 for 5% Off') === true,
+      (button) => button.textContent?.includes('Buy 5+') === true,
     )
     if (!buyFiveButton) throw new Error('Expected bulk tier button to render')
 

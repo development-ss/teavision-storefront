@@ -52,7 +52,6 @@ export type Product = {
   images: ShopifyImage[]
   priceRange: { minVariantPrice: Money }
   variants: ProductVariant[]
-  bulkPricingTiers: BulkPricingTier[]
   options: ProductOption[]
   rating?: number
   reviewCount?: number

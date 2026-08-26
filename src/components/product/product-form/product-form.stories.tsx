@@ -37,6 +37,21 @@ const options: ProductOption[] = [
   },
 ]
 
+const bulkPricingTiers: BulkPricingTier[] = [
+  {
+    minimumQuantity: 2,
+    price: { amount: '22.80', currencyCode: 'AUD' },
+  },
+  {
+    minimumQuantity: 5,
+    price: { amount: '20.40', currencyCode: 'AUD' },
+  },
+  {
+    minimumQuantity: 10,
+    price: { amount: '18.00', currencyCode: 'AUD' },
+  },
+]
+
 const baseVariant: ProductVariant = {
   id: 'gid://shopify/ProductVariant/organic-chamomile-1kg',
   title: 'Default Title',
@@ -48,7 +63,7 @@ const baseVariant: ProductVariant = {
     increment: 1,
   },
   price: { amount: '24.00', currencyCode: 'AUD' },
-  quantityPriceBreaks: [],
+  quantityPriceBreaks: bulkPricingTiers,
   image: null,
 }
 
@@ -77,21 +92,6 @@ const multiVariants: ProductVariant[] = [
   },
 ]
 
-const bulkPricingTiers: BulkPricingTier[] = [
-  {
-    minimumQuantity: 2,
-    price: { amount: '22.80', currencyCode: 'AUD' },
-  },
-  {
-    minimumQuantity: 5,
-    price: { amount: '20.40', currencyCode: 'AUD' },
-  },
-  {
-    minimumQuantity: 10,
-    price: { amount: '18.00', currencyCode: 'AUD' },
-  },
-]
-
 const meta: Meta<typeof ProductForm> = {
   title: 'Product/ProductForm',
   component: ProductForm,
@@ -117,7 +117,6 @@ export const SingleVariant: Story = {
   args: {
     variants: [baseVariant],
     options: [],
-    bulkPricingTiers,
   },
 }
 
@@ -125,7 +124,6 @@ export const MultipleVariants: Story = {
   args: {
     variants: multiVariants,
     options,
-    bulkPricingTiers,
   },
 }
 
@@ -156,7 +154,6 @@ export const LimitedQuantity: Story = {
       },
     ],
     options: [],
-    bulkPricingTiers,
   },
 }
 
@@ -171,7 +168,6 @@ export const AddToCartSuccess: Story = {
   args: {
     variants: [baseVariant],
     options: [],
-    bulkPricingTiers,
     addToCart: successfulAddToCart,
     onCartChanged: noopCartRefresh,
   },
@@ -189,7 +185,6 @@ export const AddToCartError: Story = {
   args: {
     variants: [baseVariant],
     options: [],
-    bulkPricingTiers,
     addToCart: failingAddToCart,
     onCartChanged: noopCartRefresh,
   },
@@ -207,7 +202,6 @@ export const AddToCartPending: Story = {
   args: {
     variants: [baseVariant],
     options: [],
-    bulkPricingTiers,
     addToCart: pendingAddToCart,
     onCartChanged: noopCartRefresh,
   },
@@ -279,7 +273,6 @@ export const BulkTierPayload: Story = {
   args: {
     variants: [baseVariant],
     options: [],
-    bulkPricingTiers,
     addToCart: captureAddToCart,
     onCartChanged: noopCartRefresh,
   },
