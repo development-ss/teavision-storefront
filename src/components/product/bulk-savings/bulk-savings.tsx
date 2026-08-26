@@ -27,48 +27,12 @@ function formatCurrency(money: Money): string {
   }).format(parseAmount(money))
 }
 
-function formatPercent(value: number): string {
-  return new Intl.NumberFormat('en-AU', {
-    maximumFractionDigits: 1,
-  }).format(value)
-}
-
 function getTierLabel(tier: BulkPricingTier): string {
-  if (tier.label) return tier.label
-
-  if (tier.discountPercent !== undefined) {
-    return `Buy ${tier.minimumQuantity} for ${formatPercent(
-      tier.discountPercent,
-    )}% Off`
-  }
-
   return `Buy ${tier.minimumQuantity}+`
 }
 
-// Production parity: the tier total is the UNROUNDED discounted unit price
-// multiplied by the tier quantity, rounded once. Rounding the unit first and
-// multiplying drifts totals by cents.
-function getTierUnitAmount(
-  tier: BulkPricingTier,
-  basePrice: Money,
-): number | null {
-  if (tier.price) return parseAmount(tier.price)
-  if (tier.discountPercent === undefined) return null
-
-  const baseAmount = parseAmount(basePrice)
-  if (baseAmount <= 0) return null
-
-  return baseAmount * (1 - tier.discountPercent / 100)
-}
-
-function getTierPrice(tier: BulkPricingTier, basePrice: Money): Money | null {
-  const unitAmount = getTierUnitAmount(tier, basePrice)
-  if (unitAmount === null) return null
-
-  return {
-    amount: unitAmount.toFixed(2),
-    currencyCode: tier.price?.currencyCode ?? basePrice.currencyCode,
-  }
+function getTierUnitAmount(tier: BulkPricingTier): number {
+  return parseAmount(tier.price)
 }
 
 function getTotalPrice(price: Money, quantity: number): Money {
@@ -133,21 +97,16 @@ export function BulkSavings({
       <ul className="grid grid-cols-1 gap-2.5 sm:grid-cols-3" role="list">
         {visibleTiers.map((tier) => {
           const isActive = activeTier?.minimumQuantity === tier.minimumQuantity
-          const tierUnitAmount = getTierUnitAmount(tier, basePrice)
-          const tierPrice = getTierPrice(tier, basePrice)
-          const tierTotal =
-            tierUnitAmount !== null && tierPrice !== null
-              ? {
-                  amount: (tierUnitAmount * tier.minimumQuantity).toFixed(2),
-                  currencyCode: tierPrice.currencyCode,
-                }
-              : null
+          const tierUnitAmount = getTierUnitAmount(tier)
+          const tierPrice = tier.price
+          const tierTotal = {
+            amount: (tierUnitAmount * tier.minimumQuantity).toFixed(2),
+            currencyCode: tierPrice.currencyCode,
+          }
           const baseTotal = getTotalPrice(basePrice, tier.minimumQuantity)
 
           return (
-            <li
-              key={`${tier.minimumQuantity}-${tier.label ?? tierPrice?.amount ?? 'tier'}`}
-            >
+            <li key={`${tier.minimumQuantity}-${tierPrice.amount}`}>
               <ToggleButton
                 type="button"
                 pressed={isActive}
@@ -169,30 +128,22 @@ export function BulkSavings({
                 </span>
 
                 <span className="mt-1 min-w-0">
-                  {tierPrice ? (
-                    <>
-                      <span className="flex min-w-0 flex-col items-center gap-1">
-                        <span className="font-display text-ink text-[1.3rem] leading-tight tabular-nums">
-                          {formatCurrency(tierPrice)}
-                        </span>
-                        <span className="text-ink-faint font-mono text-[10px] tabular-nums line-through">
-                          {formatCurrency(basePrice)}
-                        </span>
-                      </span>
-                      {tierTotal ? (
-                        <span className="text-brand mt-1 flex min-w-0 flex-wrap justify-center gap-x-1 text-[11px] font-semibold tabular-nums">
-                          <span className="whitespace-nowrap">
-                            Total {formatCurrency(tierTotal)}
-                          </span>
-                          <span className="text-ink-faint whitespace-nowrap line-through">
-                            {formatCurrency(baseTotal)}
-                          </span>
-                        </span>
-                      ) : null}
-                    </>
-                  ) : (
-                    <span className="type-caption text-ink-faint">In cart</span>
-                  )}
+                  <span className="flex min-w-0 flex-col items-center gap-1">
+                    <span className="font-display text-ink text-[1.3rem] leading-tight tabular-nums">
+                      {formatCurrency(tierPrice)}
+                    </span>
+                    <span className="text-ink-faint font-mono text-[10px] tabular-nums line-through">
+                      {formatCurrency(basePrice)}
+                    </span>
+                  </span>
+                  <span className="text-brand mt-1 flex min-w-0 flex-wrap justify-center gap-x-1 text-[11px] font-semibold tabular-nums">
+                    <span className="whitespace-nowrap">
+                      Total {formatCurrency(tierTotal)}
+                    </span>
+                    <span className="text-ink-faint whitespace-nowrap line-through">
+                      {formatCurrency(baseTotal)}
+                    </span>
+                  </span>
                 </span>
               </ToggleButton>
             </li>

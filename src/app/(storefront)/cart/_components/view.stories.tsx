@@ -209,7 +209,49 @@ export const Discounted: Story = {
   },
 }
 
-export const PercentageDiscounted: Story = {
+export const NoNativePriceBreak: Story = {
+  args: {
+    cart: makeCart({
+      cost: {
+        subtotalAmount: makeMoney('203.25'),
+        totalAmount: makeMoney('203.25'),
+      },
+      lines: [
+        makeCartLine({
+          quantity: 5,
+          cost: {
+            amountPerQuantity: makeMoney('40.65'),
+            compareAtAmountPerQuantity: null,
+            subtotalAmount: makeMoney('203.25'),
+            totalAmount: makeMoney('203.25'),
+          },
+          discountAllocations: [],
+          merchandise: {
+            ...makeCartLine().merchandise,
+            price: makeMoney('40.65'),
+            quantityPriceBreaks: [],
+            product: {
+              ...makeCartLine().merchandise.product,
+              handle: '2003y-mini-ripe-pu-erh-tea-brick-250g-box',
+              title: '2003Y Mini Ripe Pu-erh Tea Brick (250g/box)',
+            },
+          },
+        }),
+      ],
+    }),
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    await expect(canvas.getAllByText('$203.25')[0]).toBeVisible()
+    await expect(canvas.queryByText('$193.09')).not.toBeInTheDocument()
+    await expect(
+      canvas.queryByText(/Congratulations! You saved/),
+    ).not.toBeInTheDocument()
+  },
+}
+
+export const NativePriceBreakDiscounted: Story = {
   args: {
     cart: makeCart({
       cost: {
@@ -237,7 +279,7 @@ export const PercentageDiscounted: Story = {
             quantityPriceBreaks: [
               {
                 minimumQuantity: 40,
-                discountPercent: 15,
+                price: makeMoney('15.62'),
               },
             ],
             product: {

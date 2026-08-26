@@ -17,6 +17,10 @@ vi.mock('@/lib/cart/actions', () => ({
   cartLineFormAction: vi.fn(),
 }))
 
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ refresh: vi.fn() }),
+}))
+
 function getTextContent(html: string): string {
   return html
     .replace(/<[^>]*>/g, '')
@@ -73,7 +77,7 @@ describe('CartView', () => {
     expect(html).not.toContain('Bulk discount')
   })
 
-  it('prompts for the next percentage bulk tier when fixed tier prices are unavailable', () => {
+  it('prompts for the next native price break without replacing Shopify cart prices', () => {
     const html = renderToStaticMarkup(
       <CartView
         cart={makeCart({
@@ -97,11 +101,11 @@ describe('CartView', () => {
                 quantityPriceBreaks: [
                   {
                     minimumQuantity: 30,
-                    discountPercent: 12,
+                    price: makeMoney('16.17'),
                   },
                   {
                     minimumQuantity: 40,
-                    discountPercent: 15,
+                    price: makeMoney('15.62'),
                   },
                 ],
                 product: {
@@ -133,13 +137,54 @@ describe('CartView', () => {
     expect(html).toContain('font-sans')
     expect(html).not.toContain('font-display tabular-nums')
     expect(html).not.toContain('line-clamp-2')
-    expect(html).toContain('aria-label="Was $18.38"')
-    expect(html).toContain('aria-label="Now $16.17"')
-    expect(html).toContain('aria-label="Was $624.92"')
-    expect(html).toContain('aria-label="Now $549.93"')
-    expect(getTextContent(html)).toContain(
-      'Congratulations! You saved $74.99 by buying in bulk!',
+    expect(getTextContent(html)).toContain('$18.38')
+    expect(getTextContent(html)).toContain('$624.92')
+    expect(html).not.toContain('$16.17')
+    expect(html).not.toContain('$549.93')
+    expect(html).not.toContain('Congratulations! You saved')
+    expect(html).not.toContain('Bulk pricing estimated')
+  })
+
+  it('does not present a discount when Shopify returns no price break', () => {
+    const html = renderToStaticMarkup(
+      <CartView
+        cart={makeCart({
+          cost: {
+            subtotalAmount: makeMoney('203.25'),
+            totalAmount: makeMoney('203.25'),
+          },
+          lines: [
+            makeCartLine({
+              quantity: 5,
+              cost: {
+                amountPerQuantity: makeMoney('40.65'),
+                compareAtAmountPerQuantity: null,
+                subtotalAmount: makeMoney('203.25'),
+                totalAmount: makeMoney('203.25'),
+              },
+              discountAllocations: [],
+              merchandise: {
+                ...makeCartLine().merchandise,
+                price: makeMoney('40.65'),
+                quantityPriceBreaks: [],
+                product: {
+                  ...makeCartLine().merchandise.product,
+                  title: '2003Y Mini Ripe Pu-erh Tea Brick (250g/box)',
+                },
+              },
+            }),
+          ],
+        })}
+      />,
     )
+
+    expect(html).toContain('value="5"')
+    expect(getTextContent(html)).toContain('$40.65')
+    expect(getTextContent(html)).toContain('$203.25')
+    expect(html).not.toContain('$38.62')
+    expect(html).not.toContain('$193.09')
+    expect(html).not.toContain('$10.16')
+    expect(html).not.toContain('Congratulations! You saved')
   })
 
   it('keeps non-bulk discount labels visible when a line has discounted totals', () => {

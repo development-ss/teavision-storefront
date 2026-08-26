@@ -32,16 +32,12 @@ type LineDisplayPricing = {
   unitCompareAtPrice?: Money
   totalPrice: Money
   totalCompareAtPrice?: Money
-  /** True when the total is derived from quantityPriceBreaks rather than taken from Shopify's cart cost. */
-  isEstimated: boolean
 }
 
 type CartDisplayPricing = {
   subtotalPrice: Money
   subtotalCompareAtPrice?: Money
   savings: Money | null
-  /** True when any line total is a client-side bulk-tier estimate Shopify has not confirmed. */
-  isEstimated: boolean
 }
 
 function parseMoneyAmount(money: Money): number {
@@ -60,10 +56,6 @@ function divideMoney(money: Money, divisor: number): Money {
   if (divisor <= 0) return money
 
   return makeMoney(parseMoneyAmount(money) / divisor, money.currencyCode)
-}
-
-function multiplyMoney(money: Money, multiplier: number): Money {
-  return makeMoney(parseMoneyAmount(money) * multiplier, money.currencyCode)
 }
 
 function getSavingsAmount(original: Money, discounted: Money): Money | null {
@@ -88,76 +80,18 @@ function getBaseUnitPrice(line: CartLine): Money {
   )
 }
 
-function getActiveBulkTier(line: CartLine, baseUnitPrice: Money) {
-  const baseAmount = parseMoneyAmount(baseUnitPrice)
-  if (baseAmount <= 0) return null
-
-  return (
-    line.merchandise.quantityPriceBreaks
-      .filter((tier) => tier.minimumQuantity <= line.quantity)
-      .filter((tier) => {
-        if (tier.discountPercent !== undefined && tier.discountPercent > 0) {
-          return true
-        }
-
-        if (
-          !tier.price ||
-          tier.price.currencyCode !== baseUnitPrice.currencyCode
-        ) {
-          return false
-        }
-
-        return parseMoneyAmount(tier.price) < baseAmount - SAVINGS_EPSILON
-      })
-      .sort((a, b) => b.minimumQuantity - a.minimumQuantity)[0] ?? null
-  )
-}
-
-function getBulkTierTotalPrice(
-  line: CartLine,
-  baseUnitPrice: Money,
-): Money | null {
-  const activeTier = getActiveBulkTier(line, baseUnitPrice)
-  if (!activeTier) return null
-
-  if (activeTier.discountPercent !== undefined) {
-    if (line.cost.subtotalAmount.currencyCode !== baseUnitPrice.currencyCode) {
-      return null
-    }
-
-    return multiplyMoney(
-      line.cost.subtotalAmount,
-      1 - activeTier.discountPercent / 100,
-    )
-  }
-
-  if (!activeTier.price) return null
-
-  return multiplyMoney(activeTier.price, line.quantity)
-}
-
 function getLineDisplayPricing(line: CartLine): LineDisplayPricing {
   const compareAtPrice =
     line.cost.compareAtAmountPerQuantity ?? getBaseUnitPrice(line)
   const lineCompareTotal = getLineCompareTotal(line)
-  const tierTotalPrice = lineCompareTotal
-    ? null
-    : getBulkTierTotalPrice(line, compareAtPrice)
-  const derivedTotalPrice =
-    tierTotalPrice && getSavingsAmount(line.cost.subtotalAmount, tierTotalPrice)
-      ? tierTotalPrice
-      : null
-  const totalPrice = lineCompareTotal
-    ? line.cost.totalAmount
-    : (derivedTotalPrice ?? line.cost.totalAmount)
+  const totalPrice = line.cost.totalAmount
   const discountedUnitPrice = lineCompareTotal
     ? divideMoney(line.cost.totalAmount, line.quantity)
     : line.cost.amountPerQuantity
-  const unitPrice = derivedTotalPrice
-    ? divideMoney(derivedTotalPrice, line.quantity)
-    : discountedUnitPrice
-  const totalCompareAtPrice =
-    lineCompareTotal || derivedTotalPrice ? line.cost.subtotalAmount : undefined
+  const unitPrice = discountedUnitPrice
+  const totalCompareAtPrice = lineCompareTotal
+    ? line.cost.subtotalAmount
+    : undefined
 
   return {
     unitPrice,
@@ -166,7 +100,6 @@ function getLineDisplayPricing(line: CartLine): LineDisplayPricing {
       : undefined,
     totalPrice,
     totalCompareAtPrice,
-    isEstimated: Boolean(derivedTotalPrice),
   }
 }
 
@@ -184,29 +117,17 @@ function getNextBulkDiscountPrompt(line: CartLine): {
     .filter(
       (tier) =>
         tier.minimumQuantity > line.quantity &&
-        (tier.discountPercent !== undefined ||
-          tier.price?.currencyCode === baseUnitPrice.currencyCode),
+        tier.price.currencyCode === baseUnitPrice.currencyCode,
     )
     .sort((a, b) => a.minimumQuantity - b.minimumQuantity)
-    .find((tier) => {
-      if (tier.discountPercent !== undefined && tier.discountPercent > 0) {
-        return true
-      }
-
-      const tierAmount = tier.price ? parseMoneyAmount(tier.price) : baseAmount
-
-      return tierAmount < baseAmount - SAVINGS_EPSILON
-    })
+    .find((tier) => parseMoneyAmount(tier.price) < baseAmount - SAVINGS_EPSILON)
 
   if (!nextTier) return null
 
   const tierDiscountPercent =
-    nextTier.discountPercent ??
-    (nextTier.price
-      ? ((baseAmount - parseMoneyAmount(nextTier.price)) / baseAmount) * 100
-      : null)
+    ((baseAmount - parseMoneyAmount(nextTier.price)) / baseAmount) * 100
 
-  if (tierDiscountPercent === null || tierDiscountPercent <= 0) return null
+  if (tierDiscountPercent <= 0) return null
 
   return {
     quantityNeeded: nextTier.minimumQuantity - line.quantity,
@@ -215,19 +136,7 @@ function getNextBulkDiscountPrompt(line: CartLine): {
 }
 
 function getCartDisplayPricing(cart: Cart): CartDisplayPricing {
-  const currencyCode = cart.cost.totalAmount.currencyCode
-  const lineDisplayPricings = cart.lines.map(getLineDisplayPricing)
-  const lineSubtotal = lineDisplayPricings.reduce(
-    (total, lineDisplayPricing) =>
-      lineDisplayPricing.totalPrice.currencyCode === currencyCode
-        ? total + parseMoneyAmount(lineDisplayPricing.totalPrice)
-        : total,
-    0,
-  )
-  const subtotalPrice =
-    lineSubtotal > 0
-      ? makeMoney(lineSubtotal, currencyCode)
-      : cart.cost.totalAmount
+  const subtotalPrice = cart.cost.totalAmount
   const subtotalCompareAtPrice = getSavingsAmount(
     cart.cost.subtotalAmount,
     subtotalPrice,
@@ -241,9 +150,6 @@ function getCartDisplayPricing(cart: Cart): CartDisplayPricing {
     savings: subtotalCompareAtPrice
       ? getSavingsAmount(subtotalCompareAtPrice, subtotalPrice)
       : null,
-    isEstimated: lineDisplayPricings.some(
-      (lineDisplayPricing) => lineDisplayPricing.isEstimated,
-    ),
   }
 }
 
@@ -533,11 +439,6 @@ export function CartView({ accountContextState = null, cart }: CartViewProps) {
                 size="lg"
               />
             </div>
-            {cartDisplayPricing.isEstimated ? (
-              <p className="type-caption text-ink-faint text-right">
-                Bulk pricing estimated — final total confirmed at checkout
-              </p>
-            ) : null}
           </div>
 
           <div className="type-mono-meta text-ink-faint mt-3 flex items-center gap-3">

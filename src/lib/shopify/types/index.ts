@@ -7,9 +7,7 @@ export type Money = {
 
 export type BulkPricingTier = {
   minimumQuantity: number
-  price?: Money
-  discountPercent?: number
-  label?: string
+  price: Money
 }
 
 export type ShopifyImage = {

@@ -57,65 +57,6 @@ export const NativePriceBreaks: Story = {
   },
 }
 
-export const FallbackPercentTiers: Story = {
-  args: {
-    basePrice: {
-      amount: '32.50',
-      currencyCode: 'AUD',
-    },
-    selectedQuantity: 3,
-    tiers: [
-      {
-        minimumQuantity: 3,
-        discountPercent: 5,
-        label: 'Starter carton',
-      },
-      {
-        minimumQuantity: 6,
-        discountPercent: 10,
-        label: 'Cafe carton',
-      },
-      {
-        minimumQuantity: 12,
-        discountPercent: 15,
-        label: 'Wholesale carton',
-      },
-    ],
-  },
-}
-
-export const LegacyHulkOffer: Story = {
-  args: {
-    basePrice: {
-      amount: '40.65',
-      currencyCode: 'AUD',
-    },
-    selectedQuantity: 40,
-    tiers: [
-      {
-        minimumQuantity: 5,
-        discountPercent: 5,
-        label: 'Buy 5 for 5% Off',
-      },
-      {
-        minimumQuantity: 10,
-        discountPercent: 10,
-        label: 'Buy 10 for 10% Off',
-      },
-      {
-        minimumQuantity: 20,
-        discountPercent: 12,
-        label: 'Buy 20 for 12% Off',
-      },
-      {
-        minimumQuantity: 40,
-        discountPercent: 15,
-        label: 'Buy 40 for 15% Off',
-      },
-    ],
-  },
-}
-
 export const RequiresTierSelection: Story = {
   args: {
     ...NativePriceBreaks.args,
@@ -139,7 +80,7 @@ export const LimitedQuantity: Story = {
   },
 }
 
-export const LongUnbrokenTierLabelMobile: Story = {
+export const LongQuantityLabelMobile: Story = {
   args: {
     basePrice: {
       amount: '32.50',
@@ -148,10 +89,11 @@ export const LongUnbrokenTierLabelMobile: Story = {
     selectedQuantity: 3,
     tiers: [
       {
-        minimumQuantity: 3,
-        discountPercent: 5,
-        label:
-          'WholesaleTeaProcurementComplianceSourcingIntelligenceCartonOffer',
+        minimumQuantity: 1_000_000_000,
+        price: {
+          amount: '30.00',
+          currencyCode: 'AUD',
+        },
       },
     ],
   },

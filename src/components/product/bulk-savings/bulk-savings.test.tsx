@@ -7,33 +7,45 @@ import { BulkSavings } from './bulk-savings'
 
 const basePrice: Money = { amount: '11.47', currencyCode: 'AUD' }
 
-const percentageTiers: BulkPricingTier[] = [
-  { minimumQuantity: 5, discountPercent: 5 },
-  { minimumQuantity: 10, discountPercent: 10 },
-  { minimumQuantity: 20, discountPercent: 12 },
-  { minimumQuantity: 40, discountPercent: 15 },
+const nativePriceBreaks: BulkPricingTier[] = [
+  {
+    minimumQuantity: 5,
+    price: { amount: '10.90', currencyCode: 'AUD' },
+  },
+  {
+    minimumQuantity: 10,
+    price: { amount: '10.32', currencyCode: 'AUD' },
+  },
+  {
+    minimumQuantity: 20,
+    price: { amount: '10.09', currencyCode: 'AUD' },
+  },
+  {
+    minimumQuantity: 40,
+    price: { amount: '9.75', currencyCode: 'AUD' },
+  },
 ]
 
 describe('BulkSavings', () => {
-  it('rounds tier totals once from the unrounded discounted unit price', () => {
+  it('totals Shopify-authored unit prices', () => {
     const html = renderToStaticMarkup(
       <BulkSavings
-        tiers={percentageTiers}
+        tiers={nativePriceBreaks}
         basePrice={basePrice}
         selectedQuantity={1}
       />,
     )
 
-    expect(html).toContain('Total $54.48')
-    expect(html).toContain('Total $103.23')
-    expect(html).toContain('Total $201.87')
-    expect(html).toContain('Total $389.98')
+    expect(html).toContain('Total $54.50')
+    expect(html).toContain('Total $103.20')
+    expect(html).toContain('Total $201.80')
+    expect(html).toContain('Total $390.00')
   })
 
   it('keeps per-unit tier prices rounded to cents', () => {
     const html = renderToStaticMarkup(
       <BulkSavings
-        tiers={percentageTiers}
+        tiers={nativePriceBreaks}
         basePrice={basePrice}
         selectedQuantity={1}
       />,
