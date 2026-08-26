@@ -66,10 +66,10 @@ export const WithCollectionSearch: Story = {
     search: (
       <SearchPageSearchForm
         action="/collections/wholesale-bulk-tea"
-        className="mt-0 max-w-none"
+        className="mt-0 max-w-none lg:grid-cols-[auto_minmax(12rem,1fr)_auto] lg:items-center"
         inputId="collection-search-query"
         label="Filter products on this page"
-        labelClassName="type-label text-ink block sm:col-span-2"
+        labelClassName="type-label text-ink block sm:col-span-2 lg:col-span-1 lg:whitespace-nowrap"
         placeholder="Filter visible products"
         submitLabel="Filter"
       />
