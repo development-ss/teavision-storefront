@@ -73,7 +73,7 @@ export function CartCheckoutForm({
           I have read and agree to the{' '}
           <Link
             id="terms-link"
-            href="/pages/terms-of-service"
+            href="/pages/terms-conditions"
             className="text-brand hover:text-brand-deep underline"
           >
             Terms and Conditions

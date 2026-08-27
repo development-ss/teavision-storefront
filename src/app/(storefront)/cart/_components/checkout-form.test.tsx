@@ -7,7 +7,7 @@ import { describe, expect, it } from 'vitest'
 import { CartCheckoutForm } from './checkout-form'
 
 describe('CartCheckoutForm', () => {
-  it('links terms acceptance to the canonical terms of service route', () => {
+  it('links terms acceptance to the terms and conditions page', () => {
     const html = renderToStaticMarkup(
       <CartCheckoutForm
         accountContextState={null}
@@ -15,7 +15,7 @@ describe('CartCheckoutForm', () => {
       />,
     )
 
-    expect(html).toContain('href="/pages/terms-of-service"')
-    expect(html).not.toContain('href="/pages/terms-conditions"')
+    expect(html).toContain('href="/pages/terms-conditions"')
+    expect(html).not.toContain('href="/pages/terms-of-service"')
   })
 })

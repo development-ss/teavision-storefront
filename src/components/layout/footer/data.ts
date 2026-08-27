@@ -1,5 +1,4 @@
 import { CANONICAL_BLOG_LISTING_PATH } from '@/lib/blog/paths'
-import { getFooterLegalLinks } from '@/lib/legal/policies'
 
 import type {
   FooterColumn,
@@ -18,29 +17,13 @@ export const MAIN_MENU_LINKS = [
   { href: '/pages/our-story', label: 'Our Story' },
 ] satisfies FooterLink[]
 
-const FOOTER_LEGAL_HREFS = [
-  '/pages/privacy-policy',
-  '/pages/shipping-policy',
-  '/pages/refund-policy',
-  '/pages/terms-of-service',
-  '/pages/cookie-preferences',
-] as const
-
-function getRequiredFooterLegalLinks(): FooterLink[] {
-  const legalLinks = getFooterLegalLinks()
-
-  return FOOTER_LEGAL_HREFS.map((href) => {
-    const link = legalLinks.find((candidate) => candidate.href === href)
-
-    if (!link) {
-      throw new Error(`Missing legal footer policy link: ${href}`)
-    }
-
-    return link
-  })
-}
-
-const LEGAL_POLICY_LINKS = getRequiredFooterLegalLinks()
+const LEGAL_POLICY_LINKS = [
+  { href: '/pages/privacy-policy', label: 'Privacy Policy' },
+  { href: '/pages/shipping-policy', label: 'Shipping Policy' },
+  { href: '/pages/refund-policy', label: 'Refund Policy' },
+  { href: '/pages/terms-conditions', label: 'Terms & Conditions' },
+  { href: '/pages/cookie-preferences', label: 'Cookie Preferences' },
+] satisfies FooterLink[]
 
 export const FOOTER_LINKS = [
   { href: '/search', label: 'Search' },
