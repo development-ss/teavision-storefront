@@ -238,9 +238,10 @@ export const CollectionListMobile: Story = {
   },
 }
 
-/** Sold-out card: badges shown, no quick-add */
+/** Sold-out card: normal purchase details stay visible with disabled controls. */
 export const SoldOut: Story = {
   args: {
+    layout: 'list',
     product: {
       ...stubProduct,
       id: 'gid://shopify/Product/masters-rwanda',
@@ -253,11 +254,21 @@ export const SoldOut: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
 
-    await expect(canvas.getByText('Sold out')).toBeVisible()
+    await expect(canvas.getAllByText('Sold out')).toHaveLength(2)
 
     await expect(
-      canvas.queryByRole('button', { name: /add to cart/i }),
-    ).not.toBeInTheDocument()
+      canvas.getByRole('combobox', {
+        name: 'Select pack size for Premium Rwandan Black Tea CTC BP',
+      }),
+    ).toBeDisabled()
+    await expect(
+      canvas.getByRole('spinbutton', {
+        name: 'Quantity for Premium Rwandan Black Tea CTC BP',
+      }),
+    ).toBeDisabled()
+    await expect(
+      canvas.getByRole('button', { name: 'Sold out' }),
+    ).toBeDisabled()
   },
 }
 

@@ -92,7 +92,7 @@ describe('ProductCard', () => {
     // Product photos sit on a full media plate rather than floating on the page.
     expect(html).toContain('bg-white')
     expect(html).not.toContain('mix-blend-multiply')
-    expect(html).not.toContain('bg-card')
+    expect(html).not.toMatch(/<article class="[^"]*\bbg-card\b/)
     expect(html).not.toContain('bg-paper-2')
     // Title uses display font (lockstep with UI-SPEC §5.5)
     expect(html).toContain(
@@ -120,8 +120,9 @@ describe('ProductCard', () => {
     expect(html).toContain('text-rating')
   })
 
-  it('shows quantity and add-to-cart controls for single-variant products', () => {
+  it('always shows size, quantity, and add-to-cart controls for single-variant products', () => {
     const html = renderToStaticMarkup(<ProductCard product={product} />)
+    expect(html).toContain('Select pack size for Tea Masters Sencha Green Tea')
     expect(html).toContain('Add to cart')
     expect(html).toContain('Quantity for Tea Masters Sencha Green Tea')
   })
@@ -219,7 +220,7 @@ describe('ProductCard', () => {
     expect(html).not.toContain('Out of stock')
   })
 
-  it('keeps sold-out cards non-interactive', () => {
+  it('shows the normal purchase details on sold-out cards with every control disabled', () => {
     const soldOutProduct: CollectionProductSummary = {
       ...product,
       availableForSale: false,
@@ -228,7 +229,9 @@ describe('ProductCard', () => {
     const html = renderToStaticMarkup(<ProductCard product={soldOutProduct} />)
 
     expect(html).toContain('Sold out')
-    expect(html).not.toContain('Add to cart')
-    expect(html).not.toContain('name="quantity"')
+    expect(html).toContain('Select pack size for Tea Masters Sencha Green Tea')
+    expect(html).toContain('Quantity for Tea Masters Sencha Green Tea')
+    expect(html).toContain('name="quantity"')
+    expect(html.match(/disabled=""/g)).toHaveLength(5)
   })
 })

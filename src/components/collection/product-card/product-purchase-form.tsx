@@ -26,6 +26,7 @@ type ProductPurchaseFormProps = {
   hideSubmit?: boolean
   /** When false, omits the quantity stepper and submits quantity 1 (CARD-06). Default: true */
   showQuantity?: boolean
+  disabled?: boolean
   className?: string
 }
 
@@ -44,6 +45,7 @@ export function ProductPurchaseForm({
   showPrice,
   hideSubmit,
   showQuantity = true,
+  disabled = false,
   className,
 }: ProductPurchaseFormProps) {
   const initialVariant = getInitialVariant(variants)
@@ -74,6 +76,9 @@ export function ProductPurchaseForm({
   const minimumQuantity = getVariantMinimumQuantity(selectedVariant)
   const maximumQuantity = getVariantMaximumQuantity(selectedVariant)
   const quantityIncrement = getVariantQuantityIncrement(selectedVariant)
+  const hasAvailableVariant = variants.some(
+    (variant) => variant.availableForSale,
+  )
   const effectiveQuantity = clampQuantity({
     maximumQuantity,
     minimumQuantity,
@@ -81,9 +86,10 @@ export function ProductPurchaseForm({
     value: quantity,
   })
   const canAddToCart =
+    !disabled &&
     selectedVariant?.availableForSale === true &&
     (maximumQuantity === undefined || maximumQuantity >= minimumQuantity)
-  const hasMultipleVariants = variants.length > 1
+  const isVariantSelectDisabled = isPending || disabled || !hasAvailableVariant
 
   const isInlineLayout = layout === 'inline'
   const isCardLayout = layout === 'card'
@@ -137,14 +143,11 @@ export function ProductPurchaseForm({
               className={cn(isCompactLayout && 'text-ink font-semibold')}
             />
           )}
-          {!canAddToCart && !hideSubmit && (
-            <span className="type-caption text-danger">Sold out</span>
-          )}
         </div>
       )}
 
       {/* PDP and card layouts keep a persistent label above the select. */}
-      {!isInlineLayout && hasMultipleVariants && (
+      {!isInlineLayout && (
         <label className={cn('grid', isCardLayout ? 'gap-1' : 'gap-2')}>
           <span
             className={cn(
@@ -158,7 +161,7 @@ export function ProductPurchaseForm({
             name="variantId"
             value={selectedVariantId}
             onChange={(event) => handleSelectVariant(event.currentTarget.value)}
-            disabled={isPending}
+            disabled={isVariantSelectDisabled}
             aria-label={`Select pack size for ${productTitle}`}
             className={cn(isCardLayout && 'min-h-11 px-3 py-2.5 pr-8')}
           >
@@ -170,16 +173,14 @@ export function ProductPurchaseForm({
       <div
         className={cn(
           isInlineLayout
-            ? hasMultipleVariants
-              ? 'grid grid-cols-[7.5rem_minmax(0,1fr)] items-end gap-2 sm:grid-cols-[8rem_7.5rem_7rem] sm:gap-3'
-              : 'grid grid-cols-[7.5rem_minmax(5rem,1fr)] items-end gap-2 sm:grid-cols-[7.5rem_7rem] sm:gap-3'
+            ? 'grid grid-cols-[7.5rem_minmax(0,1fr)] items-end gap-2 sm:grid-cols-[8rem_7.5rem_7rem] sm:gap-3'
             : isCardLayout
               ? 'grid grid-cols-1 items-end gap-2 sm:grid-cols-[7.5rem_minmax(0,1fr)]'
               : 'flex flex-wrap items-center gap-2',
         )}
       >
         {/* Inline layout: controls align to the bottom of the product image. */}
-        {isInlineLayout && hasMultipleVariants && (
+        {isInlineLayout && (
           <label className="col-span-2 grid min-w-0 gap-1 sm:col-span-1">
             <span className="type-caption text-ink-soft font-semibold uppercase">
               Size
@@ -190,7 +191,7 @@ export function ProductPurchaseForm({
               onChange={(event) =>
                 handleSelectVariant(event.currentTarget.value)
               }
-              disabled={isPending}
+              disabled={isVariantSelectDisabled}
               aria-label={`Select pack size for ${productTitle}`}
               className="min-h-10 px-3 pr-8"
             >
@@ -239,7 +240,7 @@ export function ProductPurchaseForm({
               disabled={!canAddToCart || isPending || justAdded}
               variant={justAdded ? 'brand' : 'primary'}
               size={isCompactLayout ? 'sm' : 'md'}
-              className="min-w-0 w-full"
+              className="w-full min-w-0"
             >
               {justAdded ? 'Added' : canAddToCart ? 'Add to cart' : 'Sold out'}
             </Button>

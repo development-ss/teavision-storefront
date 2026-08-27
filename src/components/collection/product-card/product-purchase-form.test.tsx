@@ -50,6 +50,20 @@ const variants: ProductVariant[] = [
 ]
 
 describe('ProductPurchaseForm', () => {
+  it('renders the size selector for a single variant', () => {
+    const html = renderToStaticMarkup(
+      <ProductPurchaseForm
+        variants={[variants[0]]}
+        productTitle="Tea Masters Sencha"
+        layout="inline"
+        showPrice={false}
+      />,
+    )
+
+    expect(html).toContain('Select pack size for Tea Masters Sencha')
+    expect(html).toContain('50g Sample')
+  })
+
   it('renders quantity control in the inline collection layout', () => {
     const html = renderToStaticMarkup(
       <ProductPurchaseForm
@@ -113,5 +127,22 @@ describe('ProductPurchaseForm', () => {
       root.unmount()
     })
     host.remove()
+  })
+
+  it('keeps sold-out purchase details visible and disables every control', () => {
+    const html = renderToStaticMarkup(
+      <ProductPurchaseForm
+        variants={[{ ...variants[0], availableForSale: false }]}
+        productTitle="Tea Masters Sencha"
+        layout="inline"
+        showPrice={false}
+        disabled
+      />,
+    )
+
+    expect(html).toContain('Select pack size for Tea Masters Sencha')
+    expect(html).toContain('Quantity for Tea Masters Sencha')
+    expect(html).toContain('Sold out')
+    expect(html.match(/disabled=""/g)).toHaveLength(5)
   })
 })

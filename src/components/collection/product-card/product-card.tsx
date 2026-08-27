@@ -46,15 +46,15 @@ export function ProductCard({
   const isListLayout = layout === 'list'
   const variants = product.variants ?? []
   const hasKnownVariants = variants.length > 0
-  const canPurchaseFromCard = !isSoldOut && hasKnownVariants
 
   const { organic, gold } = getCertBadges(product.tags ?? [])
   const featuredImage = product.featuredImage
   const visibleReviewSummary = getVisibleProductReviewSummary(product)
-  const purchaseContent = canPurchaseFromCard ? (
+  const purchaseContent = hasKnownVariants ? (
     <ProductPurchaseForm
       variants={variants}
       productTitle={product.title}
+      disabled={isSoldOut}
       layout={isListLayout ? 'inline' : 'card'}
       className={cn(!isListLayout && 'mt-auto pt-3')}
     />
