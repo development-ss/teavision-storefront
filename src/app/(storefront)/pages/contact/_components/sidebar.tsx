@@ -1,6 +1,6 @@
 import { Eyebrow } from '@/components/ui'
 
-import { CONTACT_METHODS, SOCIAL_LINKS, SUPPLY_NOTES } from '../_lib/page-data'
+import { CONTACT_METHODS, SUPPLY_NOTES } from '../_lib/page-data'
 import { Icon } from './icons'
 
 export function Sidebar() {
@@ -47,24 +47,6 @@ export function Sidebar() {
             </li>
           ))}
         </ul>
-      </div>
-
-      <div className="border-hairline mt-8 border-t pt-6">
-        <p className="type-mono-meta text-ink-faint">Follow us</p>
-        <div className="mt-4 flex flex-wrap gap-3">
-          {SOCIAL_LINKS.map((link) => (
-            <a
-              key={link.label}
-              href={link.href}
-              aria-label={link.label}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="border-hairline bg-card text-brand hover:border-brand hover:text-brand-deep focus-visible:ring-ring flex size-11 items-center justify-center rounded-full border transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
-            >
-              <Icon name={link.icon} />
-            </a>
-          ))}
-        </div>
       </div>
     </aside>
   )

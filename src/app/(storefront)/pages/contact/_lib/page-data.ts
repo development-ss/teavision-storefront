@@ -44,25 +44,4 @@ export const CONTACT_METHODS = [
   },
 ] as const
 
-export const SOCIAL_LINKS = [
-  {
-    label: 'YouTube',
-    href: 'https://www.youtube.com/@teavision',
-    icon: 'youtube',
-  },
-  {
-    label: 'Instagram',
-    href: 'https://www.instagram.com/teavision/',
-    icon: 'instagram',
-  },
-  {
-    label: 'Facebook',
-    href: 'https://www.facebook.com/teavision/',
-    icon: 'facebook',
-  },
-  { label: 'WhatsApp', href: 'https://wa.me/611300729617', icon: 'whatsapp' },
-] as const
-
-export type IconName =
-  | (typeof CONTACT_METHODS)[number]['icon']
-  | (typeof SOCIAL_LINKS)[number]['icon']
+export type IconName = (typeof CONTACT_METHODS)[number]['icon']
