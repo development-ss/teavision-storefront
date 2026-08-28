@@ -117,15 +117,20 @@ export function MegaNav() {
               onClick={() => toggleMenu('shop')}
               className={NAV_TRIGGER_CLASS}
             >
-              <span onMouseEnter={() => openMenuFromHover('shop')}>Shop</span>
-              <ChevronDown
-                className={cn(
-                  'size-4 transition-transform',
-                  openMenu === 'shop' && 'rotate-180',
-                )}
-                aria-hidden="true"
-                strokeWidth={1.8}
-              />
+              <span
+                className="inline-flex items-center gap-1"
+                onMouseEnter={() => openMenuFromHover('shop')}
+              >
+                Shop
+                <ChevronDown
+                  className={cn(
+                    'size-4 transition-transform',
+                    openMenu === 'shop' && 'rotate-180',
+                  )}
+                  aria-hidden="true"
+                  strokeWidth={1.8}
+                />
+              </span>
             </DisclosureButton>
           </li>
 
@@ -140,17 +145,20 @@ export function MegaNav() {
               onClick={() => toggleMenu('services')}
               className={NAV_TRIGGER_CLASS}
             >
-              <span onMouseEnter={() => openMenuFromHover('services')}>
+              <span
+                className="inline-flex items-center gap-1"
+                onMouseEnter={() => openMenuFromHover('services')}
+              >
                 Services
+                <ChevronDown
+                  className={cn(
+                    'size-4 transition-transform',
+                    openMenu === 'services' && 'rotate-180',
+                  )}
+                  aria-hidden="true"
+                  strokeWidth={1.8}
+                />
               </span>
-              <ChevronDown
-                className={cn(
-                  'size-4 transition-transform',
-                  openMenu === 'services' && 'rotate-180',
-                )}
-                aria-hidden="true"
-                strokeWidth={1.8}
-              />
             </DisclosureButton>
           </li>
 

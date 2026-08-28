@@ -102,7 +102,14 @@ export const Default: Story = {
     const servicesItem = servicesButton.closest('li')
     const shopLabel = shopButton.querySelector('span')
     const servicesLabel = servicesButton.querySelector('span')
-    if (!shopItem || !servicesItem || !shopLabel || !servicesLabel) {
+    const servicesArrow = servicesButton.querySelector('svg')
+    if (
+      !shopItem ||
+      !servicesItem ||
+      !shopLabel ||
+      !servicesLabel ||
+      !servicesArrow
+    ) {
       throw new Error('Desktop mega menu hover targets not found')
     }
 
@@ -121,11 +128,11 @@ export const Default: Story = {
       throw new Error('Services padding changed the open menu')
     }
 
-    fireEvent.mouseOver(servicesLabel)
+    fireEvent.mouseOver(servicesArrow)
     await new Promise((resolve) => window.requestAnimationFrame(resolve))
 
     if (!shopPanel.hidden || servicesPanel.hidden) {
-      throw new Error('Services label did not switch menus')
+      throw new Error('Services arrow did not switch menus')
     }
 
     await userEvent.click(servicesButton)
