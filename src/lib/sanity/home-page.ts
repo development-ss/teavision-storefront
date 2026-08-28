@@ -497,10 +497,12 @@ function reshapeHomepage(data: SanityHomePageResult): HomepageContent {
     },
     organicHerbs: {
       intro: reshapeSection(organicHerbs.intro, 'organicHerbs.intro'),
+      // Preserve the square CMS master so Next/Image can select a sharp,
+      // responsive derivative without first inheriting a 900px lossy resize.
       image: reshapeImage(
         organicHerbs.image,
         'organicHerbs.image',
-        IMAGE_OPTIONS_CARD,
+        'original',
       ),
       checklist: requireArray(
         organicHerbs.checklist,

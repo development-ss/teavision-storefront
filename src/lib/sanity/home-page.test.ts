@@ -327,9 +327,18 @@ describe('getHomepage', () => {
     expect(homepage.hero.image.src).toBe(
       'https://cdn.sanity.io/images/project/dataset/hero.jpg',
     )
+    expect(homepage.organicHerbs.image.src).toBe(
+      'https://cdn.sanity.io/images/project/dataset/organic-herbs.jpg',
+    )
     expect(getSanityImageUrl).not.toHaveBeenCalledWith(
       expect.objectContaining({
         asset: expect.objectContaining({ _id: 'image-hero' }),
+      }),
+      expect.anything(),
+    )
+    expect(getSanityImageUrl).not.toHaveBeenCalledWith(
+      expect.objectContaining({
+        asset: expect.objectContaining({ _id: 'image-organic-herbs' }),
       }),
       expect.anything(),
     )
