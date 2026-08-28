@@ -53,7 +53,14 @@ export default async function TermsConditionsPage() {
 
   return (
     <>
-      <Hero page={page} profile={profile} showActions={false} />
+      <Hero
+        compact
+        page={page}
+        profile={profile}
+        showActions={false}
+        showKicker={false}
+        titleClassName="max-w-none md:whitespace-nowrap"
+      />
       <Section.Root tone="surface" className="border-hairline border-t">
         <Section.Container>
           <TermsConditionsContent />
