@@ -152,7 +152,7 @@ test('search route streams the hero shell before results resolve', async () => {
   assert.match(searchHero, /Searching products\.\.\./)
 })
 
-test('privacy and account launch shells keep compact stable geometry', async () => {
+test('privacy article and account launch shells keep stable geometry', async () => {
   const privacyPage = await readSource(
     'src',
     'app',
@@ -172,6 +172,11 @@ test('privacy and account launch shells keep compact stable geometry', async () 
     'login-panel.tsx',
   )
 
-  assert.match(privacyPage, /type-body-sm text-ink-soft mt-5/)
+  assert.match(
+    privacyPage,
+    /<h1 id="privacy-policy-title" className="type-heading-02 text-ink">/,
+  )
+  assert.match(privacyPage, /as="article"/)
+  assert.match(privacyPage, /aria-labelledby="privacy-policy-title"/)
   assertAccountShellContract(wrapperSources, loginPanel)
 })
