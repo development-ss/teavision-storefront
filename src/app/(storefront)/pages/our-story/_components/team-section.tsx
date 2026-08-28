@@ -1,8 +1,7 @@
 import { Card, Section } from '@/components/ui'
 
-import { TEAM_IMAGE, TEAM_POINTS } from '../_lib/data'
+import { TEAM_POINTS } from '../_lib/data'
 import { SectionHeading } from './section-heading'
-import { StoryImage } from './story-image'
 
 export function TeamSection() {
   return (
@@ -14,13 +13,6 @@ export function TeamSection() {
           highlight="Team"
           copy="At the heart of Teavision is a diverse, multi-cultural team united by a passion for natural ingredients and wellness."
         />
-
-        <Card overflow="hidden" radius="lg" className="aspect-16/7">
-          <StoryImage
-            image={TEAM_IMAGE}
-            sizes="(min-width: 1024px) 90rem, 100vw"
-          />
-        </Card>
 
         <ul className="grid gap-4 md:grid-cols-3" role="list">
           {TEAM_POINTS.map((point) => (

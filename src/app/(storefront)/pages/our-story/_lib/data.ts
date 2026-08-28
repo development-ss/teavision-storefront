@@ -126,13 +126,6 @@ export const STORY_VALUES = [
   },
 ] satisfies StoryValue[]
 
-export const TEAM_IMAGE = {
-  src: '/images/our-story/our-story-team.webp',
-  alt: 'The Teavision team standing together',
-  width: 2688,
-  height: 1200,
-} satisfies ImageAsset
-
 export const TEAM_POINTS = [
   {
     title: 'Diverse Backgrounds',
