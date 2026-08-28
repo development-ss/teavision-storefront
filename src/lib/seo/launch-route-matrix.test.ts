@@ -102,12 +102,16 @@ describe('launch SEO route matrix', () => {
     }
   })
 
-  test('represents app-owned product and blog redirects', () => {
+  test('represents app-owned product, utility, search, and blog redirects', () => {
     const redirects = [
       [
         '/collections/:handle/products/:productHandle',
         '/products/:productHandle',
       ],
+      ['/pages/banner', '/'],
+      ['/pages/search-results-page', '/search'],
+      ['/pages/search-results', '/search'],
+      ['/pages/test-page', '/'],
       ['/blogs/teavision-blogs', '/blog'],
       ['/blogs/journal', '/blog'],
       ['/blogs/journal/:path*', '/blogs/teavision-blogs/:path*'],
