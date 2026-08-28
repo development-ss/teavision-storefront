@@ -147,8 +147,8 @@ export function Dashboard({ dashboard }: DashboardProps) {
             </p>
           ) : defaultAddress ? (
             <address className="type-body-sm text-ink-soft mt-3 not-italic">
-              {defaultAddress.formatted.map((line) => (
-                <span key={line} className="block">
+              {defaultAddress.formatted.map((line, index) => (
+                <span key={`${line}-${index}`} className="block">
                   {line}
                 </span>
               ))}
