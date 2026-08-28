@@ -20,6 +20,26 @@ const nextConfig: NextConfig = {
         destination: '/products/:productHandle',
         permanent: true,
       },
+      {
+        source: '/pages/banner',
+        destination: '/',
+        permanent: true,
+      },
+      {
+        source: '/pages/search-results-page',
+        destination: '/search',
+        permanent: true,
+      },
+      {
+        source: '/pages/search-results',
+        destination: '/search',
+        permanent: true,
+      },
+      {
+        source: '/pages/test-page',
+        destination: '/',
+        permanent: true,
+      },
       // Legacy blog handle → canonical. The listing routes only statically
       // generate the canonical handle, so redirect the alias before it 404s.
       {
