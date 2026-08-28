@@ -15,10 +15,17 @@ type GraphqlRequest = {
   variables?: Record<string, unknown>
 }
 
+type FakeNewsletterCustomer = {
+  email: string
+  id: string
+  marketingState: 'SUBSCRIBED' | 'UNSUBSCRIBED'
+}
+
 type FakeShopifyServer = {
   buyerIdentity: ShopifyCartPayload['buyerIdentity']
   cart: Cart
   close: () => Promise<void>
+  newsletterCustomers: FakeNewsletterCustomer[]
   requests: GraphqlRequest[]
   reset: () => void
   url: string
@@ -26,6 +33,7 @@ type FakeShopifyServer = {
 
 type FakeShopifyServerOptions = {
   initialCart?: Cart
+  initialNewsletterCustomers?: FakeNewsletterCustomer[]
   port?: number
 }
 
@@ -267,9 +275,13 @@ function makePage() {
 
 export async function createFakeShopifyServer({
   initialCart = makeCart({ lines: [] }),
+  initialNewsletterCustomers = [],
   port = 0,
 }: FakeShopifyServerOptions = {}): Promise<FakeShopifyServer> {
   let cart = setLineTotals(initialCart)
+  let newsletterCustomers = initialNewsletterCustomers.map((customer) => ({
+    ...customer,
+  }))
   let buyerIdentity: ShopifyCartPayload['buyerIdentity'] = {
     countryCode: null,
     customer: null,
@@ -289,6 +301,14 @@ export async function createFakeShopifyServer({
       return
     }
 
+    if (
+      request.method === 'GET' &&
+      request.url === '/test/newsletter-customers'
+    ) {
+      writeJson(response, 200, { customers: newsletterCustomers })
+      return
+    }
+
     if (request.method !== 'POST') {
       writeJson(response, 405, { errors: [{ message: 'Method not allowed' }] })
       return
@@ -298,6 +318,117 @@ export async function createFakeShopifyServer({
     const graphqlRequest = JSON.parse(body) as GraphqlRequest
     const operationName = getOperationName(graphqlRequest)
     requests.push({ ...graphqlRequest, operationName })
+
+    if (operationName === 'FindNewsletterCustomer') {
+      const identifier = readRecord(graphqlRequest.variables?.identifier)
+      const email = readString(identifier.emailAddress)?.toLowerCase()
+      const found = newsletterCustomers.find(
+        (customer) => customer.email === email,
+      )
+
+      writeJson(response, 200, {
+        data: {
+          customer: found
+            ? {
+                id: found.id,
+                defaultEmailAddress: {
+                  emailAddress: found.email,
+                  marketingState: found.marketingState,
+                },
+              }
+            : null,
+        },
+      })
+      return
+    }
+
+    if (operationName === 'CreateNewsletterCustomer') {
+      const input = readRecord(graphqlRequest.variables?.input)
+      const email = readString(input.email)?.toLowerCase()
+      const consent = readRecord(input.emailMarketingConsent)
+      const marketingState = readString(consent.marketingState)
+
+      if (!email || marketingState !== 'SUBSCRIBED') {
+        writeJson(response, 200, {
+          data: {
+            customerCreate: {
+              customer: null,
+              userErrors: [
+                { field: ['email'], message: 'Invalid newsletter customer' },
+              ],
+            },
+          },
+        })
+        return
+      }
+
+      if (newsletterCustomers.some((customer) => customer.email === email)) {
+        writeJson(response, 200, {
+          data: {
+            customerCreate: {
+              customer: null,
+              userErrors: [
+                { field: ['email'], message: 'Email has already been taken' },
+              ],
+            },
+          },
+        })
+        return
+      }
+
+      const customer = {
+        email,
+        id: `gid://shopify/Customer/fake-newsletter-${newsletterCustomers.length + 1}`,
+        marketingState: 'SUBSCRIBED' as const,
+      }
+      newsletterCustomers.push(customer)
+      writeJson(response, 200, {
+        data: {
+          customerCreate: {
+            customer: { id: customer.id },
+            userErrors: [],
+          },
+        },
+      })
+      return
+    }
+
+    if (operationName === 'UpdateNewsletterCustomer') {
+      const input = readRecord(graphqlRequest.variables?.input)
+      const customerId = readString(input.customerId)
+      const consent = readRecord(input.emailMarketingConsent)
+      const customer = newsletterCustomers.find(
+        (candidate) => candidate.id === customerId,
+      )
+
+      if (!customer || readString(consent.marketingState) !== 'SUBSCRIBED') {
+        writeJson(response, 200, {
+          data: {
+            customerEmailMarketingConsentUpdate: {
+              customer: null,
+              userErrors: [
+                {
+                  field: ['customerId'],
+                  message: 'Newsletter customer not found',
+                },
+              ],
+            },
+          },
+        })
+        return
+      }
+
+      customer.marketingState = 'SUBSCRIBED'
+      writeJson(response, 200, {
+        data: {
+          customerEmailMarketingConsentUpdate: {
+            customer: { id: customer.id },
+            userErrors: [],
+          },
+        },
+      })
+      return
+    }
 
     if (operationName === 'GetProduct') {
       writeJson(response, 200, { data: { product: makeRawProduct() } })
@@ -623,11 +754,17 @@ export async function createFakeShopifyServer({
       return cart
     },
     close: () => closeServer(server),
+    get newsletterCustomers() {
+      return newsletterCustomers
+    },
     get requests() {
       return requests
     },
     reset: () => {
       cart = setLineTotals(initialCart)
+      newsletterCustomers = initialNewsletterCustomers.map((customer) => ({
+        ...customer,
+      }))
       buyerIdentity = {
         countryCode: null,
         customer: null,
