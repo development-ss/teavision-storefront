@@ -10,7 +10,7 @@ export function PageContent() {
     <>
       <Hero />
 
-      <Section.Root tone="sunken" spacing="compact">
+      <Section.Root tone="brand" spacing="compact">
         <Section.Container>
           <div className="grid gap-10 lg:grid-cols-2 lg:items-start">
             <Sidebar />
