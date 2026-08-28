@@ -10,6 +10,7 @@ import {
 
 import { Button, Eyebrow, Section } from '@/components/ui'
 import type { HomepageContent } from '@/lib/sanity/home-page'
+import { cn } from '@/lib/utils'
 
 const STRIP_ICON_MAP: Record<string, LucideIcon> = {
   FlaskConical,
@@ -74,64 +75,74 @@ export function HomepageHero({ hero }: HomepageHeroProps) {
       {/* Trust strip at the hero foot per design .heroA__strip —
           dark translucent band keeps the stats legible over any hero photo */}
       <div className="border-paper/18 bg-ink/75 border-t">
-        <Section.Container>
-          <ul className="grid grid-cols-2 lg:grid-cols-4" role="list">
+        <Section.Container className="sm:px-gutter! px-4!">
+          <ul
+            className="grid grid-cols-1 min-[360px]:grid-cols-2 xl:grid-cols-4"
+            role="list"
+          >
             {hero.proofPoints.map((point, index) => {
               const IconComponent = point.icon
                 ? STRIP_ICON_MAP[point.icon]
                 : undefined
               const isGoogleRating = index === 2
-              const isLastInRow2 = index % 2 === 1
               const isLastOverall = index === hero.proofPoints.length - 1
               return (
                 <li
                   key={point.title}
-                  className={
-                    isLastOverall
-                      ? 'px-6 py-5.5'
-                      : isLastInRow2
-                        ? 'lg:border-paper/14 border-r-0 px-6 py-5.5 lg:border-r'
-                        : 'border-paper/14 border-r px-6 py-5.5'
-                  }
+                  className={cn(
+                    'border-paper/14 grid min-h-28 min-w-0 grid-rows-[auto_auto] content-center gap-1.5 p-4 min-[360px]:grid-rows-[auto_2.5rem] sm:p-5 md:grid-rows-[auto_auto] lg:px-6 xl:px-7',
+                    !isLastOverall && 'border-b',
+                    index === 2 && 'min-[360px]:border-b-0',
+                    index < 2 && 'xl:border-b-0',
+                    index % 2 === 0 && 'min-[360px]:border-r',
+                    index === 1 && 'xl:border-r',
+                  )}
                 >
-                  <div className="font-display text-paper flex items-center gap-2 text-[1.7rem] leading-none">
+                  <div className="font-display text-paper flex h-7 min-w-0 items-center gap-2.5 text-[clamp(1rem,4.2vw,1.4rem)] leading-none whitespace-nowrap sm:text-[1.45rem] lg:text-[1.65rem]">
                     {isGoogleRating ? (
-                      <span
-                        className="text-rating flex items-center gap-0.5"
-                        role="img"
-                        aria-label={`${GOOGLE_RATING.rating} out of 5 stars from ${GOOGLE_RATING.reviewCount} Google reviews`}
-                      >
-                        {GOOGLE_RATING.stars.map((star) => (
-                          <Star
-                            key={star}
-                            aria-hidden="true"
-                            className="size-3.5 fill-current"
-                            strokeWidth={1.5}
+                      <>
+                        <span>{GOOGLE_RATING.rating}</span>
+                        <span
+                          className="text-rating flex items-center gap-0.5"
+                          role="img"
+                          aria-label={`${GOOGLE_RATING.rating} out of 5 stars from ${GOOGLE_RATING.reviewCount} Google reviews`}
+                        >
+                          {GOOGLE_RATING.stars.map((star) => (
+                            <Star
+                              key={star}
+                              aria-hidden="true"
+                              className="size-3.5 fill-current lg:size-4"
+                              strokeWidth={1.5}
+                            />
+                          ))}
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        {point.image ? (
+                          <Image
+                            src={point.image.src}
+                            alt={point.image.alt}
+                            width={48}
+                            height={24}
+                            className="h-auto w-11 shrink-0 lg:w-12"
                           />
-                        ))}
-                      </span>
-                    ) : point.image ? (
-                      <Image
-                        src={point.image.src}
-                        alt={point.image.alt}
-                        width={22}
-                        height={11}
-                        className="h-auto w-5.5"
-                      />
-                    ) : IconComponent ? (
-                      <IconComponent
-                        aria-hidden="true"
-                        className="text-gold size-5.5"
-                        strokeWidth={1.8}
-                      />
-                    ) : null}
-                    {isGoogleRating ? GOOGLE_RATING.rating : point.title}
+                        ) : IconComponent ? (
+                          <IconComponent
+                            aria-hidden="true"
+                            className="text-gold size-6 shrink-0"
+                            strokeWidth={1.8}
+                          />
+                        ) : null}
+                        <span>{point.title}</span>
+                      </>
+                    )}
                   </div>
-                  <div className="text-paper/85 mt-1 text-[0.82rem]">
+                  <p className="text-paper/85 max-w-[22ch] text-[0.82rem] leading-snug text-pretty md:max-w-none md:text-[0.95rem] md:whitespace-nowrap">
                     {isGoogleRating
                       ? `Google rated · ${GOOGLE_RATING.reviewCount} reviews`
                       : point.description}
-                  </div>
+                  </p>
                 </li>
               )
             })}
