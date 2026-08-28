@@ -11,8 +11,8 @@ describe('Terms of Service page', () => {
 
     expect(html).toContain('aria-labelledby="terms-of-service-title"')
     expect(html).toContain('Overview')
-    expect(html).toContain('Section 1 — Online Store Terms')
-    expect(html).toContain('Section 20 — Contact Information')
+    expect(html).toContain('Section 1: Online Store Terms')
+    expect(html).toContain('Section 20: Contact Information')
     expect(html).toContain('href="/pages/refund-policy"')
     expect(html).toContain('href="/pages/privacy-policy"')
     expect(html).toContain('href="mailto:info@teavision.com.au"')

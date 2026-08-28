@@ -34,7 +34,7 @@ const OVERVIEW_PARAGRAPHS = [
 const TERMS_SECTIONS: readonly TermsSection[] = [
   {
     id: 'online-store-terms',
-    title: 'Section 1 — Online Store Terms',
+    title: 'Section 1: Online Store Terms',
     paragraphs: [
       'By agreeing to these Terms of Service, you represent that you are at least the age of majority in your state or province of residence, or that you are the age of majority in your state or province of residence and you have given us your consent to allow any of your minor dependents to use this site.',
       'You may not use our products for any illegal or unauthorized purpose nor may you, in the use of the Service, violate any laws in your jurisdiction (including but not limited to copyright laws).',
@@ -44,7 +44,7 @@ const TERMS_SECTIONS: readonly TermsSection[] = [
   },
   {
     id: 'general-conditions',
-    title: 'Section 2 — General Conditions',
+    title: 'Section 2: General Conditions',
     paragraphs: [
       'We reserve the right to refuse service to anyone for any reason at any time.',
       'You understand that your content (not including credit card information), may be transferred unencrypted and involve (a) transmissions over various networks; and (b) changes to conform and adapt to technical requirements of connecting networks or devices. Credit card information is always encrypted during transfer over networks.',
@@ -54,7 +54,7 @@ const TERMS_SECTIONS: readonly TermsSection[] = [
   },
   {
     id: 'information-accuracy',
-    title: 'Section 3 — Accuracy, Completeness and Timeliness of Information',
+    title: 'Section 3: Accuracy, Completeness and Timeliness of Information',
     paragraphs: [
       'We are not responsible if information made available on this site is not accurate, complete or current. The material on this site is provided for general information only and should not be relied upon or used as the sole basis for making decisions without consulting primary, more accurate, more complete or more timely sources of information. Any reliance on the material on this site is at your own risk.',
       'This site may contain certain historical information. Historical information, necessarily, is not current and is provided for your reference only. We reserve the right to modify the contents of this site at any time, but we have no obligation to update any information on our site. You agree that it is your responsibility to monitor changes to our site.',
@@ -62,7 +62,7 @@ const TERMS_SECTIONS: readonly TermsSection[] = [
   },
   {
     id: 'service-and-price-modifications',
-    title: 'Section 4 — Modifications to the Service and Prices',
+    title: 'Section 4: Modifications to the Service and Prices',
     paragraphs: [
       'Prices for our products are subject to change without notice.',
       'We reserve the right at any time to modify or discontinue the Service (or any part or content thereof) without notice at any time.',
@@ -71,7 +71,7 @@ const TERMS_SECTIONS: readonly TermsSection[] = [
   },
   {
     id: 'products-or-services',
-    title: 'Section 5 — Products or Services (if applicable)',
+    title: 'Section 5: Products or Services (if applicable)',
     paragraphs: [
       <>
         Certain products or services may be available exclusively online through
@@ -89,7 +89,7 @@ const TERMS_SECTIONS: readonly TermsSection[] = [
   },
   {
     id: 'billing-and-account-information',
-    title: 'Section 6 — Accuracy of Billing and Account Information',
+    title: 'Section 6: Accuracy of Billing and Account Information',
     paragraphs: [
       'We reserve the right to refuse any order you place with us. We may, in our sole discretion, limit or cancel quantities purchased per person, per household or per order. These restrictions may include orders placed by or under the same customer account, the same credit card, and/or orders that use the same billing and/or shipping address. In the event that we make a change to or cancel an order, we may attempt to notify you by contacting the email and/or billing address/phone number provided at the time the order was made. We reserve the right to limit or prohibit orders that, in our sole judgment, appear to be placed by dealers, resellers or distributors.',
       'You agree to provide current, complete and accurate purchase and account information for all purchases made at our store. You agree to promptly update your account and other information, including your email address and credit card numbers and expiration dates, so that we can complete your transactions and contact you as needed.',
@@ -104,7 +104,7 @@ const TERMS_SECTIONS: readonly TermsSection[] = [
   },
   {
     id: 'optional-tools',
-    title: 'Section 7 — Optional Tools',
+    title: 'Section 7: Optional Tools',
     paragraphs: [
       'We may provide you with access to third-party tools over which we neither monitor nor have any control nor input.',
       'You acknowledge and agree that we provide access to such tools “as is” and “as available” without any warranties, representations or conditions of any kind and without any endorsement. We shall have no liability whatsoever arising from or relating to your use of optional third-party tools.',
@@ -114,7 +114,7 @@ const TERMS_SECTIONS: readonly TermsSection[] = [
   },
   {
     id: 'third-party-links',
-    title: 'Section 8 — Third-Party Links',
+    title: 'Section 8: Third-Party Links',
     paragraphs: [
       'Certain content, products and services available via our Service may include materials from third-parties.',
       'Third-party links on this site may direct you to third-party websites that are not affiliated with us. We are not responsible for examining or evaluating the content or accuracy and we do not warrant and will not have any liability or responsibility for any third-party materials or websites, or for any other materials, products, or services of third-parties.',
@@ -123,7 +123,7 @@ const TERMS_SECTIONS: readonly TermsSection[] = [
   },
   {
     id: 'user-submissions',
-    title: 'Section 9 — User Comments, Feedback and Other Submissions',
+    title: 'Section 9: User Comments, Feedback and Other Submissions',
     paragraphs: [
       'If, at our request, you send certain specific submissions (for example contest entries) or without a request from us you send creative ideas, suggestions, proposals, plans, or other materials, whether online, by email, by postal mail, or otherwise (collectively, “comments”), you agree that we may, at any time, without restriction, edit, copy, publish, distribute, translate and otherwise use in any medium any comments that you forward to us. We are and shall be under no obligation (1) to maintain any comments in confidence; (2) to pay compensation for any comments; or (3) to respond to any comments.',
       'We may, but have no obligation to, monitor, edit or remove content that we determine in our sole discretion is unlawful, offensive, threatening, libelous, defamatory, pornographic, obscene or otherwise objectionable or violates any party’s intellectual property or these Terms of Service.',
@@ -132,7 +132,7 @@ const TERMS_SECTIONS: readonly TermsSection[] = [
   },
   {
     id: 'personal-information',
-    title: 'Section 10 — Personal Information',
+    title: 'Section 10: Personal Information',
     paragraphs: [
       <>
         Your submission of personal information through the store is governed by
@@ -146,7 +146,7 @@ const TERMS_SECTIONS: readonly TermsSection[] = [
   },
   {
     id: 'errors-and-omissions',
-    title: 'Section 11 — Errors, Inaccuracies and Omissions',
+    title: 'Section 11: Errors, Inaccuracies and Omissions',
     paragraphs: [
       'Occasionally there may be information on our site or in the Service that contains typographical errors, inaccuracies or omissions that may relate to product descriptions, pricing, promotions, offers, product shipping charges, transit times and availability. We reserve the right to correct any errors, inaccuracies or omissions, and to change or update information or cancel orders if any information in the Service or on any related website is inaccurate at any time without prior notice (including after you have submitted your order).',
       'We undertake no obligation to update, amend or clarify information in the Service or on any related website, including without limitation pricing information, except as required by law. No specified update or refresh date applied in the Service or on any related website should be taken to indicate that all information in the Service or on any related website has been modified or updated.',
@@ -154,7 +154,7 @@ const TERMS_SECTIONS: readonly TermsSection[] = [
   },
   {
     id: 'prohibited-uses',
-    title: 'Section 12 — Prohibited Uses',
+    title: 'Section 12: Prohibited Uses',
     paragraphs: [
       'In addition to other prohibitions as set forth in the Terms of Service, you are prohibited from using the site or its content:',
     ],
@@ -179,7 +179,7 @@ const TERMS_SECTIONS: readonly TermsSection[] = [
   },
   {
     id: 'warranties-and-liability',
-    title: 'Section 13 — Disclaimer of Warranties; Limitation of Liability',
+    title: 'Section 13: Disclaimer of Warranties; Limitation of Liability',
     paragraphs: [
       'We do not guarantee, represent or warrant that your use of our service will be uninterrupted, timely, secure or error-free.',
       'We do not warrant that the results that may be obtained from the use of the service will be accurate or reliable.',
@@ -190,21 +190,21 @@ const TERMS_SECTIONS: readonly TermsSection[] = [
   },
   {
     id: 'indemnification',
-    title: 'Section 14 — Indemnification',
+    title: 'Section 14: Indemnification',
     paragraphs: [
       'You agree to indemnify, defend and hold harmless teavision.com.au and our parent, subsidiaries, affiliates, partners, officers, directors, agents, contractors, licensors, service providers, subcontractors, suppliers, interns and employees from any claim or demand, including reasonable attorneys’ fees, made by any third-party due to or arising out of your breach of these Terms of Service or the documents they incorporate by reference, or your violation of any law or the rights of a third-party.',
     ],
   },
   {
     id: 'severability',
-    title: 'Section 15 — Severability',
+    title: 'Section 15: Severability',
     paragraphs: [
       'In the event that any provision of these Terms of Service is determined to be unlawful, void or unenforceable, such provision shall nonetheless be enforceable to the fullest extent permitted by applicable law, and the unenforceable portion shall be deemed to be severed from these Terms of Service. Such determination shall not affect the validity and enforceability of any other remaining provisions.',
     ],
   },
   {
     id: 'termination',
-    title: 'Section 16 — Termination',
+    title: 'Section 16: Termination',
     paragraphs: [
       'The obligations and liabilities of the parties incurred prior to the termination date shall survive the termination of this agreement for all purposes.',
       'These Terms of Service are effective unless and until terminated by either you or us. You may terminate these Terms of Service at any time by notifying us that you no longer wish to use our Services, or when you cease using our site.',
@@ -213,7 +213,7 @@ const TERMS_SECTIONS: readonly TermsSection[] = [
   },
   {
     id: 'entire-agreement',
-    title: 'Section 17 — Entire Agreement',
+    title: 'Section 17: Entire Agreement',
     paragraphs: [
       'The failure of us to exercise or enforce any right or provision of these Terms of Service shall not constitute a waiver of such right or provision.',
       'These Terms of Service and any policies or operating rules posted by us on this site or in respect to the Service constitute the entire agreement and understanding between you and us and govern your use of the Service, superseding any prior or contemporaneous agreements, communications and proposals, whether oral or written, between you and us (including but not limited to any prior versions of the Terms of Service).',
@@ -222,14 +222,14 @@ const TERMS_SECTIONS: readonly TermsSection[] = [
   },
   {
     id: 'governing-law',
-    title: 'Section 18 — Governing Law',
+    title: 'Section 18: Governing Law',
     paragraphs: [
       'These Terms of Service and any separate agreements whereby we provide you Services shall be governed by and construed in accordance with the laws of Victoria, Australia.',
     ],
   },
   {
     id: 'changes-to-terms',
-    title: 'Section 19 — Changes to Terms of Service',
+    title: 'Section 19: Changes to Terms of Service',
     paragraphs: [
       'You can review the most current version of the Terms of Service at any time on this page.',
       'We reserve the right, at our sole discretion, to update, change or replace any part of these Terms of Service by posting updates and changes to our website. It is your responsibility to check our website periodically for changes. Your continued use of or access to our website or the Service following the posting of any changes to these Terms of Service constitutes acceptance of those changes.',
@@ -237,7 +237,7 @@ const TERMS_SECTIONS: readonly TermsSection[] = [
   },
   {
     id: 'contact-information',
-    title: 'Section 20 — Contact Information',
+    title: 'Section 20: Contact Information',
     paragraphs: [
       <>
         Questions about the Terms of Service should be sent to us at{' '}
