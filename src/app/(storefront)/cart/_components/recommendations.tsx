@@ -72,6 +72,7 @@ export async function CartRecommendations({ cart }: { cart: Cart }) {
           ariaLabel="Recommended products for your order"
           heading={
             <h2
+              key="cart-recommendations-title"
               id="cart-recommendations-title"
               className="type-heading-03 text-ink"
             >

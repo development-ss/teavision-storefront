@@ -1,7 +1,7 @@
 /**
  * @vitest-environment jsdom
  */
-import type { ReactNode } from 'react'
+import { isValidElement, type ReactNode } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -21,7 +21,13 @@ vi.mock('@/components/product', () => ({
     heading?: ReactNode
     products: Array<{ id: string; title: string }>
   }) => (
-    <div role="region" aria-label={ariaLabel}>
+    <div
+      role="region"
+      aria-label={ariaLabel}
+      data-heading-key={
+        isValidElement(heading) ? String(heading.key) : undefined
+      }
+    >
       {heading}
       <ul>
         {products.map((product) => (
@@ -59,6 +65,7 @@ describe('CartRecommendations', () => {
 
     expect(html).toContain('Customers Who Bought This Product Also Bought')
     expect(html).toContain('id="cart-recommendations-title"')
+    expect(html).toContain('data-heading-key="cart-recommendations-title"')
     expect(html).toContain('Recommended Tea')
   })
 })
