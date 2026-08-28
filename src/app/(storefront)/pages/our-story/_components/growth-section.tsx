@@ -6,7 +6,7 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 
-import { Badge, Card, Section } from '@/components/ui'
+import { Card, Section } from '@/components/ui'
 
 import { FEATURE_CARDS, type FeatureCard } from '../_lib/data'
 import { SectionHeading } from './section-heading'
@@ -45,10 +45,7 @@ export function GrowthSection() {
                 <div className="bg-brand-tint text-brand flex size-12 items-center justify-center rounded-full">
                   <Icon className="size-6" aria-hidden="true" />
                 </div>
-                <div className="mt-6">
-                  <Badge variant="organic" label="Teavision" />
-                </div>
-                <h3 className="type-heading-05 text-ink mt-4">{card.title}</h3>
+                <h3 className="type-heading-05 text-ink mt-6">{card.title}</h3>
                 <p className="type-body-sm text-ink-soft mt-3">
                   {card.description}
                 </p>
