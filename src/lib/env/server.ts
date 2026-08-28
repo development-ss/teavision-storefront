@@ -20,6 +20,18 @@ export function getResendApiKey(): string | undefined {
   return optionalEnv('RESEND_API_KEY')
 }
 
+export function getShopifyAdminApiAccessToken(): string | undefined {
+  return optionalEnv('SHOPIFY_ADMIN_API_ACCESS_TOKEN')
+}
+
+export function getShopifyAdminClientId(): string | undefined {
+  return optionalEnv('SHOPIFY_ADMIN_CLIENT_ID')
+}
+
+export function getShopifyAdminClientSecret(): string | undefined {
+  return optionalEnv('SHOPIFY_ADMIN_CLIENT_SECRET')
+}
+
 export function getShopifyWebhookSecret(): string | undefined {
   return optionalEnv('SHOPIFY_WEBHOOK_SECRET')
 }

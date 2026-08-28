@@ -8,6 +8,7 @@ export type ObservabilityEventName =
   | 'cart_buyer_identity_sync_failed'
   | 'account_oauth_failed'
   | 'shopify_storefront_failed'
+  | 'shopify_admin_failed'
   | 'customer_account_failed'
   | 'sanity_failed'
   | 'searchanise_failed'

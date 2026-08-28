@@ -1,7 +1,7 @@
 import { defaultedEnv, optionalEnv, truthyEnv } from '@/lib/env/read'
 import { isProductionRuntime, isTestRuntime } from '@/lib/env/runtime'
 
-const SHOPIFY_API_VERSION = '2026-04'
+export const SHOPIFY_API_VERSION = '2026-04'
 const LOCAL_TEST_ENDPOINT_HOSTS = new Set(['localhost', '127.0.0.1', '[::1]'])
 
 export type StorefrontEndpoint = {
