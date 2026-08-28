@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
-import { userEvent } from 'storybook/test'
+import { fireEvent, userEvent } from 'storybook/test'
 
 import { MegaNav } from './desktop'
 import { SHOP_SECTIONS, type ShopKey } from './data'
@@ -96,6 +96,53 @@ export const Default: Story = {
 
     if (!servicesPanel.hidden) {
       throw new Error('Services mega panel did not close on Escape')
+    }
+
+    const shopItem = shopButton.closest('li')
+    const servicesItem = servicesButton.closest('li')
+    const shopLabel = shopButton.querySelector('span')
+    const servicesLabel = servicesButton.querySelector('span')
+    if (!shopItem || !servicesItem || !shopLabel || !servicesLabel) {
+      throw new Error('Desktop mega menu hover targets not found')
+    }
+
+    fireEvent.mouseOver(shopLabel)
+    await new Promise((resolve) => window.requestAnimationFrame(resolve))
+
+    if (shopPanel.hidden) {
+      throw new Error('Shop mega panel did not open from its label')
+    }
+
+    fireEvent.mouseOut(shopItem, { relatedTarget: servicesItem })
+    fireEvent.mouseOver(servicesItem, { relatedTarget: shopItem })
+    await new Promise((resolve) => window.setTimeout(resolve, 250))
+
+    if (shopPanel.hidden || !servicesPanel.hidden) {
+      throw new Error('Services padding changed the open menu')
+    }
+
+    fireEvent.mouseOver(servicesLabel)
+    await new Promise((resolve) => window.requestAnimationFrame(resolve))
+
+    if (!shopPanel.hidden || servicesPanel.hidden) {
+      throw new Error('Services label did not switch menus')
+    }
+
+    await userEvent.click(servicesButton)
+    await new Promise((resolve) => window.requestAnimationFrame(resolve))
+
+    if (
+      servicesPanel.hidden ||
+      servicesButton.getAttribute('aria-expanded') !== 'true'
+    ) {
+      throw new Error('First click did not confirm the hover-opened menu')
+    }
+
+    await userEvent.click(servicesButton)
+    await new Promise((resolve) => window.requestAnimationFrame(resolve))
+
+    if (!servicesPanel.hidden) {
+      throw new Error('Second click did not close the confirmed menu')
     }
   },
 }

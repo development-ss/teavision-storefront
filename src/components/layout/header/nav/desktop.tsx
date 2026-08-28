@@ -8,12 +8,7 @@ import { createPortal } from 'react-dom'
 import { DisclosureButton } from '@/components/ui'
 import { cn } from '@/lib/utils'
 
-import {
-  DIRECT_LINKS,
-  SHOP_SECTIONS,
-  type MenuKey,
-  type ShopKey,
-} from './data'
+import { DIRECT_LINKS, SHOP_SECTIONS, type MenuKey, type ShopKey } from './data'
 import { DESKTOP_MENU_ITEM_CLASS, NAV_TRIGGER_CLASS } from './styles'
 import { ServicesMegaPanel } from './services/panel'
 import { ShopMegaPanel } from './shop/panel'
@@ -91,14 +86,6 @@ export function MegaNav() {
     }, CLOSE_GRACE_MS)
   }, [clearCloseTimer])
 
-  /** Cancel a pending close (called from panel onMouseEnter). */
-  const cancelClose = useCallback(() => {
-    if (closeTimerRef.current !== null) {
-      clearTimeout(closeTimerRef.current)
-      closeTimerRef.current = null
-    }
-  }, [])
-
   const closeMenus = useCallback(() => {
     clearCloseTimer()
     hoverOpenedMenuRef.current = null
@@ -121,7 +108,7 @@ export function MegaNav() {
         <ul className="flex h-full items-stretch gap-1" role="list">
           <li
             className={DESKTOP_MENU_ITEM_CLASS}
-            onMouseEnter={() => openMenuFromHover('shop')}
+            onMouseEnter={clearCloseTimer}
             onMouseLeave={scheduleClose}
           >
             <DisclosureButton
@@ -130,7 +117,7 @@ export function MegaNav() {
               onClick={() => toggleMenu('shop')}
               className={NAV_TRIGGER_CLASS}
             >
-              Shop
+              <span onMouseEnter={() => openMenuFromHover('shop')}>Shop</span>
               <ChevronDown
                 className={cn(
                   'size-4 transition-transform',
@@ -144,7 +131,7 @@ export function MegaNav() {
 
           <li
             className={DESKTOP_MENU_ITEM_CLASS}
-            onMouseEnter={() => openMenuFromHover('services')}
+            onMouseEnter={clearCloseTimer}
             onMouseLeave={scheduleClose}
           >
             <DisclosureButton
@@ -153,7 +140,9 @@ export function MegaNav() {
               onClick={() => toggleMenu('services')}
               className={NAV_TRIGGER_CLASS}
             >
-              Services
+              <span onMouseEnter={() => openMenuFromHover('services')}>
+                Services
+              </span>
               <ChevronDown
                 className={cn(
                   'size-4 transition-transform',
@@ -176,7 +165,7 @@ export function MegaNav() {
       </nav>
 
       {/* Mega panels — onMouseEnter cancels the grace-period close; onMouseLeave re-schedules it */}
-      <div onMouseEnter={cancelClose} onMouseLeave={scheduleClose}>
+      <div onMouseEnter={clearCloseTimer} onMouseLeave={scheduleClose}>
         <ShopMegaPanel
           activeShop={activeShop}
           onActiveShopChange={setActiveShopKey}
