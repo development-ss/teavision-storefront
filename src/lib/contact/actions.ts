@@ -28,6 +28,8 @@ import {
 import { normalizeAustralianDateInput } from '@/lib/date-formatting'
 import { logEvent } from '@/lib/observability/logger'
 import { checkRateLimit, getClientIpFromHeaders } from '@/lib/rate-limit'
+import { ShopifyAdminConfigurationError } from '@/lib/shopify/admin-client'
+import { subscribeNewsletterEmail } from '@/lib/shopify/newsletter-subscription'
 
 type ContactSubmission = {
   name: string
@@ -752,30 +754,16 @@ export async function sendNewsletterSignupAction(
     return { success: false, error: RATE_LIMIT_ERROR }
   }
 
-  const resendApiKey = getResendApiKey()
-  if (!resendApiKey) {
-    logProviderWarning('newsletter', 'provider-not-configured')
-    return { success: false, error: NEWSLETTER_SEND_ERROR }
-  }
-
   try {
-    const resend = new Resend(resendApiKey)
-    const { error } = await resend.emails.send({
-      from: 'Teavision Newsletter <noreply@teavision.com.au>',
-      to: 'info@teavision.com.au',
-      subject: 'New Tea Journal newsletter signup',
-      text: `Please add this email to the Tea Journal newsletter list:\n\n${email}`,
-      replyTo: email,
-    })
-
-    if (error) {
-      logProviderError('newsletter', 'provider-error')
-      return { success: false, error: NEWSLETTER_SEND_ERROR }
+    await subscribeNewsletterEmail(email)
+    return { success: true }
+  } catch (error) {
+    if (error instanceof ShopifyAdminConfigurationError) {
+      logProviderWarning('newsletter', 'provider-not-configured')
+    } else {
+      logProviderError('newsletter', 'exception')
     }
 
-    return { success: true }
-  } catch {
-    logProviderError('newsletter', 'exception')
     return { success: false, error: NEWSLETTER_SEND_ERROR }
   }
 }

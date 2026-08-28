@@ -14,12 +14,17 @@ type ResendSendResult = {
 
 type ResendSend = () => Promise<ResendSendResult>
 
-const { checkRateLimitMock, getClientIpFromHeadersMock, resendSendMock } =
-  vi.hoisted(() => ({
-    checkRateLimitMock: vi.fn(),
-    getClientIpFromHeadersMock: vi.fn(() => '127.0.0.1'),
-    resendSendMock: vi.fn<ResendSend>(async () => ({ error: null })),
-  }))
+const {
+  checkRateLimitMock,
+  getClientIpFromHeadersMock,
+  resendSendMock,
+  subscribeNewsletterEmailMock,
+} = vi.hoisted(() => ({
+  checkRateLimitMock: vi.fn(),
+  getClientIpFromHeadersMock: vi.fn(() => '127.0.0.1'),
+  resendSendMock: vi.fn<ResendSend>(async () => ({ error: null })),
+  subscribeNewsletterEmailMock: vi.fn(async () => undefined),
+}))
 
 const LIMITED_RESULT = {
   limited: true,
@@ -59,7 +64,12 @@ vi.mock('resend', () => ({
 
 vi.mock('@/lib/env/server', () => ({
   getResendApiKey: vi.fn(() => 're_test'),
+  getShopifyAdminApiAccessToken: vi.fn(() => 'admin_test'),
   shouldWarnAboutRateLimitMemoryFallback: vi.fn(() => false),
+}))
+
+vi.mock('@/lib/shopify/newsletter-subscription', () => ({
+  subscribeNewsletterEmail: subscribeNewsletterEmailMock,
 }))
 
 function formData(fields: Record<string, string | string[]>): FormData {
@@ -144,6 +154,7 @@ beforeEach(() => {
   vi.clearAllMocks()
   checkRateLimitMock.mockResolvedValue(ALLOWED_RESULT)
   resendSendMock.mockResolvedValue({ error: null })
+  subscribeNewsletterEmailMock.mockResolvedValue(undefined)
 })
 
 describe('public contact surface rate limits', () => {
@@ -328,18 +339,29 @@ describe('email field delivery', () => {
     )
   })
 
-  test('uses the newsletter email as the reply-to address', async () => {
+  test('delegates newsletter signup to Shopify without sending a Resend email', async () => {
     const result = await sendNewsletterSignupAction(
       formData({ email: 'newsletter@example.com', website: '' }),
     )
 
     expect(result.success).toBe(true)
-    expect(resendSendMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        replyTo: 'newsletter@example.com',
-        text: expect.stringContaining('newsletter@example.com'),
-      }),
+    expect(subscribeNewsletterEmailMock).toHaveBeenCalledWith(
+      'newsletter@example.com',
     )
+    expect(resendSendMock).not.toHaveBeenCalled()
+  })
+
+  test('returns a safe error when Shopify signup fails', async () => {
+    subscribeNewsletterEmailMock.mockRejectedValueOnce(new Error('offline'))
+
+    await expect(
+      sendNewsletterSignupAction(
+        formData({ email: 'newsletter@example.com', website: '' }),
+      ),
+    ).resolves.toEqual({
+      success: false,
+      error: 'Unable to send your signup right now. Please try again shortly.',
+    })
   })
 })
 
