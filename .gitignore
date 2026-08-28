@@ -57,3 +57,4 @@ output/
 # temporary files
 tmp/
 .tmp/
+artifacts/
