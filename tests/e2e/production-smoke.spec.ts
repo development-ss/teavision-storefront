@@ -206,7 +206,7 @@ test('/pages/privacy-policy loads without 404', async ({ page }) => {
 
   expect(response.status()).not.toBe(404)
   await expect(
-    page.getByRole('heading', { name: /Privacy Policy/i }),
+    page.getByRole('heading', { name: 'Privacy Policy', exact: true }),
   ).toBeVisible()
   assertNoLiveFlow()
 })
