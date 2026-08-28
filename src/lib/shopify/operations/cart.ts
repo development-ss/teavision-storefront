@@ -1,3 +1,6 @@
+import { parse } from 'graphql'
+import type { TypedDocumentNode } from '@graphql-typed-document-node/core'
+
 import { shopifyFetch } from '@/lib/shopify/client'
 import {
   CartBuyerIdentityUpdateDocument,
@@ -33,6 +36,35 @@ type ShopifyUserError = {
   field?: string[] | null
   message: string
 }
+
+type CartNoteUpdateMutationVariables = {
+  cartId: string
+  note: string
+}
+
+type CartNoteUpdateMutation = {
+  cartNoteUpdate?: {
+    cart?: { checkoutUrl: string } | null
+    userErrors: ShopifyUserError[]
+  } | null
+}
+
+const CartNoteUpdateDocument = parse(`
+  mutation CartNoteUpdate($cartId: ID!, $note: String!) {
+    cartNoteUpdate(cartId: $cartId, note: $note) {
+      cart {
+        checkoutUrl
+      }
+      userErrors {
+        field
+        message
+      }
+    }
+  }
+`) as unknown as TypedDocumentNode<
+  CartNoteUpdateMutation,
+  CartNoteUpdateMutationVariables
+>
 
 export type CartBuyerIdentity = {
   customerAccessToken?: string
@@ -265,4 +297,21 @@ export async function removeCartLines(
   if (!data.cartLinesRemove?.cart)
     throw new Error('Unable to remove cart lines')
   return reshapeCart(data.cartLinesRemove.cart)
+}
+
+export async function updateCartNote(
+  cartId: string,
+  note: string,
+): Promise<Pick<Cart, 'checkoutUrl'>> {
+  const data = await shopifyFetch<
+    CartNoteUpdateMutation,
+    CartNoteUpdateMutationVariables
+  >({
+    query: CartNoteUpdateDocument,
+    variables: { cartId, note },
+    cache: 'no-store',
+  })
+  handleUserErrors(data.cartNoteUpdate?.userErrors ?? [])
+  if (!data.cartNoteUpdate?.cart) throw new Error('Unable to update cart note')
+  return data.cartNoteUpdate.cart
 }

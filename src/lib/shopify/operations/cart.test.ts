@@ -17,6 +17,7 @@ import {
   removeCartLines,
   syncCartBuyerIdentity,
   tryClearCartBuyerIdentity,
+  updateCartNote,
   updateCartLines,
 } from './cart'
 
@@ -310,5 +311,40 @@ describe('Shopify cart operations', () => {
     expect(JSON.stringify(query)).toContain('CartFields')
     // The source query uses lines(first: 100); this contract documents the
     // current cap so a future pagination change is intentional.
+  })
+
+  test('updateCartNote passes the note and uses no-store', async () => {
+    const cart = makeCart()
+    shopifyFetchMock.mockResolvedValueOnce({
+      cartNoteUpdate: {
+        cart: makeShopifyCartPayload(cart),
+        userErrors: [],
+      },
+    })
+
+    await expect(
+      updateCartNote(cart.id, 'Please pack this separately'),
+    ).resolves.toMatchObject({ checkoutUrl: cart.checkoutUrl })
+
+    expect(shopifyFetchMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        cache: 'no-store',
+        variables: {
+          cartId: cart.id,
+          note: 'Please pack this separately',
+        },
+      }),
+    )
+
+    shopifyFetchMock.mockResolvedValueOnce({
+      cartNoteUpdate: {
+        cart: null,
+        userErrors: [{ message: 'Note is too long' }],
+      },
+    })
+
+    await expect(updateCartNote(cart.id, 'x')).rejects.toThrow(
+      'Note is too long',
+    )
   })
 })

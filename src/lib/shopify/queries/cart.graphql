@@ -167,3 +167,15 @@ mutation CartLinesRemove($cartId: ID!, $lineIds: [ID!]!) {
     }
   }
 }
+
+mutation CartNoteUpdate($cartId: ID!, $note: String!) {
+  cartNoteUpdate(cartId: $cartId, note: $note) {
+    cart {
+      checkoutUrl
+    }
+    userErrors {
+      field
+      message
+    }
+  }
+}
