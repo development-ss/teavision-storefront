@@ -288,6 +288,7 @@ export async function createFakeShopifyServer({
     email: null,
     phone: null,
   }
+  let cartNote = ''
   let lineSequence = cart.lines.length + 1
   const requests: GraphqlRequest[] = []
 
@@ -306,6 +307,11 @@ export async function createFakeShopifyServer({
       request.url === '/test/newsletter-customers'
     ) {
       writeJson(response, 200, { customers: newsletterCustomers })
+      return
+    }
+
+    if (request.method === 'GET' && request.url === '/test/cart-note') {
+      writeJson(response, 200, { note: cartNote })
       return
     }
 
@@ -632,6 +638,19 @@ export async function createFakeShopifyServer({
       return
     }
 
+    if (operationName === 'CartNoteUpdate') {
+      cartNote = readString(graphqlRequest.variables?.note) ?? ''
+      writeJson(response, 200, {
+        data: {
+          cartNoteUpdate: {
+            cart: { checkoutUrl: cart.checkoutUrl },
+            userErrors: [],
+          },
+        },
+      })
+      return
+    }
+
     if (operationName === 'CartLinesAdd') {
       const lines = Array.isArray(graphqlRequest.variables?.lines)
         ? graphqlRequest.variables.lines
@@ -771,6 +790,7 @@ export async function createFakeShopifyServer({
         email: null,
         phone: null,
       }
+      cartNote = ''
       lineSequence = cart.lines.length + 1
       requests.length = 0
     },

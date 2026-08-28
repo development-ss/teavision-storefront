@@ -6,6 +6,7 @@ import { blockThirdPartyRequests } from '../mocks/third-party-network'
 
 const customerSessionSecret = 'test-session-secret-with-at-least-32-characters'
 const localBaseUrl = `http://localhost:${process.env.PLAYWRIGHT_PORT ?? '4173'}`
+const fakeShopifyBaseUrl = `http://127.0.0.1:${process.env.FAKE_SHOPIFY_PORT ?? '4517'}`
 const hostedShopifyCheckoutPattern =
   /myshopify\.com\/checkouts|checkout\.shopify\.com/
 
@@ -67,6 +68,10 @@ test('adds a product to cart, updates the cart, removes it, and exposes only fak
   await page
     .getByRole('button', { name: 'Increase quantity of Test Standard Tea' })
     .click()
+  await expect(
+    page.getByRole('spinbutton', { name: 'Quantity of Test Standard Tea' }),
+  ).toHaveValue('10')
+  await page.reload()
   await expect(page.getByText('10 items', { exact: true }).last()).toBeVisible()
   await expect(page.getByRole('list', { name: 'Cart items' })).toContainText(
     '$240.00',
@@ -106,6 +111,7 @@ test('signed-in customer reaches only the fake checkout handoff', async ({
   await expect(
     page.getByText('Checking out with your Teavision account'),
   ).toBeVisible()
+  await page.getByLabel('Order notes').fill('Keep this shipment dry')
   await page.getByLabel('I have read and agree to the Terms of Service').click()
 
   const checkoutResponse = page.waitForResponse((response) =>
@@ -121,6 +127,14 @@ test('signed-in customer reaches only the fake checkout handoff', async ({
     observedBrowserUrls.some((url) => hostedShopifyCheckoutPattern.test(url)),
   ).toBe(false)
   expect(hostedShopifyCheckoutPattern.test(page.url())).toBe(false)
+
+  const noteResponse = await page.request.get(
+    `${fakeShopifyBaseUrl}/test/cart-note`,
+  )
+  expect(noteResponse.ok()).toBe(true)
+  await expect(noteResponse.json()).resolves.toEqual({
+    note: 'Keep this shipment dry',
+  })
 })
 
 test('buyer identity sync failure blocks checkout with recovery actions', async ({
