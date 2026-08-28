@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { Check, Leaf, Truck } from 'lucide-react'
+import { Check, Leaf } from 'lucide-react'
 
 import { Button, Price } from '@/components/ui'
 import { getSizedShopifyImageUrl } from '@/lib/shopify/image-url'
@@ -439,13 +439,6 @@ export function CartView({ accountContextState = null, cart }: CartViewProps) {
                 size="lg"
               />
             </div>
-          </div>
-
-          <div className="type-mono-meta text-ink-faint mt-3 flex items-center gap-3">
-            <Truck className="size-3.5 shrink-0" aria-hidden="true" />
-            <span>
-              Free freight on wholesale orders over $300 · insured &amp; tracked
-            </span>
           </div>
 
           <TrustSignalList layout="stacked" />

@@ -294,5 +294,6 @@ describe('CartView', () => {
     expect(html.match(checkoutControlPattern)).toHaveLength(1)
     expect(html).toContain('Check Out')
     expect(html).not.toContain('>Checkout</a>')
+    expect(html).not.toContain('Free freight')
   })
 })
