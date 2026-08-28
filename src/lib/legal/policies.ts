@@ -7,9 +7,11 @@ export type LegalPolicyHandle =
   | 'terms-of-service'
   | 'cookie-preferences'
 
+export type LegalPolicyHref = `/pages/${LegalPolicyHandle}`
+
 export type LegalPolicy = {
   handle: LegalPolicyHandle
-  href: `/pages/${LegalPolicyHandle}`
+  href: LegalPolicyHref
   title: string
   description: string
   status: LegalPolicyStatus
@@ -30,17 +32,15 @@ export type LegalPolicyRedirect = {
   permanent: true
 }
 
-const INITIAL_REVIEW_DATE = '2026-06-22'
-
 const LEGAL_POLICIES_BY_HANDLE = {
   'privacy-policy': {
     handle: 'privacy-policy',
     href: '/pages/privacy-policy',
     title: 'Privacy Policy',
     description:
-      'Launch-review privacy route for how Teavision expects to handle customer and visitor information.',
+      'Information about how Teavision collects, uses, stores, discloses, and protects customer and visitor information.',
     status: 'pending_owner_legal_review',
-    lastReviewed: INITIAL_REVIEW_DATE,
+    lastReviewed: '2026-08-28',
     includeInFooter: true,
     sitemap: true,
     redirectSources: [
@@ -53,9 +53,9 @@ const LEGAL_POLICIES_BY_HANDLE = {
     href: '/pages/shipping-policy',
     title: 'Shipping Policy',
     description:
-      'Launch-review shipping route for delivery, dispatch, and fulfilment guidance.',
+      'Information about Teavision delivery timeframes, courier delays, damaged or lost shipments, and PO Box restrictions.',
     status: 'pending_owner_legal_review',
-    lastReviewed: INITIAL_REVIEW_DATE,
+    lastReviewed: '2026-08-28',
     includeInFooter: true,
     sitemap: true,
     redirectSources: [
@@ -68,9 +68,9 @@ const LEGAL_POLICIES_BY_HANDLE = {
     href: '/pages/refund-policy',
     title: 'Refund Policy',
     description:
-      'Launch-review returns and refunds route for pre-approval policy coverage.',
+      'Information about Teavision returns, credits, exchanges, product claims, quality assurance, and return shipping.',
     status: 'pending_owner_legal_review',
-    lastReviewed: INITIAL_REVIEW_DATE,
+    lastReviewed: '2026-08-28',
     includeInFooter: true,
     sitemap: true,
     redirectSources: [
@@ -83,12 +83,14 @@ const LEGAL_POLICIES_BY_HANDLE = {
     href: '/pages/terms-of-service',
     title: 'Terms of Service',
     description:
-      'Launch-review terms route for order, account, and storefront use expectations.',
+      'Terms governing use of the Teavision website, online store, products, services, orders, accounts, and user submissions.',
     status: 'pending_owner_legal_review',
-    lastReviewed: INITIAL_REVIEW_DATE,
+    lastReviewed: '2026-08-28',
     includeInFooter: true,
     sitemap: true,
     redirectSources: [
+      '/pages/terms-conditions',
+      '/terms-of-service',
       '/policies/terms-of-service',
       '/7868339/policies/terms-of-service.html',
     ],
@@ -100,7 +102,7 @@ const LEGAL_POLICIES_BY_HANDLE = {
     description:
       'Stable launch-review route for visitor consent and cookie preference controls.',
     status: 'pending_owner_legal_review',
-    lastReviewed: INITIAL_REVIEW_DATE,
+    lastReviewed: '2026-06-23',
     includeInFooter: true,
     sitemap: true,
     redirectSources: [],

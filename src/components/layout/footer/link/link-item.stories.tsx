@@ -29,8 +29,8 @@ export const Menu: Story = {}
 
 export const External: Story = {
   args: {
-    href: 'https://www.teavision.com.au/pages/terms-conditions-1',
-    label: "T's & C's",
+    href: 'https://www.teavision.com.au/pages/terms-of-service',
+    label: 'Terms of Service',
     title: 'External terms page',
   },
 }

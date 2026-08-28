@@ -23,10 +23,8 @@ export type PageProfile = {
 }
 
 const POLICY_HANDLES = new Set([
-  'terms-conditions',
   'terms-of-service',
   'refund-policy',
-  'terms-conditions-1',
   'appi-compliance',
   'pipeda-compliance',
   'gdpr-compliance',
@@ -173,7 +171,7 @@ const POLICY_PROFILE: PageProfile = {
     label: 'Ask about this policy',
   },
   secondaryAction: {
-    href: '/pages/terms-conditions',
+    href: '/pages/terms-of-service',
     label: 'View terms',
   },
   proofPoints: [
@@ -193,8 +191,8 @@ const POLICY_PROFILE: PageProfile = {
   ],
   relatedLinks: [
     {
-      href: '/pages/terms-conditions',
-      label: 'Terms and conditions',
+      href: '/pages/terms-of-service',
+      label: 'Terms of Service',
       description: 'Commercial account and order terms.',
     },
     {

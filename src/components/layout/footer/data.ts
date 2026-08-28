@@ -21,7 +21,7 @@ const LEGAL_POLICY_LINKS = [
   { href: '/pages/privacy-policy', label: 'Privacy Policy' },
   { href: '/pages/shipping-policy', label: 'Shipping Policy' },
   { href: '/pages/refund-policy', label: 'Refund Policy' },
-  { href: '/pages/terms-conditions', label: 'Terms & Conditions' },
+  { href: '/pages/terms-of-service', label: 'Terms of Service' },
   { href: '/pages/cookie-preferences', label: 'Cookie Preferences' },
 ] satisfies FooterLink[]
 

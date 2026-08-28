@@ -40,6 +40,11 @@ const nextConfig: NextConfig = {
         destination: '/',
         permanent: true,
       },
+      {
+        source: '/pages/terms-conditions-1',
+        destination: '/pages/terms-conditions',
+        permanent: true,
+      },
       // Legacy blog handle → canonical. The listing routes only statically
       // generate the canonical handle, so redirect the alias before it 404s.
       {

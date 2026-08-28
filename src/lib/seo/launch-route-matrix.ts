@@ -207,6 +207,14 @@ export const APP_OWNED_REDIRECT_EXPECTATIONS = [
     checks: REDIRECT_CHECKS,
   },
   {
+    path: '/pages/terms-conditions-1',
+    expectedStatus: 308,
+    canonicalPath: '/pages/terms-conditions',
+    shouldIndexWhenEnabled: false,
+    shouldAppearInSitemap: false,
+    checks: REDIRECT_CHECKS,
+  },
+  {
     path: '/blogs/teavision-blogs',
     expectedStatus: 308,
     canonicalPath: '/blog',

@@ -31,9 +31,7 @@ function readLegalApprovalMatrix(): string {
 
 describe('legal policy registry', () => {
   test('contains the launch canonical policy hrefs', () => {
-    expect(LEGAL_POLICIES.map((policy) => policy.href)).toEqual(
-      CANONICAL_HREFS,
-    )
+    expect(LEGAL_POLICIES.map((policy) => policy.href)).toEqual(CANONICAL_HREFS)
   })
 
   test('returns all footer legal labels from the registry', () => {
@@ -57,6 +55,16 @@ describe('legal policy registry', () => {
         {
           source: '/policies/privacy-policy',
           destination: '/pages/privacy-policy',
+          permanent: true,
+        },
+        {
+          source: '/pages/terms-conditions',
+          destination: '/pages/terms-of-service',
+          permanent: true,
+        },
+        {
+          source: '/terms-of-service',
+          destination: '/pages/terms-of-service',
           permanent: true,
         },
         {

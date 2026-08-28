@@ -112,6 +112,7 @@ describe('launch SEO route matrix', () => {
       ['/pages/search-results-page', '/search'],
       ['/pages/search-results', '/search'],
       ['/pages/test-page', '/'],
+      ['/pages/terms-conditions-1', '/pages/terms-conditions'],
       ['/blogs/teavision-blogs', '/blog'],
       ['/blogs/journal', '/blog'],
       ['/blogs/journal/:path*', '/blogs/teavision-blogs/:path*'],
@@ -132,13 +133,15 @@ describe('launch SEO route matrix', () => {
     }
   })
 
-  test('includes required legacy policy redirect aliases', () => {
+  test('includes required legacy legal redirect aliases', () => {
     const redirectPaths = REDIRECT_ROUTE_EXPECTATIONS.map(
       (expectation) => expectation.path,
     )
 
     expect(redirectPaths).toEqual(
       expect.arrayContaining([
+        '/pages/terms-conditions',
+        '/pages/terms-conditions-1',
         '/policies/privacy-policy',
         '/policies/terms-of-service',
       ]),

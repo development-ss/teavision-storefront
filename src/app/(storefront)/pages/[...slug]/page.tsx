@@ -28,6 +28,7 @@ const RESERVED_HANDLES = new Set([
   'refund-policy',
   'shipping-policy',
   'terms-conditions',
+  'terms-conditions-1',
   'terms-of-service',
   'wholesale',
   'wholesale-account-request',

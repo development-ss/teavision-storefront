@@ -2,7 +2,7 @@ const PRIVACY_EMAIL = 'info@teavision.com.au'
 
 export const COMPLIANCE_PRIVACY_EMAIL = PRIVACY_EMAIL
 export const COMPLIANCE_PRIVACY_LINK_LABEL = 'Privacy Policy & Terms of Service'
-export const COMPLIANCE_PRIVACY_LINK_HREF = '/pages/terms-conditions'
+export const COMPLIANCE_PRIVACY_LINK_HREF = '/pages/terms-of-service'
 
 export type ComplianceRight = {
   title: string
@@ -52,7 +52,8 @@ const ACCESS: ComplianceRight = {
 
 const EXPORT: ComplianceRight = {
   title: 'Export your data',
-  description: 'Receive your data, including order history, in a portable format.',
+  description:
+    'Receive your data, including order history, in a portable format.',
   subject: 'Data export request',
 }
 
@@ -64,7 +65,8 @@ const OPT_OUT: ComplianceRight = {
 
 const OPT_OUT_THIRD_PARTY: ComplianceRight = {
   title: 'Opt out of third-party sharing',
-  description: 'Tell us not to share your personal information with third parties.',
+  description:
+    'Tell us not to share your personal information with third parties.',
   subject: 'Do not sell my personal information to third parties',
 }
 
