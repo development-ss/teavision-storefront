@@ -64,6 +64,22 @@ describe('ProductPurchaseForm', () => {
     expect(html).toContain('50g Sample')
   })
 
+  it('replaces Shopify placeholder and empty titles with Standard', () => {
+    for (const title of ['Default Title', '']) {
+      const html = renderToStaticMarkup(
+        <ProductPurchaseForm
+          variants={[{ ...variants[0], title }]}
+          productTitle="2003Y Mini Ripe Pu-erh Tea Brick (250g/box)"
+          layout="inline"
+          showPrice={false}
+        />,
+      )
+
+      expect(html).toContain('Standard')
+      expect(html).not.toContain('Default Title')
+    }
+  })
+
   it('renders quantity control in the inline collection layout', () => {
     const html = renderToStaticMarkup(
       <ProductPurchaseForm

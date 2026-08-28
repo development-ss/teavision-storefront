@@ -64,6 +64,13 @@ const minimumQuantityVariants: ProductVariant[] = [
   },
 ]
 
+const standardPackVariant: ProductVariant = {
+  ...variants[0],
+  id: 'gid://shopify/ProductVariant/mini-pu-erh-brick',
+  title: 'Default Title',
+  price: { amount: '40.65', currencyCode: 'AUD' },
+}
+
 async function successfulAddToCart() {}
 
 async function failingAddToCart() {
@@ -250,6 +257,25 @@ export const CardPurchaseControls: Story = {
         quantity: 2,
       })
     })
+  },
+}
+
+export const CardStandard: Story = {
+  args: {
+    variants: [standardPackVariant],
+    productTitle: '2003Y Mini Ripe Pu-erh Tea Brick (250g/box)',
+    layout: 'card',
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    await expect(
+      canvas.getByRole('option', { name: 'Standard' }),
+    ).toBeVisible()
+    await expect(canvas.queryByText('Default Title')).not.toBeInTheDocument()
+    await expect(
+      canvas.getByRole('button', { name: 'Add to cart' }),
+    ).toBeEnabled()
   },
 }
 

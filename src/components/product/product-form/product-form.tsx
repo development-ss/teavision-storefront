@@ -11,6 +11,10 @@ import {
   getVariantMinimumQuantity,
   getVariantQuantityIncrement,
 } from '@/lib/shopify/quantity-rules'
+import {
+  getVariantDisplayTitle,
+  isPlaceholderVariantTitle,
+} from '@/lib/shopify/variant-title'
 import { cn } from '@/lib/utils'
 
 import { BulkSavings } from '../bulk-savings'
@@ -114,7 +118,7 @@ export function ProductForm({
     selectedBulkTierQuantity ?? activeBulkTier?.minimumQuantity ?? null
   const showVariantSelector =
     variants.length > 1 ||
-    variants.some((variant) => variant.title !== 'Default Title')
+    variants.some((variant) => !isPlaceholderVariantTitle(variant.title))
 
   function canUseQuantity(nextQuantity: number): boolean {
     if (maximumQuantity !== undefined && nextQuantity > maximumQuantity) {
@@ -190,20 +194,21 @@ export function ProductForm({
           <div className="flex min-w-0 flex-wrap gap-2.5">
             {variants.map((v) => {
               const isSelected = selectedVariantId === v.id
+              const displayTitle = getVariantDisplayTitle(v.title)
 
               return (
                 <ToggleButton
                   key={v.id}
                   pressed={isSelected}
                   disabled={!v.availableForSale}
-                  aria-label={`${v.title}${!v.availableForSale ? ', out of stock' : ''}`}
+                  aria-label={`${displayTitle}${!v.availableForSale ? ', out of stock' : ''}`}
                   className={cn(
                     'border-hairline bg-card text-ink hover:border-ink-faint aria-pressed:border-brand aria-pressed:bg-brand-tint aria-pressed:text-ink min-w-23 flex-col rounded-sm border-[1.5px] px-4.5 py-3.25 text-center transition-colors',
                     isSelected && 'border-brand bg-brand-tint',
                   )}
                   onClick={() => handleSelectVariant(v.id)}
                 >
-                  <span className="text-sm font-bold">{v.title}</span>
+                  <span className="text-sm font-bold">{displayTitle}</span>
                   <Price
                     price={v.price}
                     size="sm"

@@ -14,6 +14,7 @@ import {
   getVariantMinimumQuantity,
   getVariantQuantityIncrement,
 } from '@/lib/shopify/quantity-rules'
+import { getVariantDisplayTitle } from '@/lib/shopify/variant-title'
 import { cn } from '@/lib/utils'
 
 type ProductPurchaseFormProps = {
@@ -121,7 +122,7 @@ export function ProductPurchaseForm({
 
   const variantOptions = variants.map((variant) => (
     <option key={variant.id} value={variant.id}>
-      {variant.title}
+      {getVariantDisplayTitle(variant.title)}
     </option>
   ))
 

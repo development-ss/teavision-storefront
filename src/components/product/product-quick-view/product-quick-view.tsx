@@ -17,6 +17,10 @@ import {
   getVariantQuantityIncrement,
 } from '@/lib/shopify/quantity-rules'
 import {
+  getVariantDisplayTitle,
+  isPlaceholderVariantTitle,
+} from '@/lib/shopify/variant-title'
+import {
   Button,
   type ButtonProps,
   Dialog,
@@ -179,7 +183,9 @@ export function ProductQuickView({
   const showVariantSelector =
     productData !== null &&
     (productData.variants.length > 1 ||
-      productData.variants.some((variant) => variant.title !== 'Default Title'))
+      productData.variants.some(
+        (variant) => !isPlaceholderVariantTitle(variant.title),
+      ))
   const TriggerIcon = buttonIcon === 'cart' ? ShoppingCart : Eye
 
   async function loadProduct() {
@@ -337,32 +343,36 @@ export function ProductQuickView({
                     Pack size
                   </legend>
                   <div className="flex flex-wrap gap-2.5">
-                    {productData.variants.map((variant) => (
-                      <ToggleButton
-                        key={variant.id}
-                        pressed={selectedVariantId === variant.id}
-                        disabled={isPending}
-                        aria-label={`${variant.title}${!variant.availableForSale ? ', sold out' : ''}`}
-                        className={cn(
-                          'border-hairline bg-card text-ink hover:border-ink-faint aria-pressed:border-brand aria-pressed:bg-brand-tint aria-pressed:text-ink min-w-23 flex-col rounded-sm border-[1.5px] px-4.5 py-3 text-center transition-colors',
-                          selectedVariantId === variant.id &&
-                            'border-brand bg-brand-tint',
-                        )}
-                        onClick={() => handleSelectVariant(variant.id)}
-                      >
-                        <span className="text-sm font-bold">
-                          {variant.title}
-                        </span>
-                        <Price
-                          price={variant.price}
-                          size="sm"
+                    {productData.variants.map((variant) => {
+                      const displayTitle = getVariantDisplayTitle(variant.title)
+
+                      return (
+                        <ToggleButton
+                          key={variant.id}
+                          pressed={selectedVariantId === variant.id}
+                          disabled={isPending}
+                          aria-label={`${displayTitle}${!variant.availableForSale ? ', sold out' : ''}`}
                           className={cn(
-                            'text-ink-faint mt-1 font-mono text-[11px]',
-                            selectedVariantId === variant.id && 'text-brand',
+                            'border-hairline bg-card text-ink hover:border-ink-faint aria-pressed:border-brand aria-pressed:bg-brand-tint aria-pressed:text-ink min-w-23 flex-col rounded-sm border-[1.5px] px-4.5 py-3 text-center transition-colors',
+                            selectedVariantId === variant.id &&
+                              'border-brand bg-brand-tint',
                           )}
-                        />
-                      </ToggleButton>
-                    ))}
+                          onClick={() => handleSelectVariant(variant.id)}
+                        >
+                          <span className="text-sm font-bold">
+                            {displayTitle}
+                          </span>
+                          <Price
+                            price={variant.price}
+                            size="sm"
+                            className={cn(
+                              'text-ink-faint mt-1 font-mono text-[11px]',
+                              selectedVariantId === variant.id && 'text-brand',
+                            )}
+                          />
+                        </ToggleButton>
+                      )
+                    })}
                   </div>
                 </fieldset>
               )}
