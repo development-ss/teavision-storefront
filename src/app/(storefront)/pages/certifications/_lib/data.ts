@@ -1,3 +1,18 @@
+import { Award, CheckCircle, Globe, Users } from 'lucide-react'
+
+import type { StatBandItem } from '@/components/ui'
+
+export const CERTIFICATION_STATS = [
+  { icon: Users, value: '2,500+', label: 'Satisfied customers' },
+  { icon: Award, value: '#1', label: 'Rated and most trusted' },
+  { icon: Globe, value: '40+', label: 'Countries worldwide' },
+  {
+    icon: CheckCircle,
+    value: '100%',
+    label: 'Quality satisfaction',
+  },
+] satisfies readonly StatBandItem[]
+
 export type TrustPoint = {
   description: string
   icon: 'shield' | 'users' | 'trophy'

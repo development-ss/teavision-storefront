@@ -1,3 +1,7 @@
+import { Globe, Leaf, Package, Trophy } from 'lucide-react'
+
+import type { StatBandItem } from '@/components/ui'
+
 // Section 1 — Hero
 export const HERO_IMAGE_SRC =
   '/images/tea-bag-manufacturer/tea-bag-manufacturer-hero.webp'
@@ -46,17 +50,12 @@ export const HERO_CERT_LOGOS: CertLogo[] = [
 ]
 
 // Section 2 — Statistics band
-export type Stat = {
-  highlight: string
-  label: string
-}
-
-export const STATS: Stat[] = [
-  { highlight: '10M+', label: 'Tea Bags Sold Annually' },
-  { highlight: '#1', label: 'in Australia and New Zealand' },
-  { highlight: '50+', label: 'Countries Served' },
-  { highlight: '100+', label: 'Tea Varieties' },
-]
+export const STATS = [
+  { icon: Package, value: '10M+', label: 'Tea bags sold annually' },
+  { icon: Trophy, value: '#1', label: 'In Australia and New Zealand' },
+  { icon: Globe, value: '50+', label: 'Countries served' },
+  { icon: Leaf, value: '100+', label: 'Tea varieties' },
+] satisfies readonly StatBandItem[]
 
 // Section 3 — Manufacturing solutions
 export type SolutionCard = {
