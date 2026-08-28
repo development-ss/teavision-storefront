@@ -340,8 +340,8 @@ export const ORGANIC_HERBS_FIXTURE = {
   image: {
     src: '/images/homepage/organic-herbs-and-spices.png',
     alt: 'Organic herbs and spices',
-    width: 1500,
-    height: 1000,
+    width: 1254,
+    height: 1254,
   },
   checklist: [
     'Import and Freight Insurance on all ingredients',
