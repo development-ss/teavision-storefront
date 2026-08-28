@@ -25,25 +25,24 @@ export const Default: Story = {
     const mindfulness = canvas.getByRole('button', { name: 'Mindfulness' })
     const sincerity = canvas.getByRole('button', { name: 'Sincerity' })
 
-    await expect(mindfulness).toHaveAttribute('aria-expanded', 'true')
+    await expect(mindfulness).toHaveAttribute('aria-expanded', 'false')
     await expect(sincerity).toHaveAttribute('aria-expanded', 'false')
+    await expect(
+      canvas.queryByRole('region', { name: 'Mindfulness' }),
+    ).not.toBeInTheDocument()
+
+    await userEvent.click(mindfulness)
+
+    await expect(mindfulness).toHaveAttribute('aria-expanded', 'true')
     await expect(
       canvas.getByRole('region', { name: 'Mindfulness' }),
     ).toBeVisible()
 
-    await userEvent.click(sincerity)
+    await userEvent.click(mindfulness)
 
     await expect(mindfulness).toHaveAttribute('aria-expanded', 'false')
-    await expect(sincerity).toHaveAttribute('aria-expanded', 'true')
     await expect(
-      canvas.getByRole('region', { name: 'Sincerity' }),
-    ).toBeVisible()
-
-    await userEvent.click(sincerity)
-
-    await expect(sincerity).toHaveAttribute('aria-expanded', 'false')
-    await expect(
-      canvas.queryByRole('region', { name: 'Sincerity' }),
+      canvas.queryByRole('region', { name: 'Mindfulness' }),
     ).not.toBeInTheDocument()
 
     const accordionImages = canvasElement.querySelectorAll('img')

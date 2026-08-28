@@ -13,7 +13,7 @@ type StoryValuesAccordionProps = {
 
 export function StoryValuesAccordion({ values }: StoryValuesAccordionProps) {
   const accordionId = useId()
-  const [openValueId, setOpenValueId] = useState(values[0]?.id ?? '')
+  const [openValueId, setOpenValueId] = useState('')
 
   if (values.length === 0) {
     return null
