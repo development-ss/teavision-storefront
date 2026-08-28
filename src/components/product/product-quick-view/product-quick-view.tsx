@@ -176,7 +176,10 @@ export function ProductQuickView({
   })
   const canUseSelectedVariantQuantity =
     maximumQuantity === undefined || maximumQuantity >= minimumQuantity
-  const hasVariants = (productData?.variants.length ?? 0) > 0
+  const showVariantSelector =
+    productData !== null &&
+    (productData.variants.length > 1 ||
+      productData.variants.some((variant) => variant.title !== 'Default Title'))
   const TriggerIcon = buttonIcon === 'cart' ? ShoppingCart : Eye
 
   async function loadProduct() {
@@ -328,7 +331,7 @@ export function ProductQuickView({
                 </p>
               )}
 
-              {hasVariants && (
+              {showVariantSelector && (
                 <fieldset className="grid gap-3">
                   <legend className="type-mono-meta text-ink-faint">
                     Pack size

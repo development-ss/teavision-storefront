@@ -88,6 +88,24 @@ const minimumQuantityProduct: Product = {
   ],
 }
 
+const defaultVariantProduct: Product = {
+  ...quickViewProduct,
+  title: '2003Y Mini Ripe Pu-erh Tea Brick (250g/box)',
+  options: [
+    {
+      name: 'Title',
+      values: ['Default Title'],
+    },
+  ],
+  variants: [
+    {
+      ...quickViewProduct.variants[0]!,
+      id: 'gid://shopify/ProductVariant/mini-pu-erh-brick',
+      title: 'Default Title',
+    },
+  ],
+}
+
 const capturedQuickViewPayloads: Array<{
   quantity: number
   variantId: string
@@ -192,6 +210,25 @@ export const SoldOut: Story = {
     await expect(
       dialog.getByRole('button', { name: 'Sold Out' }),
     ).toBeDisabled()
+  },
+}
+
+export const DefaultVariant: Story = {
+  args: {
+    product: {
+      ...stubProduct,
+      title: defaultVariantProduct.title,
+    },
+    initialProduct: defaultVariantProduct,
+  },
+  play: async ({ canvasElement }) => {
+    const dialog = await openQuickViewDialog(canvasElement)
+
+    await expect(dialog.queryByText('Default Title')).not.toBeInTheDocument()
+    await expect(dialog.queryByText('Pack size')).not.toBeInTheDocument()
+    await expect(
+      dialog.getByRole('button', { name: 'Add to Cart' }),
+    ).toBeEnabled()
   },
 }
 
