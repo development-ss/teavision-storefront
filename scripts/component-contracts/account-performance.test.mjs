@@ -18,8 +18,17 @@ test('account login bridge keeps the shared account geometry stable', async () =
   const wrapperFiles = [
     sourcePath('src', 'app', '(storefront)', 'account', 'layout.tsx'),
     sourcePath('src', 'app', '(storefront)', 'account', 'page.tsx'),
-    sourcePath('src', 'app', '(storefront)', 'account', 'loading.tsx'),
+    sourcePath(
+      'src',
+      'app',
+      '(storefront)',
+      'account',
+      '_components',
+      'loading',
+      'loading.tsx',
+    ),
     sourcePath('src', 'app', '(storefront)', 'account', 'login', 'page.tsx'),
+    sourcePath('src', 'app', '(storefront)', 'account', 'login', 'loading.tsx'),
   ]
   const wrapperSources = await Promise.all(
     wrapperFiles.map((filePath) => readFile(filePath, 'utf8')),
@@ -33,6 +42,7 @@ test('account login bridge keeps the shared account geometry stable', async () =
   }
 
   const login = wrapperSources[3]
+  const loginLoading = wrapperSources[4]
   const loginPanel = await readFile(
     sourcePath(
       'src',
@@ -51,4 +61,6 @@ test('account login bridge keeps the shared account geometry stable', async () =
   assert.match(loginPanel, /prefetch=\{false\}/)
   assert.doesNotMatch(login, /<Section\.Root/)
   assert.doesNotMatch(login, /<Section\.Container/)
+  assert.match(loginLoading, /<LoginPanel/)
+  assert.doesNotMatch(loginLoading, /AccountLoading|Skeleton/)
 })

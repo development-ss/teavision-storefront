@@ -9,8 +9,8 @@ import {
 } from '@/lib/shopify/customer-account/actions'
 
 import { AddressBook } from '../_components/address-book'
+import { AccountLoading } from '../_components/loading'
 import { requireAccountSessionForPath } from '../_lib/protection'
-import AccountLoading from '../loading'
 
 export const metadata: Metadata = withNoindexRobots({
   title: 'Saved Addresses',

@@ -11,8 +11,6 @@ type LoginPageProps = {
   }>
 }
 
-// The card shell is static so navigation never falls back to the /account
-// dashboard skeleton; only the reason copy and returnTo href stream in.
 export default function AccountLoginPage({ searchParams }: LoginPageProps) {
   return (
     <div className="min-h-136 md:min-h-128">

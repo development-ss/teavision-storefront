@@ -5,9 +5,9 @@ import { Suspense } from 'react'
 import { withNoindexRobots } from '@/lib/seo/noindex'
 import { getCustomerAccountOrder } from '@/lib/shopify/customer-account'
 
+import { AccountLoading } from '../../_components/loading'
 import { OrderDetail } from '../../_components/order-detail'
 import { requireAccountSessionForPath } from '../../_lib/protection'
-import AccountLoading from '../../loading'
 
 export const metadata: Metadata = withNoindexRobots({
   title: 'Order Detail',

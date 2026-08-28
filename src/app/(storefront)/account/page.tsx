@@ -8,8 +8,8 @@ import {
 } from '@/lib/shopify/customer-account'
 
 import { Dashboard } from './_components/dashboard'
+import { AccountLoading } from './_components/loading'
 import { requireAccountSessionForPath } from './_lib/protection'
-import AccountLoading from './loading'
 
 export const metadata: Metadata = withNoindexRobots({
   title: 'Your Account',

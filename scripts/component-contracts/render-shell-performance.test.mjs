@@ -22,8 +22,17 @@ async function readAccountWrapperSources() {
   return Promise.all([
     readSource('src', 'app', '(storefront)', 'account', 'layout.tsx'),
     readSource('src', 'app', '(storefront)', 'account', 'page.tsx'),
-    readSource('src', 'app', '(storefront)', 'account', 'loading.tsx'),
+    readSource(
+      'src',
+      'app',
+      '(storefront)',
+      'account',
+      '_components',
+      'loading',
+      'loading.tsx',
+    ),
     readSource('src', 'app', '(storefront)', 'account', 'login', 'page.tsx'),
+    readSource('src', 'app', '(storefront)', 'account', 'login', 'loading.tsx'),
   ])
 }
 
@@ -38,6 +47,10 @@ function assertAccountShellContract(wrapperSources, loginPanel) {
   assert.match(loginPanel, /min-h-72/)
   assert.match(loginPanel, /content-start/)
   assert.match(loginPanel, /prefetch=\{false\}/)
+
+  const loginLoading = wrapperSources[4]
+  assert.match(loginLoading, /<LoginPanel/)
+  assert.doesNotMatch(loginLoading, /AccountLoading|Skeleton/)
 }
 
 test('cart render shell avoids the empty-cart account-session waterfall', async () => {

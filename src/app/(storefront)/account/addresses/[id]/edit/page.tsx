@@ -7,8 +7,8 @@ import { getCustomerAccountDashboard } from '@/lib/shopify/customer-account'
 import { updateAddressAction } from '@/lib/shopify/customer-account/actions'
 
 import { AddressForm } from '../../../_components/address-form'
+import { AccountLoading } from '../../../_components/loading'
 import { requireAccountSessionForPath } from '../../../_lib/protection'
-import AccountLoading from '../../../loading'
 
 export const metadata: Metadata = withNoindexRobots({
   title: 'Edit Address',
