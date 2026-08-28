@@ -33,8 +33,8 @@ export const FOOTER_LINKS = [
 ] satisfies FooterLink[]
 
 export const FOOTER_COLUMNS = [
-  { title: 'Main Menu', links: MAIN_MENU_LINKS },
-  { title: 'Footer', links: FOOTER_LINKS },
+  { title: 'Shop Ingredients', links: MAIN_MENU_LINKS },
+  { title: 'Help & Policies', links: FOOTER_LINKS },
 ] satisfies FooterColumn[]
 
 export const CONTACT_LINKS = [

@@ -14,7 +14,7 @@ export function QualityColumn() {
   return (
     <div>
       <h3 className="text-gold mb-4.5 font-mono text-[10.5px] tracking-[0.16em] uppercase">
-        Quality
+        Certified Quality
       </h3>
       {/* Original site HACCP copy (restored from settings_data.json footer text block) */}
       <p className="text-paper/75 max-w-[30ch] text-[0.95rem] leading-normal">
