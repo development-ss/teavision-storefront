@@ -40,6 +40,7 @@ import {
 import { JsonLd } from './json-ld'
 import { ProductList } from './product-list'
 import { Sidebar } from './sidebar'
+import { CollectionStory } from './story'
 
 type ResultsProps = {
   handle: string
@@ -323,35 +324,39 @@ export async function Results({
               visibleFilters={visibleFilters}
             />
 
-            <ProductList
-              clearActionLabel={
-                normalizedQuery ? 'Clear search' : 'Clear filters'
-              }
-              clearFiltersHref={
-                normalizedQuery ? clearSearchHref : clearFiltersHref
-              }
-              currentPage={currentPage}
-              emptyMessage={
-                normalizedQuery
-                  ? 'No products on this page match your search.'
-                  : undefined
-              }
-              totalPages={normalizedQuery ? 1 : totalPages}
-              buildPageHref={
-                normalizedQuery
-                  ? undefined
-                  : (p) =>
-                      getPaginationHref({
-                        category,
-                        handle,
-                        page: p,
-                        selectedFilters,
-                        sort,
-                      })
-              }
-              preloadFirstImage={!hasRenderableCollectionHeroImage}
-              products={displayedProducts}
-            />
+            <div>
+              <ProductList
+                clearActionLabel={
+                  normalizedQuery ? 'Clear search' : 'Clear filters'
+                }
+                clearFiltersHref={
+                  normalizedQuery ? clearSearchHref : clearFiltersHref
+                }
+                currentPage={currentPage}
+                emptyMessage={
+                  normalizedQuery
+                    ? 'No products on this page match your search.'
+                    : undefined
+                }
+                totalPages={normalizedQuery ? 1 : totalPages}
+                buildPageHref={
+                  normalizedQuery
+                    ? undefined
+                    : (p) =>
+                        getPaginationHref({
+                          category,
+                          handle,
+                          page: p,
+                          selectedFilters,
+                          sort,
+                        })
+                }
+                preloadFirstImage={!hasRenderableCollectionHeroImage}
+                products={displayedProducts}
+              />
+
+              {!category ? <CollectionStory collection={collection} /> : null}
+            </div>
           </div>
         </Section.Container>
       </Section.Root>

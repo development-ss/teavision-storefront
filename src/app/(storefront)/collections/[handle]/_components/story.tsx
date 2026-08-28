@@ -1,25 +1,18 @@
 import { StoryDisclosure } from '@/components/collection'
-import { Section } from '@/components/ui'
 import { sanitizeShopifyCollectionStoryHtml } from '@/lib/shopify/html-content'
-import { getCollection } from '@/lib/shopify/operations/collection'
+import type { Collection } from '@/lib/shopify/types'
 
 import {
   normalizeHtml,
   parseCollectionRichHero,
   shouldRenderRichDescription,
 } from '../_lib/page-helpers'
-import type { RouteParams } from '../_lib/page-types'
-
 type CollectionStoryProps = {
-  params: Promise<RouteParams>
+  collection: Collection
 }
 
-export async function CollectionStory({ params }: CollectionStoryProps) {
-  const { handle } = await params
-  const collection = await getCollection(handle)
-
+export function CollectionStory({ collection }: CollectionStoryProps) {
   if (
-    !collection ||
     parseCollectionRichHero(collection.descriptionHtml) ||
     !shouldRenderRichDescription(
       collection.descriptionHtml,
@@ -32,19 +25,16 @@ export async function CollectionStory({ params }: CollectionStoryProps) {
   const storyHtml = sanitizeShopifyCollectionStoryHtml(
     normalizeHtml(collection.descriptionHtml),
   )
-
   return (
-    <Section.Root
+    <div
+      className="mt-10"
+      role="region"
       aria-label={`About ${collection.title}`}
-      tone="transparent"
-      spacing="compact"
     >
-      <Section.Container>
-        <StoryDisclosure
-          title={`Read more about ${collection.title}`}
-          html={storyHtml}
-        />
-      </Section.Container>
-    </Section.Root>
+      <StoryDisclosure
+        title={`Read more about ${collection.title}`}
+        html={storyHtml}
+      />
+    </div>
   )
 }

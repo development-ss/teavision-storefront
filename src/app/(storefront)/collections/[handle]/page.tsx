@@ -10,7 +10,6 @@ import {
 import { DefaultResults } from './_components/default-results'
 import { HeroContent } from './_components/hero-content'
 import { PageContent } from './_components/page-content'
-import { CollectionStory } from './_components/story'
 import {
   getHeroImage,
   getPath,
@@ -69,7 +68,6 @@ export default function Page({ params, searchParams }: PageProps) {
   return (
     <div className="bg-card">
       <HeroContent params={params} />
-      <CollectionStory params={params} />
       {/* The fallback is the real default grid, not a skeleton: it reads only
           params + cached data, so crawlers and no-JS renders get actual
           products while query-driven variants stream in over it. */}

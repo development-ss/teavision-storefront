@@ -537,17 +537,16 @@ describe('Collection hero and page content rendering', () => {
   })
 
   it('renders the strict rich hero block when Shopify description opts in', async () => {
-    shopifyMocks.getCollection.mockResolvedValue(
-      collectionFixture({
-        description: 'Ready-Made Bulk Tea Bags',
-        descriptionHtml: richHeroHtml,
-      }),
-    )
+    const collection = collectionFixture({
+      description: 'Ready-Made Bulk Tea Bags',
+      descriptionHtml: richHeroHtml,
+    })
+    shopifyMocks.getCollection.mockResolvedValue(collection)
 
     const params = Promise.resolve({ handle: 'bulk-tea-bags' })
     const [heroElement, storyElement] = await Promise.all([
       HeroContent({ params }),
-      CollectionStory({ params }),
+      CollectionStory({ collection }),
     ])
     const html = renderToStaticMarkup(heroElement)
 
@@ -569,20 +568,19 @@ describe('Collection hero and page content rendering', () => {
   })
 
   it('renders normal collection stories separately from the hero', async () => {
-    shopifyMocks.getCollection.mockResolvedValue(
-      collectionFixture({
-        handle: 'wholesale-bulk-tea',
-        title: 'Wholesale Bulk Tea',
-        description: 'Browse loose leaf teas.',
-        descriptionHtml:
-          '<h2>Wholesale Bulk Tea</h2><p>Browse loose leaf teas.</p><ul><li>Black tea</li></ul>',
-      }),
-    )
+    const collection = collectionFixture({
+      handle: 'wholesale-bulk-tea',
+      title: 'Wholesale Bulk Tea',
+      description: 'Browse loose leaf teas.',
+      descriptionHtml:
+        '<h2>Wholesale Bulk Tea</h2><p>Browse loose leaf teas.</p><ul><li>Black tea</li></ul>',
+    })
+    shopifyMocks.getCollection.mockResolvedValue(collection)
 
     const params = Promise.resolve({ handle: 'wholesale-bulk-tea' })
     const [heroElement, storyElement] = await Promise.all([
       HeroContent({ params }),
-      CollectionStory({ params }),
+      CollectionStory({ collection }),
     ])
     const heroHtml = renderToStaticMarkup(heroElement)
     const storyHtml = renderToStaticMarkup(storyElement)
@@ -593,7 +591,7 @@ describe('Collection hero and page content rendering', () => {
     expect(heroHtml).not.toContain('Read more about Wholesale Bulk Tea')
     expect(storyHtml).toContain('Read more about Wholesale Bulk Tea')
     expect(storyHtml).toContain(
-      '<section class="py-8 md:py-12" aria-label="About Wholesale Bulk Tea">',
+      '<div class="mt-10" role="region" aria-label="About Wholesale Bulk Tea">',
     )
   })
 
@@ -714,13 +712,12 @@ describe('Collection hero and page content rendering', () => {
     expect(html).toContain('value="sencha"')
   })
 
-  it('renders banner H1 visibly and places read-more story below the breadcrumb', async () => {
-    shopifyMocks.getCollection.mockResolvedValue(
-      collectionFixture({
-        handle: 'wholesale-bulk-tea',
-        title: 'Wholesale Bulk Tea',
-        description: 'Hero summary should not render in banner mode.',
-        descriptionHtml: `
+  it('renders banner H1 visibly and places read-more story below the product grid', async () => {
+    const collection = collectionFixture({
+      handle: 'wholesale-bulk-tea',
+      title: 'Wholesale Bulk Tea',
+      description: 'Hero summary should not render in banner mode.',
+      descriptionHtml: `
           <img src="https://cdn.shopify.com/s/files/1/0786/8339/files/Wholesale-Bulk-Tea_1440x640.jpg" alt="Wholesale Bulk Tea">
           <h2>Wholesale Bulk Tea</h2>
           <p>Browse loose leaf teas for cafes, retailers, and foodservice teams.</p>
@@ -728,8 +725,8 @@ describe('Collection hero and page content rendering', () => {
           <h4>Flexible wholesale ordering</h4>
           <ul><li>Black tea</li><li>Green tea</li><li>Herbal tea</li></ul>
         `,
-      }),
-    )
+    })
+    shopifyMocks.getCollection.mockResolvedValue(collection)
     shopifyMocks.getCollectionProductsPage.mockResolvedValue({
       filters: [],
       pageInfo: { endCursor: null, hasNextPage: false },
@@ -742,7 +739,7 @@ describe('Collection hero and page content rendering', () => {
     const params = Promise.resolve({ handle: 'wholesale-bulk-tea' })
     const [heroElement, storyElement, pageElement] = await Promise.all([
       HeroContent({ params }),
-      CollectionStory({ params }),
+      CollectionStory({ collection }),
       PageContent({ params, searchParams: Promise.resolve({}) }),
     ])
     const heroHtml = renderToStaticMarkup(heroElement)
@@ -771,7 +768,7 @@ describe('Collection hero and page content rendering', () => {
     expect(heroHtml).toContain('aria-label="Breadcrumb"')
     expect(heroHtml).not.toContain('Read more about Wholesale Bulk Tea')
     expect(storyHtml).toContain(
-      '<section class="py-8 md:py-12" aria-label="About Wholesale Bulk Tea">',
+      '<div class="mt-10" role="region" aria-label="About Wholesale Bulk Tea">',
     )
     expect(storyHtml).toContain(
       '<h2 class="type-heading-05 text-ink mt-5">Why hospitality teams choose Teavision</h2>',
@@ -780,7 +777,10 @@ describe('Collection hero and page content rendering', () => {
       '<h3 class="type-label text-ink mt-5">Flexible wholesale ordering</h3>',
     )
     expect(pageHtml.indexOf('id="product-grid"')).toBeGreaterThan(-1)
-    expect(pageHtml).not.toContain('Read more about Wholesale Bulk Tea')
+    expect(pageHtml).toContain('Read more about Wholesale Bulk Tea')
+    expect(
+      pageHtml.indexOf('Read more about Wholesale Bulk Tea'),
+    ).toBeGreaterThan(pageHtml.indexOf('id="product-grid"'))
   })
 
   it('preloads the first product image when incomplete hero dimensions prevent the hero from rendering', async () => {
