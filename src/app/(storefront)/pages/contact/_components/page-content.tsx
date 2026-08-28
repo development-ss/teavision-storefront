@@ -3,7 +3,6 @@ import { Card, Section } from '@/components/ui'
 import { submitContactFormAction } from '@/lib/contact/actions'
 
 import { Hero } from './hero'
-import { LocationMap } from './location-map'
 import { Sidebar } from './sidebar'
 
 export function PageContent() {
@@ -11,13 +10,7 @@ export function PageContent() {
     <>
       <Hero />
 
-      <Section.Root tone="sunken">
-        <Section.Container>
-          <LocationMap />
-        </Section.Container>
-      </Section.Root>
-
-      <Section.Root tone="surface">
+      <Section.Root tone="sunken" spacing="compact">
         <Section.Container>
           <div className="grid gap-10 lg:grid-cols-2 lg:items-start">
             <Sidebar />
