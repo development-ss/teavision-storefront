@@ -15,4 +15,17 @@ describe('CartCheckoutForm', () => {
     expect(html).toContain('href="/pages/terms-of-service"')
     expect(html).not.toContain('href="/pages/terms-conditions"')
   })
+
+  it('shows a retryable error when order notes could not be saved', () => {
+    const html = renderToStaticMarkup(
+      <CartCheckoutForm
+        accountContextState={null}
+        cartIdPresent={true}
+        checkoutError="note-update-failed"
+      />,
+    )
+
+    expect(html).toContain('We could not save your order notes.')
+    expect(html).toContain('role="alert"')
+  })
 })

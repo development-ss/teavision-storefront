@@ -15,11 +15,13 @@ import {
 type CartCheckoutFormProps = {
   accountContextState: CartAccountContextState
   cartIdPresent: boolean
+  checkoutError?: 'note-update-failed' | null
 }
 
 export function CartCheckoutForm({
   accountContextState,
   cartIdPresent,
+  checkoutError = null,
 }: CartCheckoutFormProps) {
   const [agreedToTerms, setAgreedToTerms] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -48,6 +50,18 @@ export function CartCheckoutForm({
         setIsSubmitting(true)
       }}
     >
+      {checkoutError === 'note-update-failed' ? (
+        <div
+          className="bg-danger-tint text-danger border-danger rounded-lg border px-4 py-3"
+          role="alert"
+        >
+          <p className="type-body-sm">
+            We could not save your order notes. Please try again before
+            continuing to checkout.
+          </p>
+        </div>
+      ) : null}
+
       <CartAccountContext
         state={currentAccountContextState}
         retryDisabled={!agreedToTerms || isSubmitting}

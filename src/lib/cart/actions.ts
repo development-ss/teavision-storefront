@@ -13,6 +13,7 @@ import {
   updateCartLines,
   removeCartLines,
   syncCartBuyerIdentity,
+  updateCartNote,
 } from '@/lib/shopify/operations/cart'
 import type { Cart } from '@/lib/shopify/types'
 import type { CustomerAccountSession } from '@/lib/shopify/customer-account/types'
@@ -40,6 +41,7 @@ export type CartLineFormState = {
 export type CheckoutHandoffResult =
   | { status: 'ready'; checkoutUrl: string; cartIdHash: string }
   | { status: 'identity-sync-failed'; message: string; cartIdHash: string }
+  | { status: 'note-update-failed'; cartIdHash: string }
   | { status: 'missing-cart'; cartIdHash?: string }
   | { status: 'terms-required' }
 
@@ -165,6 +167,7 @@ export async function syncCartBuyerIdentityForCurrentSession(): Promise<CartIden
 
 export async function prepareCheckoutHandoff(
   agreedToTerms: boolean,
+  note = '',
 ): Promise<CheckoutHandoffResult> {
   if (!agreedToTerms) return { status: 'terms-required' }
 
@@ -186,10 +189,16 @@ export async function prepareCheckoutHandoff(
     }
   }
 
-  return {
-    cartIdHash,
-    checkoutUrl: syncResult.cart?.checkoutUrl ?? cart.checkoutUrl,
-    status: 'ready',
+  try {
+    const checkoutCart = await updateCartNote(cartId, note.trim())
+
+    return {
+      cartIdHash,
+      checkoutUrl: checkoutCart.checkoutUrl,
+      status: 'ready',
+    }
+  } catch {
+    return { cartIdHash, status: 'note-update-failed' }
   }
 }
 

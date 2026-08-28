@@ -19,9 +19,10 @@ const prepareCheckoutHandoffMock = prepareCheckoutHandoff as unknown as Mock<
 >
 const logEventMock = logEvent as unknown as Mock<typeof logEvent>
 
-function makeCheckoutRequest(terms = 'accepted'): Request {
+function makeCheckoutRequest(terms = 'accepted', note?: string): Request {
   const formData = new FormData()
   if (terms) formData.set('terms', terms)
+  if (note !== undefined) formData.set('note', note)
 
   return new Request('https://teavision.test/cart/checkout', {
     body: formData,
@@ -49,7 +50,7 @@ describe('cart checkout route', () => {
 
     const response = await POST(makeCheckoutRequest(''))
 
-    expect(prepareCheckoutHandoffMock).toHaveBeenCalledWith(false)
+    expect(prepareCheckoutHandoffMock).toHaveBeenCalledWith(false, '')
     expect(response.headers.get('location')).toBe(
       'https://teavision.test/cart?checkout=terms-required',
     )
@@ -90,6 +91,7 @@ describe('cart checkout route', () => {
     expect(response.headers.get('location')).toBe(
       'https://checkout.test/cart/fake-cart',
     )
+    expect(prepareCheckoutHandoffMock).toHaveBeenCalledWith(true, '')
     expect(logEventMock).toHaveBeenCalledWith(
       'info',
       'checkout_handoff_ready',
@@ -100,6 +102,42 @@ describe('cart checkout route', () => {
     )
     expect(JSON.stringify(logEventMock.mock.calls)).not.toContain(
       'https://checkout.test/cart/fake-cart',
+    )
+  })
+
+  test('forwards a trimmed note to the checkout handoff', async () => {
+    prepareCheckoutHandoffMock.mockResolvedValue({
+      cartIdHash: 'cart-hash',
+      checkoutUrl: 'https://checkout.test/cart/fake-cart',
+      status: 'ready',
+    })
+
+    await POST(makeCheckoutRequest('accepted', '  Keep this dry  '))
+
+    expect(prepareCheckoutHandoffMock).toHaveBeenCalledWith(
+      true,
+      'Keep this dry',
+    )
+  })
+
+  test('redirects back when the cart note cannot be saved', async () => {
+    prepareCheckoutHandoffMock.mockResolvedValue({
+      cartIdHash: 'cart-hash',
+      status: 'note-update-failed',
+    })
+
+    const response = await POST(makeCheckoutRequest('accepted', 'Keep dry'))
+
+    expect(response.headers.get('location')).toBe(
+      'https://teavision.test/cart?checkout=note-update-failed',
+    )
+    expect(logEventMock).toHaveBeenCalledWith(
+      'error',
+      'checkout_handoff_failed',
+      {
+        cartIdHash: 'cart-hash',
+        status: 'note-update-failed',
+      },
     )
   })
 })

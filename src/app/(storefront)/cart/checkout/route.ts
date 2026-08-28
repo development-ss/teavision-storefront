@@ -11,7 +11,9 @@ function redirectToCart(request: Request, checkout: string): Response {
 export async function POST(request: Request): Promise<Response> {
   const formData = await request.formData()
   const agreedToTerms = formData.get('terms') === 'accepted'
-  const result = await prepareCheckoutHandoff(agreedToTerms)
+  const noteValue = formData.get('note')
+  const note = typeof noteValue === 'string' ? noteValue.trim() : ''
+  const result = await prepareCheckoutHandoff(agreedToTerms, note)
 
   if (result.status === 'ready') {
     logEvent('info', 'checkout_handoff_ready', {
@@ -29,6 +31,15 @@ export async function POST(request: Request): Promise<Response> {
     })
 
     return redirectToCart(request, 'identity-sync-failed')
+  }
+
+  if (result.status === 'note-update-failed') {
+    logEvent('error', 'checkout_handoff_failed', {
+      cartIdHash: result.cartIdHash,
+      status: result.status,
+    })
+
+    return redirectToCart(request, 'note-update-failed')
   }
 
   if (result.status === 'terms-required') {

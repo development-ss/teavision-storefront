@@ -33,10 +33,16 @@ async function CartPageContent({ searchParams }: CartPageProps) {
       : session
         ? 'signed-in'
         : null
+  const checkoutError =
+    params.checkout === 'note-update-failed' ? 'note-update-failed' : null
 
   return (
     <>
-      <CartView cart={cart} accountContextState={accountContextState} />
+      <CartView
+        cart={cart}
+        accountContextState={accountContextState}
+        checkoutError={checkoutError}
+      />
       {cart && cart.totalQuantity > 0 ? (
         <CartRecommendations cart={cart} />
       ) : null}

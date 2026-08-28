@@ -9,6 +9,7 @@ import {
   getCart,
   removeCartLines,
   syncCartBuyerIdentity,
+  updateCartNote,
   updateCartLines,
 } from '@/lib/shopify/operations/cart'
 import { getCustomerAccountSession } from '@/lib/shopify/customer-account/session'
@@ -40,6 +41,7 @@ vi.mock('@/lib/shopify/operations/cart', () => ({
   getCart: vi.fn(),
   removeCartLines: vi.fn(),
   syncCartBuyerIdentity: vi.fn(),
+  updateCartNote: vi.fn(),
   updateCartLines: vi.fn(),
 }))
 
@@ -104,6 +106,9 @@ const removeCartLinesMock = removeCartLines as unknown as Mock<
 const syncCartBuyerIdentityMock = syncCartBuyerIdentity as unknown as Mock<
   typeof syncCartBuyerIdentity
 >
+const updateCartNoteMock = updateCartNote as unknown as Mock<
+  typeof updateCartNote
+>
 const getCustomerAccountSessionMock =
   getCustomerAccountSession as unknown as Mock<typeof getCustomerAccountSession>
 const logEventMock = logEvent as unknown as Mock<typeof logEvent>
@@ -113,6 +118,7 @@ describe('cart Server Actions', () => {
     vi.clearAllMocks()
     vi.stubEnv('NODE_ENV', 'test')
     getCustomerAccountSessionMock.mockResolvedValue(null)
+    updateCartNoteMock.mockResolvedValue(makeCart())
   })
 
   test('addToCartAction creates a cart, sets the cookie, adds a line, and revalidates cart', async () => {
@@ -279,12 +285,54 @@ describe('cart Server Actions', () => {
       refreshToken: 'refresh-token',
     })
     syncCartBuyerIdentityMock.mockResolvedValue(syncedCart)
+    updateCartNoteMock.mockResolvedValue(syncedCart)
 
     await expect(prepareCheckoutHandoff(true)).resolves.toEqual({
       cartIdHash: hashIdentifier(cart.id),
       checkoutUrl: syncedCart.checkoutUrl,
       status: 'ready',
     })
+    expect(updateCartNoteMock).toHaveBeenCalledWith(cart.id, '')
+  })
+
+  test('prepareCheckoutHandoff saves the note before returning the checkout URL', async () => {
+    const cart = makeCart({ id: 'gid://shopify/Cart/current' })
+    const updatedCart = makeCart({
+      checkoutUrl: 'https://checkout.test/cart/note-saved',
+      id: cart.id,
+    })
+    cookiesMock.mockResolvedValue(makeCookieStore(cart.id))
+    getCartMock.mockResolvedValue(cart)
+    updateCartNoteMock.mockResolvedValue(updatedCart)
+
+    await expect(
+      prepareCheckoutHandoff(true, '  Keep this separate  '),
+    ).resolves.toEqual({
+      cartIdHash: hashIdentifier(cart.id),
+      checkoutUrl: updatedCart.checkoutUrl,
+      status: 'ready',
+    })
+    expect(updateCartNoteMock).toHaveBeenCalledWith(
+      cart.id,
+      'Keep this separate',
+    )
+  })
+
+  test('prepareCheckoutHandoff blocks checkout when the note cannot be saved', async () => {
+    const cart = makeCart({ id: 'gid://shopify/Cart/current' })
+    cookiesMock.mockResolvedValue(makeCookieStore(cart.id))
+    getCartMock.mockResolvedValue(cart)
+    updateCartNoteMock.mockRejectedValue(new Error('Note is too long'))
+
+    await expect(
+      prepareCheckoutHandoff(true, 'Keep this separate'),
+    ).resolves.toEqual({
+      cartIdHash: hashIdentifier(cart.id),
+      status: 'note-update-failed',
+    })
+    expect(JSON.stringify(logEventMock.mock.calls)).not.toContain(
+      'Keep this separate',
+    )
   })
 
   test('prepareCheckoutHandoff redirects only after terms and cart are valid', async () => {

@@ -20,6 +20,7 @@ import { TrustSignalList } from './trust-signal-list'
 type CartViewProps = {
   accountContextState?: CartAccountContextState
   cart: Cart | null
+  checkoutError?: 'note-update-failed' | null
 }
 
 const SAVINGS_EPSILON = 0.005
@@ -167,7 +168,11 @@ function isBulkDiscountAllocation(
   return title.includes('bulk') || title.includes('quantity')
 }
 
-export function CartView({ accountContextState = null, cart }: CartViewProps) {
+export function CartView({
+  accountContextState = null,
+  cart,
+  checkoutError = null,
+}: CartViewProps) {
   if (!cart || cart.totalQuantity === 0) {
     return (
       <div className="py-16 text-center sm:py-24">
@@ -411,6 +416,7 @@ export function CartView({ accountContextState = null, cart }: CartViewProps) {
           <CartCheckoutForm
             accountContextState={accountContextState}
             cartIdPresent={Boolean(cart.id)}
+            checkoutError={checkoutError}
           />
         </div>
 
