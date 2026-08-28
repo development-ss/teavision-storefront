@@ -26,13 +26,13 @@ const optionalCategories = [
     id: 'analytics',
     label: 'Analytics',
     description:
-      'Helps us understand storefront visits, product interest, and cart journeys without collecting optional data before consent.',
+      'These cookies measure how people use our website, including the pages and products they view. We only collect this information if you allow analytics cookies.',
   },
   {
     id: 'marketing',
     label: 'Marketing',
     description:
-      'Allows advertising and remarketing destinations to receive eligible visitor and campaign signals after consent.',
+      'These cookies help measure which ads bring people to our website and may be used to show more relevant advertising. We only use them if you allow marketing cookies.',
   },
 ] as const
 
@@ -85,7 +85,7 @@ export function ConsentPreferences({
     )
 
     setDraftConsent(savedConsent)
-    setStatusMessage('Cookie preferences saved.')
+    setStatusMessage('Your cookie choices have been saved.')
     onSaved?.(savedConsent)
     void applyShopifyCustomerPrivacyConsent(savedConsent)
   }
@@ -98,11 +98,11 @@ export function ConsentPreferences({
       {optionalDenied && (
         <Card padding="md" radius="md" tone="sunken">
           <p className="type-heading-05 text-ink">
-            No optional tracking is active
+            Optional cookies are off
           </p>
           <p className="type-body-sm text-ink-soft mt-2">
-            Analytics and marketing stay off until you choose to allow them.
-            You can update this anytime from Cookie Preferences.
+            Analytics and marketing cookies are currently off. Turn on either
+            category below if you want to allow it.
           </p>
         </Card>
       )}
@@ -112,7 +112,7 @@ export function ConsentPreferences({
         className="flex flex-col gap-3"
       >
         <legend className="type-label text-ink">
-          Cookie consent categories
+          Choose which cookies to allow
         </legend>
 
         <Card padding="md" radius="md" tone="surface">
@@ -124,8 +124,8 @@ export function ConsentPreferences({
                 id={`${fieldsetId}-lock`}
                 className="type-body-sm text-ink-soft mt-1 block"
               >
-                Always on. Required for security, cart, checkout handoff, and
-                preference saving.
+                Always on. These cookies are needed for security, your cart,
+                checkout and remembering your cookie choices.
               </span>
             </span>
           </label>
@@ -160,7 +160,7 @@ export function ConsentPreferences({
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <Button type="submit" variant="brand">
-          Save consent preferences
+          Save choices
         </Button>
         {statusMessage && (
           <p

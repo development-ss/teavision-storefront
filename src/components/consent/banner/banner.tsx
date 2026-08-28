@@ -104,7 +104,7 @@ export function ConsentBanner({
         open={preferencesOpen}
         onOpenChange={setPreferencesOpen}
         title="Cookie preferences"
-        description="Choose which optional categories Teavision can use."
+        description="Choose which optional cookies you allow. Essential cookies are always on."
         className="max-w-3xl"
       >
         <div className="p-4 sm:p-5">

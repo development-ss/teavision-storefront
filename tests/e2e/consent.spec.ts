@@ -86,14 +86,14 @@ test('Manage preferences saves analytics independently from marketing', async ({
 
   const dialog = page.getByRole('dialog', { name: 'Cookie preferences' })
   await expect(dialog).toBeVisible()
-  await expect(dialog.getByText('No optional tracking is active')).toBeVisible()
+  await expect(dialog.getByText('Optional cookies are off')).toBeVisible()
 
   await dialog.getByRole('checkbox', { name: /Analytics/ }).check()
   await expect(
     dialog.getByRole('checkbox', { name: /Marketing/ }),
   ).not.toBeChecked()
   await dialog
-    .getByRole('button', { name: 'Save consent preferences' })
+    .getByRole('button', { name: 'Save choices' })
     .click()
 
   await expect(dialog).toHaveCount(0)
@@ -125,6 +125,7 @@ test('/pages/cookie-preferences shows controls after a previous choice', async (
     page.getByRole('checkbox', { name: /Analytics/ }),
   ).toBeChecked()
   await expect(
-    page.getByRole('button', { name: 'Save consent preferences' }),
+    page.getByRole('button', { name: 'Save choices' }),
   ).toBeVisible()
+  await expect(page.getByText('Pending owner/legal review')).toHaveCount(0)
 })
