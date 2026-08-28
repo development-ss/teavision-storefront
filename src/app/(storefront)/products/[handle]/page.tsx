@@ -20,7 +20,6 @@ import { RichText } from '@/components/ui/rich-text'
 import { Badge, Eyebrow, StarRating } from '@/components/ui'
 import { ProductForm, ProductGallery } from '@/components/product'
 
-import { CustomersAlsoBought } from './_components/customers-also-bought'
 import { PurchaseForm } from './_components/purchase-form'
 import { RelatedProducts } from './_components/related-products'
 import {
@@ -360,7 +359,6 @@ export async function ProductContent({
       <div className="my-[clamp(50px,7vw,90px)] flex flex-col gap-10">
         <Suspense fallback={null}>
           <RelatedProducts product={product} />
-          <CustomersAlsoBought product={product} />
         </Suspense>
       </div>
     </>

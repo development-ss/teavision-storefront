@@ -61,10 +61,6 @@ vi.mock('@/lib/shopify/operations/product', () => ({
   getProduct: vi.fn(),
 }))
 
-vi.mock('./_components/customers-also-bought', () => ({
-  CustomersAlsoBought: () => null,
-}))
-
 vi.mock('./_components/related-products', () => ({
   RelatedProducts: () => null,
 }))
