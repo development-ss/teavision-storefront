@@ -100,9 +100,9 @@ const LEGAL_POLICIES_BY_HANDLE = {
     href: '/pages/cookie-preferences',
     title: 'Cookie Preferences',
     description:
-      'Stable launch-review route for visitor consent and cookie preference controls.',
+      'Choose which optional cookies Teavision can use for analytics and marketing, and update your preferences at any time.',
     status: 'pending_owner_legal_review',
-    lastReviewed: '2026-06-23',
+    lastReviewed: '2026-08-28',
     includeInFooter: true,
     sitemap: true,
     redirectSources: [],

@@ -4,17 +4,17 @@
 
 This matrix tracks launch coverage for code-owned Teavision legal policy routes. It records route implementation status, owner/legal approval state, last review date, and proof status without treating draft wording as final legal advice.
 
-Final policy wording remains owner/legal gated. The storefront routes are live so launch reviewers can verify URLs, redirects, footer links, canonical metadata, and visible pending-review status before final approval is recorded.
+Final policy wording remains owner/legal gated. The storefront routes are live so launch reviewers can verify URLs, redirects, footer links, canonical metadata, and the approval status recorded in this matrix before final approval is recorded.
 
 ## Policy Route Matrix
 
-| URL                         | Status                              | Owner/legal approval | Last reviewed | Proof                                                                                                                                                     |
-| --------------------------- | ----------------------------------- | -------------------- | ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `/pages/privacy-policy`     | implemented - policy copy published | pending              | 2026-08-28    | Customer-supplied privacy wording published; owner/legal approval proof remains pending.                                                                  |
-| `/pages/shipping-policy`    | implemented - policy copy published | pending              | 2026-08-28    | Customer-supplied shipping wording published; owner/legal approval proof remains pending.                                                                 |
-| `/pages/refund-policy`      | implemented - policy copy published | pending              | 2026-08-28    | Customer-supplied refund wording published; owner/legal approval proof remains pending.                                                                   |
-| `/pages/terms-of-service`   | implemented - policy copy published | pending              | 2026-08-28    | Customer-supplied Terms of Service wording published; owner/legal approval proof remains pending.                                                         |
-| `/pages/cookie-preferences` | implemented - consent controls live | pending              | 2026-06-23    | Stable preference URL added in Plan 16-01; consent UI, banner link, and preference controls implemented in Plan 16-02; owner/legal wording proof pending. |
+| URL                         | Status                              | Owner/legal approval | Last reviewed | Proof                                                                                                          |
+| --------------------------- | ----------------------------------- | -------------------- | ------------- | -------------------------------------------------------------------------------------------------------------- |
+| `/pages/privacy-policy`     | implemented - policy copy published | pending              | 2026-08-28    | Customer-supplied privacy wording published; owner/legal approval proof remains pending.                       |
+| `/pages/shipping-policy`    | implemented - policy copy published | pending              | 2026-08-28    | Customer-supplied shipping wording published; owner/legal approval proof remains pending.                      |
+| `/pages/refund-policy`      | implemented - policy copy published | pending              | 2026-08-28    | Customer-supplied refund wording published; owner/legal approval proof remains pending.                        |
+| `/pages/terms-of-service`   | implemented - policy copy published | pending              | 2026-08-28    | Customer-supplied Terms of Service wording published; owner/legal approval proof remains pending.              |
+| `/pages/cookie-preferences` | implemented - consent controls live | pending              | 2026-08-28    | Plain-language consent copy and preference controls are published; owner/legal approval proof remains pending. |
 
 ## Owner/Legal Approval Evidence
 
@@ -48,7 +48,7 @@ The following legacy Shopify policy URLs are represented in the code-owned redir
 
 ## Remaining Owner-Gated Items
 
-- Replace the remaining launch-review placeholder copy with owner/legal-approved policy wording.
+- Review and approve the published cookie-preferences wording before treating it as final.
 - Record owner/legal approval evidence for the published privacy, shipping,
   refund, and Terms of Service wording.
 - Record approver, approval date, and proof location for each policy route.
