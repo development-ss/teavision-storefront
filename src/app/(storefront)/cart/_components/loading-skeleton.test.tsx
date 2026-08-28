@@ -42,7 +42,7 @@ describe('CartLoadingSkeleton', () => {
     expect(html).toContain('data-skeleton="terms"')
     expect(html).toContain('h-12 w-72 max-w-full sm:h-5')
     expect(html).toContain('data-skeleton="checkout-actions"')
-    expect(html).toContain('data-skeleton="freight-note"')
+    expect(html).not.toContain('data-skeleton="freight-note"')
     expect(html).not.toContain('data-skeleton="summary-checkout-pill"')
     expect(html).not.toContain('mt-5 h-12 w-full rounded-full')
   })
