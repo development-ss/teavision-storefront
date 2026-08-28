@@ -71,18 +71,14 @@ export const SingleItem: Story = {
     ).toBeVisible()
     await expect(canvas.getByLabelText('Order notes')).toBeVisible()
     await expect(
-      canvas.getByLabelText(
-        'I have read and agree to the Terms and Conditions',
-      ),
+      canvas.getByLabelText('I have read and agree to the Terms of Service'),
     ).toBeVisible()
     await expect(
       canvas.getByRole('button', { name: 'Proceed to checkout' }),
     ).toBeDisabled()
 
     await userEvent.click(
-      canvas.getByLabelText(
-        'I have read and agree to the Terms and Conditions',
-      ),
+      canvas.getByLabelText('I have read and agree to the Terms of Service'),
     )
 
     const checkoutButtons = canvas.getAllByRole('button', {

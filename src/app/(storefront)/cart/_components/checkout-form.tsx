@@ -73,10 +73,10 @@ export function CartCheckoutForm({
           I have read and agree to the{' '}
           <Link
             id="terms-link"
-            href="/pages/terms-conditions"
+            href="/pages/terms-of-service"
             className="text-brand hover:text-brand-deep underline"
           >
-            Terms and Conditions
+            Terms of Service
           </Link>
         </span>
       </label>

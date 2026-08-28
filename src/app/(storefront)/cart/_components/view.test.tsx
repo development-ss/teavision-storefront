@@ -290,7 +290,8 @@ describe('CartView', () => {
       /<(?:a|button)(?=[^>]*aria-label="Proceed to checkout")[^>]*>/g
 
     expect(html).toContain('aria-label="Order notes"')
-    expect(html).toContain('Terms and Conditions')
+    expect(html).toContain('Terms of Service')
+    expect(html).toContain('href="/pages/terms-of-service"')
     expect(html.match(checkoutControlPattern)).toHaveLength(1)
     expect(html).toContain('Check Out')
     expect(html).not.toContain('>Checkout</a>')

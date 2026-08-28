@@ -59,9 +59,7 @@ test('adds a product to cart, updates the cart, removes it, and exposes only fak
     'action',
     /\/cart\/checkout$/,
   )
-  await page
-    .getByLabel('I have read and agree to the Terms and Conditions')
-    .click()
+  await page.getByLabel('I have read and agree to the Terms of Service').click()
   await expect(
     page.getByRole('button', { name: 'Proceed to checkout' }),
   ).toBeEnabled()
@@ -108,9 +106,7 @@ test('signed-in customer reaches only the fake checkout handoff', async ({
   await expect(
     page.getByText('Checking out with your Teavision account'),
   ).toBeVisible()
-  await page
-    .getByLabel('I have read and agree to the Terms and Conditions')
-    .click()
+  await page.getByLabel('I have read and agree to the Terms of Service').click()
 
   const checkoutResponse = page.waitForResponse((response) =>
     response.url().endsWith('/cart/checkout'),
@@ -137,9 +133,7 @@ test('buyer identity sync failure blocks checkout with recovery actions', async 
   await expect(page.getByText('5 added to cart')).toBeVisible()
 
   await page.goto('/cart')
-  await page
-    .getByLabel('I have read and agree to the Terms and Conditions')
-    .click()
+  await page.getByLabel('I have read and agree to the Terms of Service').click()
   await page.getByRole('button', { name: 'Proceed to checkout' }).click()
   await page.waitForURL('**/cart?checkout=identity-sync-failed')
 
