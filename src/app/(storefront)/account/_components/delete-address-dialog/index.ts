@@ -1,2 +1,1 @@
-export * from './delete-address-dialog'
-
+export { DeleteAddressDialog } from './delete-address-dialog'

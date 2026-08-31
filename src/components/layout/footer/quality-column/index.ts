@@ -1,1 +1,1 @@
-export * from './quality-column'
+export { QualityColumn } from './quality-column'

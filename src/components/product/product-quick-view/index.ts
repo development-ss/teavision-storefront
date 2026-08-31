@@ -1,1 +1,1 @@
-export * from './product-quick-view'
+export { ProductQuickView } from './product-quick-view'

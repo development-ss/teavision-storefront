@@ -1,1 +1,1 @@
-export * from './portable-text'
+export { PortableTextContent } from './portable-text'

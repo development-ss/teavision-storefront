@@ -1,1 +1,1 @@
-export * from './loading-skeleton'
+export { LoadingSkeleton } from './loading-skeleton'

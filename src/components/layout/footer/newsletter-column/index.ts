@@ -1,1 +1,1 @@
-export * from './newsletter-column'
+export { NewsletterColumn } from './newsletter-column'

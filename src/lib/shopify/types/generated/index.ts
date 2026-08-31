@@ -1,1 +1,2 @@
-export * from "./gql";
+export { graphql } from './gql'
+export type { DocumentType } from './gql'

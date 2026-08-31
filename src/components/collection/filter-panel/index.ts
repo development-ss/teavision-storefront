@@ -1,1 +1,1 @@
-export * from './filter-panel'
+export { getCollectionFilterHref, FilterPanel } from './filter-panel'

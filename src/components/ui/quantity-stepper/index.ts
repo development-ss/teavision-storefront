@@ -1,1 +1,1 @@
-export * from './quantity-stepper'
+export { QuantityStepper } from './quantity-stepper'

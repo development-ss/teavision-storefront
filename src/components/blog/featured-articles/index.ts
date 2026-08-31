@@ -1,1 +1,1 @@
-export * from './featured-articles'
+export { FeaturedArticles } from './featured-articles'

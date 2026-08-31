@@ -1,1 +1,1 @@
-export * from './loading-skeleton'
+export { BlogLoadingSkeleton } from './loading-skeleton'

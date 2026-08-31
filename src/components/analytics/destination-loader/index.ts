@@ -1,1 +1,5 @@
-export * from './destination-loader'
+export { AnalyticsDestinationLoader } from './destination-loader'
+export type {
+  AnalyticsDestinationLoaderConfig,
+  AnalyticsDestinationLoaderProps,
+} from './destination-loader'

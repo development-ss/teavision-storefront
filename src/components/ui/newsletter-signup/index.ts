@@ -1,1 +1,1 @@
-export * from './newsletter-signup'
+export { NewsletterSignup } from './newsletter-signup'

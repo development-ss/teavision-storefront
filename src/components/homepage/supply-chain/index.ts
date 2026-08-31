@@ -1,1 +1,2 @@
-export * from './supply-chain'
+export { SupplyChain } from './supply-chain'
+export type { SupplyChainProps } from './supply-chain'

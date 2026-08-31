@@ -1,2 +1,1 @@
-export * from './legacy-bridge'
-
+export { LegacyBridge } from './legacy-bridge'

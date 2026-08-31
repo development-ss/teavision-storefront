@@ -1,2 +1,1 @@
-export * from './status-pill'
-
+export { StatusPill } from './status-pill'

@@ -1,1 +1,1 @@
-export * from './story-disclosure'
+export { StoryDisclosure } from './story-disclosure'

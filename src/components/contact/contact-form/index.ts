@@ -1,1 +1,2 @@
-export * from './contact-form'
+export { ContactForm } from './contact-form'
+export type { ContactActionResult } from '../../../lib/contact/types'

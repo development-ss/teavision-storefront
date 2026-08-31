@@ -1,1 +1,1 @@
-export * from './payment-mark'
+export { PaymentMark } from './payment-mark'

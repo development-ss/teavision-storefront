@@ -1,1 +1,2 @@
-export * from './form-label'
+export { FormLabel } from './form-label'
+export type { FormLabelProps } from './form-label'

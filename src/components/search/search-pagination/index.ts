@@ -1,1 +1,1 @@
-export * from './search-pagination'
+export { SearchPagination } from './search-pagination'

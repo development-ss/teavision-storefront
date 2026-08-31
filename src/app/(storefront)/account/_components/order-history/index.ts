@@ -1,2 +1,1 @@
-export * from './order-history'
-
+export { OrderHistory } from './order-history'

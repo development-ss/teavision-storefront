@@ -1,1 +1,1 @@
-export * from './search-sort-select'
+export { SearchSortSelect } from './search-sort-select'

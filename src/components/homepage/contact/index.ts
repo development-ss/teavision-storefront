@@ -1,1 +1,1 @@
-export * from './contact'
+export { ContactSection as Contact } from '../../contact/contact-section'

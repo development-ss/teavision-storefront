@@ -1,1 +1,1 @@
-export * from './animated-element'
+export { AnimatedElement } from './animated-element'

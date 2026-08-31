@@ -1,1 +1,1 @@
-export * from './bulk-savings'
+export { BulkSavings } from './bulk-savings'

@@ -1,2 +1,1 @@
-export * from './order-detail'
-
+export { OrderDetail } from './order-detail'

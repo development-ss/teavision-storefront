@@ -1,2 +1,1 @@
-export * from './support-block'
-
+export { SupportBlock } from './support-block'

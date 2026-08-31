@@ -1,2 +1,2 @@
-export * from './mail-icon'
-export * from './phone-icon'
+export { MailIcon } from './mail-icon'
+export { PhoneIcon } from './phone-icon'

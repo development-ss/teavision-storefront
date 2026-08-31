@@ -1,1 +1,1 @@
-export * from './recommendation-carousel-skeleton'
+export { RecommendationCarouselSkeleton } from './recommendation-carousel-skeleton'

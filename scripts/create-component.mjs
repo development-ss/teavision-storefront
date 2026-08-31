@@ -67,7 +67,10 @@ export function ${componentName}({ className }: ${componentName}Props) {
 `,
 )
 
-writeFileSync(componentIndexPath, `export * from './${componentKebab}'\n`)
+writeFileSync(
+  componentIndexPath,
+  `export { ${componentName} } from './${componentKebab}'\n`,
+)
 
 writeFileSync(
   storyPath,
@@ -90,7 +93,7 @@ export const Default: Story = {
 `,
 )
 
-const exportLine = `export * from './${componentKebab}'\n`
+const exportLine = `export { ${componentName} } from './${componentKebab}'\n`
 
 if (!existsSync(barrelPath)) {
   writeFileSync(barrelPath, exportLine)

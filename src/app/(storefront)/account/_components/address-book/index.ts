@@ -1,2 +1,1 @@
-export * from './address-book'
-
+export { AddressBook } from './address-book'

@@ -1,1 +1,2 @@
-export * from './hero'
+export { HomepageHero } from './hero'
+export type { HomepageHeroProps } from './hero'

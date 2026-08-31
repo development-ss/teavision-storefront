@@ -1,1 +1,1 @@
-export * from './link-item'
+export { FooterTextLink } from './link-item'

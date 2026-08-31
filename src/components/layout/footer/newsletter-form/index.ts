@@ -1,1 +1,2 @@
-export * from './newsletter-form'
+export { FooterNewsletterForm } from './newsletter-form'
+export type { FooterNewsletterAction } from './newsletter-form'

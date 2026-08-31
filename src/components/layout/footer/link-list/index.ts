@@ -1,1 +1,1 @@
-export * from './link-list'
+export { FooterLinkList } from './link-list'

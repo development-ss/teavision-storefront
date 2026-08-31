@@ -1,2 +1,2 @@
-export * from './hero'
-export * from './search-form'
+export { Hero } from './hero'
+export { SearchForm } from './search-form'

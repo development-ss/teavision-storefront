@@ -1,1 +1,1 @@
-export * from './product-gallery'
+export { ProductGallery } from './product-gallery'

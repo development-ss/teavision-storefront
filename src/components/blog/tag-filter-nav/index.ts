@@ -1,1 +1,1 @@
-export * from './tag-filter-nav'
+export { TagFilterNav } from './tag-filter-nav'

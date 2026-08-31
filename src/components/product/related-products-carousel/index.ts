@@ -1,1 +1,1 @@
-export * from './related-products-carousel'
+export { RelatedProductsCarousel } from './related-products-carousel'
