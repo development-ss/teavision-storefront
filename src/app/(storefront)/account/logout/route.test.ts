@@ -2,8 +2,7 @@ import type { Mock } from 'vitest'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 
 import { sealCustomerSession } from '@/lib/shopify/customer-account/session'
-import { getCartIdFromCookie } from '@/lib/cart/actions'
-import { tryClearCartBuyerIdentity } from '@/lib/shopify/operations/cart'
+import { clearCartCookie } from '@/lib/cart/actions'
 
 import { GET, POST } from './route'
 
@@ -26,18 +25,12 @@ vi.mock('next/headers', () => ({
 }))
 
 vi.mock('@/lib/cart/actions', () => ({
-  getCartIdFromCookie: vi.fn(),
+  clearCartCookie: vi.fn(),
 }))
 
-vi.mock('@/lib/shopify/operations/cart', () => ({
-  tryClearCartBuyerIdentity: vi.fn(),
-}))
-
-const getCartIdFromCookieMock = getCartIdFromCookie as unknown as Mock<
-  typeof getCartIdFromCookie
+const clearCartCookieMock = clearCartCookie as unknown as Mock<
+  typeof clearCartCookie
 >
-const tryClearCartBuyerIdentityMock =
-  tryClearCartBuyerIdentity as unknown as Mock<typeof tryClearCartBuyerIdentity>
 
 describe('account logout route', () => {
   beforeEach(() => {
@@ -76,8 +69,7 @@ describe('account logout route', () => {
         })
       }),
     )
-    getCartIdFromCookieMock.mockResolvedValue(null)
-    tryClearCartBuyerIdentityMock.mockResolvedValue('unsupported')
+    clearCartCookieMock.mockResolvedValue()
   })
 
   test('GET clears session and redirects through Shopify logout endpoint', async () => {
@@ -85,6 +77,7 @@ describe('account logout route', () => {
       'teavision_customer_session',
       sealCustomerSession({
         accessToken: 'customer-access-token',
+        customerId: 'gid://shopify/Customer/test-customer-1',
         expiresAt: Date.now() + 60000,
         idToken: 'id-token',
         refreshToken: 'customer-refresh-token',
@@ -101,23 +94,17 @@ describe('account logout route', () => {
     )
   })
 
-  test('POST clears local cookies but preserves cart when there is no session', async () => {
+  test('POST clears the cart and local cookies when there is no session', async () => {
     cookieState.values.set('teavision_cart', 'gid://shopify/Cart/current')
-    getCartIdFromCookieMock.mockResolvedValue('gid://shopify/Cart/current')
 
     const response = await POST()
 
     expect(response.headers.get('location')).toBe(
-      'https://teavision.test/account/login?reason=logged-out-cart-retained',
+      'https://teavision.test/account/login?reason=logged-out',
     )
+    expect(clearCartCookieMock).toHaveBeenCalledTimes(1)
     expect(cookieState.delete).toHaveBeenCalledWith(
       'teavision_customer_session',
-    )
-    expect(tryClearCartBuyerIdentityMock).toHaveBeenCalledWith(
-      'gid://shopify/Cart/current',
-    )
-    expect(cookieState.values.get('teavision_cart')).toBe(
-      'gid://shopify/Cart/current',
     )
   })
 

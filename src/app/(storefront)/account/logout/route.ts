@@ -1,5 +1,4 @@
-import { getCartIdFromCookie } from '@/lib/cart/actions'
-import { tryClearCartBuyerIdentity } from '@/lib/shopify/operations/cart'
+import { clearCartCookie } from '@/lib/cart/actions'
 import { getCustomerAccountConfig } from '@/lib/shopify/customer-account/env'
 import { discoverCustomerAccountEndpoints } from '@/lib/shopify/customer-account/discovery'
 import {
@@ -7,31 +6,26 @@ import {
   getCustomerAccountSession,
 } from '@/lib/shopify/customer-account/session'
 
-function getLocalLogoutRedirectUrl(cartRetained: boolean): URL {
+function getLocalLogoutRedirectUrl(): URL {
   const config = getCustomerAccountConfig()
   const loginUrl = new URL(config.logoutRedirectUri)
-  loginUrl.searchParams.set(
-    'reason',
-    cartRetained ? 'logged-out-cart-retained' : 'logged-out',
-  )
+  loginUrl.searchParams.set('reason', 'logged-out')
 
   return loginUrl
 }
 
 async function redirectAfterLocalLogout(): Promise<Response> {
-  const cartId = await getCartIdFromCookie()
-  if (cartId) await tryClearCartBuyerIdentity(cartId)
+  await clearCartCookie()
   await clearCustomerAccountCookies()
 
-  return Response.redirect(getLocalLogoutRedirectUrl(Boolean(cartId)))
+  return Response.redirect(getLocalLogoutRedirectUrl())
 }
 
 async function logout(): Promise<Response> {
   const session = await getCustomerAccountSession()
   if (!session) return await redirectAfterLocalLogout()
 
-  const cartId = await getCartIdFromCookie()
-  if (cartId) await tryClearCartBuyerIdentity(cartId)
+  await clearCartCookie()
   const endpoints = await discoverCustomerAccountEndpoints()
   const config = getCustomerAccountConfig()
   const logoutUrl = new URL(endpoints.logoutEndpoint)
