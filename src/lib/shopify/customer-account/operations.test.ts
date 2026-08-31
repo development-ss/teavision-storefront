@@ -12,6 +12,7 @@ import { createFakeCustomerAccountApiServer } from '@/tests/mocks/customer-accou
 
 import {
   createCustomerAddress,
+  getCustomerAccountIdentity,
   getCustomerAccountDashboard,
   getCustomerAccountOrder,
   getCustomerAccountOrders,
@@ -45,6 +46,7 @@ describe('Customer Account read operations', () => {
   function makeSession(): CustomerAccountSession {
     return {
       accessToken: 'customer-access-token',
+      customerId: 'gid://shopify/Customer/test-customer-1',
       expiresAt: Date.now() + 60000,
       idToken: 'id-token',
       refreshToken: 'customer-refresh-token',
@@ -58,6 +60,13 @@ describe('Customer Account read operations', () => {
     expect(dashboard.defaultAddress?.countryCodeV2).toBe('AU')
     expect(dashboard.recentOrders[0]?.name).toBe('#TV1001')
     expect(dashboard.sectionErrors).toEqual({})
+  })
+
+  test('loads only the signed-in customer id and email for checkout context', async () => {
+    await expect(getCustomerAccountIdentity(makeSession())).resolves.toEqual({
+      customerId: 'gid://shopify/Customer/test-customer-1',
+      email: 'avery@example.test',
+    })
   })
 
   test('keeps loaded dashboard sections when recent orders are unavailable', async () => {

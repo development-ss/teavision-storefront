@@ -20,6 +20,7 @@ import { makeCart } from '@/tests/fixtures/shopify/cart'
 import {
   addToCartAction,
   cartLineFormAction,
+  getCartAction,
   getCartIdFromCookie,
   prepareCheckoutHandoff,
   removeCartLineAction,
@@ -157,6 +158,7 @@ describe('cart Server Actions', () => {
     cookiesMock.mockResolvedValue(cookieStore)
     getCustomerAccountSessionMock.mockResolvedValue({
       accessToken: 'customer-access-token',
+      customerId: 'gid://shopify/Customer/test-customer-1',
       expiresAt: Date.now() + 60000,
       idToken: 'id-token',
       refreshToken: 'refresh-token',
@@ -198,6 +200,7 @@ describe('cart Server Actions', () => {
     cookiesMock.mockResolvedValue(makeCookieStore())
     getCustomerAccountSessionMock.mockResolvedValue({
       accessToken: 'customer-access-token',
+      customerId: 'gid://shopify/Customer/test-customer-1',
       expiresAt: Date.now() + 60000,
       idToken: 'id-token',
       refreshToken: 'refresh-token',
@@ -214,11 +217,15 @@ describe('cart Server Actions', () => {
 
   test('syncCartBuyerIdentityForCurrentSession syncs an existing cart when signed in', async () => {
     const syncedCart = makeCart({
+      buyerIdentity: {
+        customerId: 'gid://shopify/Customer/test-customer-1',
+      },
       checkoutUrl: 'https://checkout.test/cart/synced',
     })
     cookiesMock.mockResolvedValue(makeCookieStore('gid://shopify/Cart/current'))
     getCustomerAccountSessionMock.mockResolvedValue({
       accessToken: 'customer-access-token',
+      customerId: 'gid://shopify/Customer/test-customer-1',
       expiresAt: Date.now() + 60000,
       idToken: 'id-token',
       refreshToken: 'refresh-token',
@@ -237,12 +244,62 @@ describe('cart Server Actions', () => {
     expect(revalidatePathMock).toHaveBeenCalledWith('/cart')
   })
 
+  test('getCartAction discards a cart owned by a different signed-in customer', async () => {
+    const cookieStore = makeCookieStore('gid://shopify/Cart/customer-a')
+    cookiesMock.mockResolvedValue(cookieStore)
+    getCartMock.mockResolvedValue(
+      makeCart({
+        buyerIdentity: {
+          customerId: 'gid://shopify/Customer/customer-a',
+        },
+      }),
+    )
+    getCustomerAccountSessionMock.mockResolvedValue({
+      accessToken: 'customer-b-token',
+      customerId: 'gid://shopify/Customer/customer-b',
+      expiresAt: Date.now() + 60000,
+      idToken: 'id-token',
+      refreshToken: 'refresh-token',
+    })
+
+    await expect(getCartAction()).resolves.toBeNull()
+    expect(cookieStore.delete).toHaveBeenCalledWith('teavision_cart')
+  })
+
+  test('checkout refuses to mutate a cart after the signed-in customer changes', async () => {
+    const cart = makeCart({
+      buyerIdentity: {
+        customerId: 'gid://shopify/Customer/customer-a',
+      },
+      id: 'gid://shopify/Cart/customer-a',
+    })
+    const cookieStore = makeCookieStore(cart.id)
+    cookiesMock.mockResolvedValue(cookieStore)
+    getCartMock.mockResolvedValue(cart)
+    getCustomerAccountSessionMock.mockResolvedValue({
+      accessToken: 'customer-b-token',
+      customerId: 'gid://shopify/Customer/customer-b',
+      expiresAt: Date.now() + 60000,
+      idToken: 'id-token',
+      refreshToken: 'refresh-token',
+    })
+
+    await expect(prepareCheckoutHandoff(true)).resolves.toEqual({
+      cartIdHash: hashIdentifier(cart.id),
+      status: 'missing-cart',
+    })
+    expect(syncCartBuyerIdentityMock).not.toHaveBeenCalled()
+    expect(updateCartNoteMock).not.toHaveBeenCalled()
+    expect(cookieStore.delete).toHaveBeenCalledWith('teavision_cart')
+  })
+
   test('prepareCheckoutHandoff blocks checkout when identity sync fails', async () => {
     const cart = makeCart({ id: 'gid://shopify/Cart/current' })
     cookiesMock.mockResolvedValue(makeCookieStore(cart.id))
     getCartMock.mockResolvedValue(cart)
     getCustomerAccountSessionMock.mockResolvedValue({
       accessToken: 'customer-access-token',
+      customerId: 'gid://shopify/Customer/test-customer-1',
       expiresAt: Date.now() + 60000,
       idToken: 'id-token',
       refreshToken: 'refresh-token',
@@ -273,6 +330,9 @@ describe('cart Server Actions', () => {
       id: 'gid://shopify/Cart/current',
     })
     const syncedCart = makeCart({
+      buyerIdentity: {
+        customerId: 'gid://shopify/Customer/test-customer-1',
+      },
       checkoutUrl: 'https://checkout.test/cart/synced',
       id: cart.id,
     })
@@ -280,6 +340,7 @@ describe('cart Server Actions', () => {
     getCartMock.mockResolvedValue(cart)
     getCustomerAccountSessionMock.mockResolvedValue({
       accessToken: 'customer-access-token',
+      customerId: 'gid://shopify/Customer/test-customer-1',
       expiresAt: Date.now() + 60000,
       idToken: 'id-token',
       refreshToken: 'refresh-token',
@@ -414,6 +475,7 @@ describe('cart Server Actions', () => {
   test('update and remove require a cart cookie and revalidate after mutation', async () => {
     const cookieStore = makeCookieStore('gid://shopify/Cart/existing')
     cookiesMock.mockResolvedValue(cookieStore)
+    getCartMock.mockResolvedValue(makeCart())
     updateCartLinesMock.mockResolvedValue(makeCart())
     removeCartLinesMock.mockResolvedValue(makeCart())
 
@@ -442,6 +504,7 @@ describe('cart Server Actions', () => {
   test('cartLineFormAction handles intents, invalid form data, and thrown errors safely', async () => {
     const cookieStore = makeCookieStore('gid://shopify/Cart/existing')
     cookiesMock.mockResolvedValue(cookieStore)
+    getCartMock.mockResolvedValue(makeCart())
     updateCartLinesMock.mockResolvedValue(makeCart())
     removeCartLinesMock.mockResolvedValue(makeCart())
 

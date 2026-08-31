@@ -86,6 +86,17 @@ const CUSTOMER_ACCOUNT_VIEWER_QUERY = /* GraphQL */ `
   }
 `
 
+const CUSTOMER_ACCOUNT_IDENTITY_QUERY = /* GraphQL */ `
+  query CustomerAccountIdentity {
+    customer {
+      id
+      emailAddress {
+        emailAddress
+      }
+    }
+  }
+`
+
 const CUSTOMER_UPDATE_MUTATION = /* GraphQL */ `
   mutation CustomerUpdate($input: CustomerUpdateInput!) {
     customerUpdate(input: $input) {
@@ -289,6 +300,13 @@ type RawCustomer = Omit<
 
 type ViewerResponse = {
   customer: RawCustomer | null
+}
+
+type IdentityResponse = {
+  customer: {
+    id: string
+    emailAddress?: RawCustomerAccountEmailAddress | null
+  } | null
 }
 
 type OrdersResponse = {
@@ -504,6 +522,22 @@ export async function getCustomerAccountDashboard(
     profile,
     recentOrders: profile.orders,
     sectionErrors,
+  }
+}
+
+export async function getCustomerAccountIdentity(
+  session: CustomerAccountSession,
+): Promise<{ customerId: string; email: string | null } | null> {
+  const data = await customerAccountFetch<IdentityResponse>({
+    query: CUSTOMER_ACCOUNT_IDENTITY_QUERY,
+    session,
+  })
+
+  if (!data.customer) return null
+
+  return {
+    customerId: data.customer.id,
+    email: data.customer.emailAddress?.emailAddress ?? null,
   }
 }
 

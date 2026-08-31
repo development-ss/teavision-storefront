@@ -55,6 +55,7 @@ const initialState: CustomerAccountFormState = {
 function makeSession(): CustomerAccountSession {
   return {
     accessToken: 'customer-access-token',
+    customerId: 'gid://shopify/Customer/test-customer-1',
     expiresAt: Date.now() + 60000,
     idToken: 'id-token',
     refreshToken: 'customer-refresh-token',

@@ -170,6 +170,9 @@ function reshapeCart(cart: ShopifyCart): Cart {
     id: cart.id,
     checkoutUrl: String(cart.checkoutUrl),
     totalQuantity: cart.totalQuantity,
+    buyerIdentity: {
+      customerId: cart.buyerIdentity.customer?.id ?? null,
+    },
     cost: {
       totalAmount: reshapeMoney(cart.cost.totalAmount),
       subtotalAmount: reshapeMoney(cart.cost.subtotalAmount),

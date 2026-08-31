@@ -97,7 +97,9 @@ function isCustomerSession(value: unknown): value is CustomerAccountSession {
     typeof session.accessToken === 'string' &&
     typeof session.refreshToken === 'string' &&
     typeof session.idToken === 'string' &&
-    typeof session.expiresAt === 'number'
+    typeof session.expiresAt === 'number' &&
+    typeof session.customerId === 'string' &&
+    session.customerId.length > 0
   )
 }
 

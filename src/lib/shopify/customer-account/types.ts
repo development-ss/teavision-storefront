@@ -129,7 +129,7 @@ export type CustomerAccountSession = {
   refreshToken: string
   idToken: string
   expiresAt: number
-  customerId?: string
+  customerId: string
 }
 
 export type PendingCustomerAccountAuth = {

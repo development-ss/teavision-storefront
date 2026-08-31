@@ -39,6 +39,7 @@ describe('Customer Account session sealing', () => {
     const expiresAt = Date.now() + 60000
     const sealed = sealCustomerSession({
       accessToken: 'customer-access-token',
+      customerId: 'gid://shopify/Customer/test-customer-1',
       expiresAt,
       idToken: 'id-token',
       refreshToken: 'customer-refresh-token',
@@ -50,6 +51,7 @@ describe('Customer Account session sealing', () => {
   test('rejects tampered cookie strings', () => {
     const sealed = sealCustomerSession({
       accessToken: 'customer-access-token',
+      customerId: 'gid://shopify/Customer/test-customer-1',
       expiresAt: Date.now() + 60000,
       idToken: 'id-token',
       refreshToken: 'customer-refresh-token',
@@ -58,9 +60,22 @@ describe('Customer Account session sealing', () => {
     expect(unsealCustomerSession(`${sealed}tampered`)).toBeNull()
   })
 
+  test('rejects legacy sessions without a customer id', () => {
+    const sealed = sealCustomerSession({
+      accessToken: 'customer-access-token',
+      customerId: '',
+      expiresAt: Date.now() + 60000,
+      idToken: 'id-token',
+      refreshToken: 'customer-refresh-token',
+    })
+
+    expect(unsealCustomerSession(sealed)).toBeNull()
+  })
+
   test('sets the sealed HttpOnly session cookie', async () => {
     await setCustomerAccountSession({
       accessToken: 'customer-access-token',
+      customerId: 'gid://shopify/Customer/test-customer-1',
       expiresAt: Date.now() + 60000,
       idToken: 'id-token',
       refreshToken: 'customer-refresh-token',

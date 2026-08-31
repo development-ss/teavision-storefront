@@ -60,7 +60,7 @@ export async function GET(request: Request): Promise<Response> {
     })
     const claims = decodeIdTokenClaims(tokenExchange.idToken)
 
-    if (!claims || claims.nonce !== pendingAuth.nonce) {
+    if (!claims || claims.nonce !== pendingAuth.nonce || !claims.sub) {
       return await failCallback()
     }
 

@@ -118,17 +118,33 @@ export async function getCartIdFromCookie(): Promise<string | null> {
   return cartId ?? null
 }
 
+export async function clearCartCookie(): Promise<void> {
+  const cookieStore = await cookies()
+  cookieStore.delete(CART_COOKIE)
+}
+
+function cartBelongsToSession(
+  cart: Cart,
+  session: CustomerAccountSession | null,
+): boolean {
+  const cartCustomerId = cart.buyerIdentity.customerId
+  return (
+    cartCustomerId === null ||
+    (session !== null && session.customerId === cartCustomerId)
+  )
+}
+
 async function getOrCreateCart(): Promise<Cart> {
   const cookieStore = await cookies()
   const cartId = cookieStore.get(CART_COOKIE)?.value
+  const session = await getOptionalCustomerAccountSession()
 
   if (cartId) {
     const cart = await getCart(cartId)
-    if (cart) return cart
+    if (cart && cartBelongsToSession(cart, session)) return cart
     cookieStore.delete(CART_COOKIE)
   }
 
-  const session = await getOptionalCustomerAccountSession()
   const cart = await createCart(
     session
       ? { buyerIdentity: { customerAccessToken: session.accessToken } }
@@ -147,15 +163,34 @@ export async function syncCartBuyerIdentityForCurrentSession(): Promise<CartIden
   const cartId = await getCartIdFromCookie()
   if (!cartId) return { cart: null, message: null, synced: false }
 
-  const session = await getOptionalCustomerAccountSession()
-  if (!session) return { cart: null, message: null, synced: false }
+  const [cart, session] = await Promise.all([
+    getCart(cartId),
+    getOptionalCustomerAccountSession(),
+  ])
+
+  if (!cart) {
+    await clearCartCookie()
+    return { cart: null, message: null, synced: false }
+  }
+
+  if (!cartBelongsToSession(cart, session)) {
+    await clearCartCookie()
+    return { cart: null, message: null, synced: false }
+  }
+
+  if (!session) return { cart, message: null, synced: false }
 
   try {
-    const cart = await syncCartBuyerIdentity(cartId, {
+    const syncedCart = await syncCartBuyerIdentity(cartId, {
       customerAccessToken: session.accessToken,
     })
+
+    if (syncedCart.buyerIdentity.customerId !== session.customerId) {
+      throw new Error('Cart buyer identity did not match the signed-in account')
+    }
+
     revalidatePath('/cart')
-    return { cart, message: null, synced: true }
+    return { cart: syncedCart, message: null, synced: true }
   } catch {
     logEvent('error', 'cart_buyer_identity_sync_failed', {
       cartIdHash: hashIdentifier(cartId),
@@ -189,6 +224,10 @@ export async function prepareCheckoutHandoff(
     }
   }
 
+  if (!syncResult.cart) {
+    return { cartIdHash, status: 'missing-cart' }
+  }
+
   try {
     const checkoutCart = await updateCartNote(cartId, note.trim())
 
@@ -207,8 +246,37 @@ export async function getCartAction(): Promise<Cart | null> {
   const cartId = cookieStore.get(CART_COOKIE)?.value
   if (!cartId) return null
 
-  const cart = await getCart(cartId)
+  const [cart, session] = await Promise.all([
+    getCart(cartId),
+    getOptionalCustomerAccountSession(),
+  ])
+  if (!cart) {
+    await clearCartCookie()
+    return null
+  }
+
+  if (!cartBelongsToSession(cart, session)) {
+    await clearCartCookie()
+    return null
+  }
+
   return cart
+}
+
+async function getOwnedCartIdForMutation(): Promise<string> {
+  const cartId = await getCartIdFromCookie()
+  if (!cartId) throw new Error(CART_SESSION_EXPIRED_ERROR)
+
+  const [cart, session] = await Promise.all([
+    getCart(cartId),
+    getOptionalCustomerAccountSession(),
+  ])
+  if (!cart || !cartBelongsToSession(cart, session)) {
+    await clearCartCookie()
+    throw new Error(CART_SESSION_EXPIRED_ERROR)
+  }
+
+  return cartId
 }
 
 export async function addToCartAction(
@@ -238,9 +306,7 @@ export async function updateCartLineAction(
   quantity: number,
 ): Promise<void> {
   const normalizedQuantity = normalizeCartQuantity(quantity)
-  const cookieStore = await cookies()
-  const cartId = cookieStore.get(CART_COOKIE)?.value
-  if (!cartId) throw new Error(CART_SESSION_EXPIRED_ERROR)
+  const cartId = await getOwnedCartIdForMutation()
 
   try {
     await updateCartLines(cartId, [
@@ -257,9 +323,7 @@ export async function updateCartLineAction(
 }
 
 export async function removeCartLineAction(lineId: string): Promise<void> {
-  const cookieStore = await cookies()
-  const cartId = cookieStore.get(CART_COOKIE)?.value
-  if (!cartId) throw new Error(CART_SESSION_EXPIRED_ERROR)
+  const cartId = await getOwnedCartIdForMutation()
   await removeCartLines(cartId, [lineId])
   revalidatePath('/cart')
 }

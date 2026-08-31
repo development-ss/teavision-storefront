@@ -23,6 +23,7 @@ export type {
 } from './oauth'
 export {
   normalizeCustomerAccountUserErrors,
+  getCustomerAccountIdentity,
   getCustomerAccountDashboard,
   getCustomerAccountOrders,
   getCustomerAccountOrder,

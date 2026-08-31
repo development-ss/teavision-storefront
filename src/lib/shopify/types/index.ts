@@ -180,6 +180,9 @@ export type Cart = {
   id: string
   checkoutUrl: string
   totalQuantity: number
+  buyerIdentity: {
+    customerId: string | null
+  }
   cost: {
     totalAmount: Money
     subtotalAmount: Money

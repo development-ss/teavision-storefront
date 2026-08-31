@@ -128,6 +128,9 @@ export function makeCart(overrides: Partial<Cart> = {}): Cart {
     id: 'gid://shopify/Cart/test-cart',
     checkoutUrl: 'https://checkout.test/cart/test-cart',
     totalQuantity,
+    buyerIdentity: {
+      customerId: null,
+    },
     cost: {
       totalAmount: makeMoney('24.00'),
       subtotalAmount: makeMoney('24.00'),
