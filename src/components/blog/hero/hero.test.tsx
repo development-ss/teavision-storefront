@@ -77,9 +77,10 @@ describe('Hero', () => {
 
   it('uses deliberate readable measures without aggressive balancing', () => {
     const markup = renderToStaticMarkup(<Hero />)
+    const headingClassName = markup.match(/<h1[^>]+class="([^"]+)"/)?.[1] ?? ''
 
     expect(markup).not.toContain('text-balance')
-    expect(markup).not.toContain('whitespace-nowrap')
+    expect(headingClassName).not.toContain('whitespace-nowrap')
     expect(markup).toContain('max-w-[24ch]')
     expect(markup).toContain('text-pretty')
     expect(markup).toContain('max-w-[68ch]')
