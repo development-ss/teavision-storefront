@@ -154,6 +154,11 @@ function cleanText(value: string | undefined): string | undefined {
     allowedAttributes: {},
     allowedTags: [],
   })
+    // sanitize-html serializes text-safe characters as entities. Convert those
+    // back to plain text so React can perform the single escaping pass at render.
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
     .replace(/\s+/g, ' ')
     .trim()
 
