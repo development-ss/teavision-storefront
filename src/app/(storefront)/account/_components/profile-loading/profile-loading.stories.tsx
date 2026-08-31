@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { expect, within } from 'storybook/test'
 
-import { ProfileLoading } from '.'
+import { ProfileLoading } from './profile-loading'
 
 const meta: Meta<typeof ProfileLoading> = {
   title: 'Account/Profile/Loading',

@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 
 import { withNoindexRobots } from '@/lib/seo/noindex'
-import { getCustomerAccountOrder } from '@/lib/shopify/customer-account'
+import { getCustomerAccountOrder } from '@/lib/shopify/customer-account/operations'
 
 import { AccountLoading } from '../../_components/loading'
 import { OrderDetail } from '../../_components/order-detail'

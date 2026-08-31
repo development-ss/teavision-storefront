@@ -1,5 +1,6 @@
-import { CertificationCoverage, SupplyChain } from '@/components/homepage'
-import { StatBand } from '@/components/ui'
+import { CertificationCoverage } from '@/components/homepage/certification-coverage'
+import { SupplyChain } from '@/components/homepage/supply-chain'
+import { StatBand } from '@/components/ui/stat-band'
 
 import { CERTIFICATION_STATS } from '../_lib/data'
 import { AwardExcellenceSection } from './award-excellence-section'

@@ -4,15 +4,11 @@ import Link from 'next/link'
 import { ChevronDown, ChevronRight, Phone } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
-import { Button, DisclosureButton } from '@/components/ui'
+import { Button } from '@/components/ui/button'
+import { DisclosureButton } from '@/components/ui/disclosure-button'
 import { cn } from '@/lib/utils'
 
-import {
-  DIRECT_LINKS,
-  SHOP_SECTIONS,
-  type MenuKey,
-  type ShopKey,
-} from './data'
+import { DIRECT_LINKS, SHOP_SECTIONS, type MenuKey, type ShopKey } from './data'
 import { MobileServicesPanel } from './services/mobile-panel'
 import { MobileShopPanel } from './shop/mobile-panel'
 

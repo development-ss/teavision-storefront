@@ -1,4 +1,4 @@
-import { Section } from '@/components/ui'
+import { Section } from '@/components/ui/section'
 
 import { CERT_SPANS } from '../_lib/data'
 

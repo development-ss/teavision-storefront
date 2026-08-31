@@ -16,7 +16,7 @@ vi.mock('@/lib/contact/actions', () => ({
   submitContactFormAction: vi.fn(),
 }))
 
-vi.mock('@/components/contact', () => ({
+vi.mock('@/components/contact/contact-section', () => ({
   ContactSection: () => <div>Contact section</div>,
 }))
 

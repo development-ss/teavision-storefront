@@ -1,4 +1,5 @@
-import { Button, Section } from '@/components/ui'
+import { Button } from '@/components/ui/button'
+import { Section } from '@/components/ui/section'
 
 type CtaSectionProps = {
   title: string

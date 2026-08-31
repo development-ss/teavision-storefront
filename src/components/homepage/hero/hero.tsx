@@ -8,7 +8,9 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 
-import { Button, Eyebrow, Section } from '@/components/ui'
+import { Button } from '@/components/ui/button'
+import { Eyebrow } from '@/components/ui/eyebrow'
+import { Section } from '@/components/ui/section'
 import type { HomepageContent } from '@/lib/sanity/home-page'
 import { cn } from '@/lib/utils'
 

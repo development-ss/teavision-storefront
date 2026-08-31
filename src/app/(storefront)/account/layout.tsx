@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 
-import { Section } from '@/components/ui'
+import { Section } from '@/components/ui/section'
 
 type AccountLayoutProps = {
   children: ReactNode

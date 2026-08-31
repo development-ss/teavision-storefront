@@ -6,7 +6,9 @@ import type {
   CollectionProductSummary,
   ProductSummary,
 } from '@/lib/shopify/types'
-import { Badge, Price, StarRating } from '@/components/ui'
+import { Badge } from '@/components/ui/badge'
+import { Price } from '@/components/ui/price'
+import { StarRating } from '@/components/ui/star-rating'
 import { getVisibleProductReviewSummary } from '@/lib/reviews/summary'
 import { getSizedShopifyImageUrl } from '@/lib/shopify/image-url'
 import { ProductQuickView } from '@/components/product/product-quick-view'

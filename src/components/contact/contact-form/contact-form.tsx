@@ -2,7 +2,10 @@
 
 import { useActionState, useEffect, useState } from 'react'
 
-import { Button, FormLabel, Textarea, TextInput } from '@/components/ui'
+import { Button } from '@/components/ui/button'
+import { FormLabel } from '@/components/ui/form-label'
+import { Textarea } from '@/components/ui/textarea'
+import { TextInput } from '@/components/ui/text-input'
 import { dispatchClientAnalyticsEvent } from '@/lib/analytics/client'
 import { createLeadSubmitEvent } from '@/lib/analytics/events'
 import type { ContactActionResult } from '@/lib/contact/types'

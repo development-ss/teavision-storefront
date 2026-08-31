@@ -1,6 +1,9 @@
 import { ArrowRight } from 'lucide-react'
 
-import { Badge, Button, Eyebrow, Section } from '@/components/ui'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Eyebrow } from '@/components/ui/eyebrow'
+import { Section } from '@/components/ui/section'
 
 import { HERO_IMAGE, THUMBNAILS, HERO_PROOF_POINTS } from '../_lib/data'
 import { BlendImage } from './blend-image'

@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 
-import { ToggleButton } from '@/components/ui'
+import { ToggleButton } from '@/components/ui/toggle-button'
 
 import { SHOP_SECTIONS } from '../data'
 import { PANEL_LINK_CLASS } from '../styles'

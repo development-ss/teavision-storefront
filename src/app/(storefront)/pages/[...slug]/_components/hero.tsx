@@ -1,4 +1,5 @@
-import { Eyebrow, Section } from '@/components/ui'
+import { Eyebrow } from '@/components/ui/eyebrow'
+import { Section } from '@/components/ui/section'
 import { cn } from '@/lib/utils'
 import { getPagePath } from '@/lib/shopify/operations/storefront-page'
 import type { ShopifyPage } from '@/lib/shopify/operations/storefront-page'

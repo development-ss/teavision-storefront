@@ -1,4 +1,4 @@
-import { ArticleCard } from '@/components/ui'
+import { ArticleCard } from '@/components/ui/article-card'
 import type { BlogArticleSummary } from '@/lib/blog/operations'
 import { formatArticleDate, getArticlePath } from '@/lib/blog/operations'
 

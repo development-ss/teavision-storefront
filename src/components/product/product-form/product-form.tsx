@@ -3,7 +3,10 @@
 import { useId, useState, type ReactNode } from 'react'
 import { Leaf, ShieldCheck, Truck } from 'lucide-react'
 
-import { Button, Price, QuantityStepper, ToggleButton } from '@/components/ui'
+import { Button } from '@/components/ui/button'
+import { Price } from '@/components/ui/price'
+import { QuantityStepper } from '@/components/ui/quantity-stepper'
+import { ToggleButton } from '@/components/ui/toggle-button'
 import type { ProductOption, ProductVariant } from '@/lib/shopify/types'
 import {
   clampQuantity,

@@ -2,8 +2,10 @@
 
 import { useActionState } from 'react'
 
-import { Badge, Button, Card } from '@/components/ui'
-import type { CustomerAccountAddress } from '@/lib/shopify/customer-account'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import type { CustomerAccountAddress } from '@/lib/shopify/customer-account/types'
 import type { CustomerAccountFormState } from '@/lib/shopify/customer-account/types'
 
 import {

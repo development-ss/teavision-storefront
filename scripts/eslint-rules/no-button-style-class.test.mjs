@@ -26,7 +26,7 @@ async function lintText(code, filePath) {
 
 test('reports visual styling classes on Button className', async () => {
   const messages = await lintText(
-    `import { Button } from '@/components/ui'
+    `import { Button } from '@/components/ui/button'
 
     export function HeroCta() {
       return (
@@ -47,7 +47,7 @@ test('reports visual styling classes on Button className', async () => {
 
 test('allows layout-only classes on Button className', async () => {
   const messages = await lintText(
-    `import { Button } from '@/components/ui'
+    `import { Button } from '@/components/ui/button'
 
     export function FullWidthCta() {
       return (
@@ -69,7 +69,7 @@ test('allows layout-only classes on Button className', async () => {
 
 test('reports visual styling classes inside cn calls on Button className', async () => {
   const messages = await lintText(
-    `import { Button } from '@/components/ui'
+    `import { Button } from '@/components/ui/button'
     import { cn } from '@/lib/utils'
 
     export function HeaderTrigger({ open }) {
@@ -91,7 +91,7 @@ test('reports visual styling classes inside cn calls on Button className', async
 
 test('reports dynamic Button className expressions that cannot be checked', async () => {
   const messages = await lintText(
-    `import { Button } from '@/components/ui'
+    `import { Button } from '@/components/ui/button'
 
     export function UnknownCta({ classes }) {
       return <Button className={classes}>Submit</Button>
@@ -108,7 +108,7 @@ test('reports dynamic Button className expressions that cannot be checked', asyn
 
 test('reports visual classes on aliased Button imports', async () => {
   const messages = await lintText(
-    `import { Button as CtaButton } from '@/components/ui'
+    `import { Button as CtaButton } from '@/components/ui/button'
 
     export function HeroCta() {
       return <CtaButton className="text-brand">Apply</CtaButton>
@@ -125,7 +125,7 @@ test('reports visual classes on aliased Button imports', async () => {
 
 test('reports visual classes on namespaced Button imports', async () => {
   const messages = await lintText(
-    `import * as UI from '@/components/ui'
+    `import * as UI from '@/components/ui/button'
 
     export function HeroCta() {
       return <UI.Button className="text-brand">Apply</UI.Button>

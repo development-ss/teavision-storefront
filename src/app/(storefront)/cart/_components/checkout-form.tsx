@@ -3,7 +3,9 @@
 import { useState } from 'react'
 import Link from 'next/link'
 
-import { Button, Checkbox, Textarea } from '@/components/ui'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Textarea } from '@/components/ui/textarea'
 import { dispatchClientAnalyticsEvent } from '@/lib/analytics/client'
 import { createCheckoutStartEvent } from '@/lib/analytics/events'
 

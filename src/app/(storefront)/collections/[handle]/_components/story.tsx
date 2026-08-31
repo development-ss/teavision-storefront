@@ -1,4 +1,4 @@
-import { StoryDisclosure } from '@/components/collection'
+import { StoryDisclosure } from '@/components/collection/story-disclosure'
 import { sanitizeShopifyCollectionStoryHtml } from '@/lib/shopify/html-content'
 import type { Collection } from '@/lib/shopify/types'
 

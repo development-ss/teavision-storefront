@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import { Check } from 'lucide-react'
 
-import { Section } from '@/components/ui'
+import { Section } from '@/components/ui/section'
 
 import { LOGISTICS_CHECK_ITEMS, SHIP_IMAGE_SRC } from '../_lib/data'
 

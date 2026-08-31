@@ -1,4 +1,7 @@
-import { Button, Card, Eyebrow, Section } from '@/components/ui'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { Eyebrow } from '@/components/ui/eyebrow'
+import { Section } from '@/components/ui/section'
 
 import { PROCESS_STEPS } from '../_lib/data'
 

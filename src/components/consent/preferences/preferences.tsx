@@ -2,16 +2,15 @@
 
 import { useEffect, useId, useState } from 'react'
 
-import { Button, Card, Checkbox } from '@/components/ui'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   type ConsentState,
   DEFAULT_CONSENT,
   updateConsentCategories,
 } from '@/lib/consent/adapter'
-import {
-  readStoredConsent,
-  writeStoredConsent,
-} from '@/lib/consent/storage'
+import { readStoredConsent, writeStoredConsent } from '@/lib/consent/storage'
 import { applyShopifyCustomerPrivacyConsent } from '@/lib/consent/shopify-customer-privacy'
 import { cn } from '@/lib/utils'
 
@@ -42,8 +41,7 @@ export function ConsentPreferences({
   onSaved,
 }: ConsentPreferencesProps) {
   const fieldsetId = useId()
-  const [draftConsent, setDraftConsent] =
-    useState<ConsentState>(initialConsent)
+  const [draftConsent, setDraftConsent] = useState<ConsentState>(initialConsent)
   const [statusMessage, setStatusMessage] = useState<string | null>(null)
 
   useEffect(() => {
@@ -97,9 +95,7 @@ export function ConsentPreferences({
     >
       {optionalDenied && (
         <Card padding="md" radius="md" tone="sunken">
-          <p className="type-heading-05 text-ink">
-            Optional cookies are off
-          </p>
+          <p className="type-heading-05 text-ink">Optional cookies are off</p>
           <p className="type-body-sm text-ink-soft mt-2">
             Analytics and marketing cookies are currently off. Turn on either
             category below if you want to allow it.
@@ -117,7 +113,11 @@ export function ConsentPreferences({
 
         <Card padding="md" radius="md" tone="surface">
           <label className="flex gap-3">
-            <Checkbox checked disabled aria-describedby={`${fieldsetId}-lock`} />
+            <Checkbox
+              checked
+              disabled
+              aria-describedby={`${fieldsetId}-lock`}
+            />
             <span className="min-w-0">
               <span className="type-label text-ink block">Essential</span>
               <span

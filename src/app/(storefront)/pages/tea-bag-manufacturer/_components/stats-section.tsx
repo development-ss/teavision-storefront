@@ -1,4 +1,4 @@
-import { StatBand } from '@/components/ui'
+import { StatBand } from '@/components/ui/stat-band'
 
 import { STATS } from '../_lib/data'
 

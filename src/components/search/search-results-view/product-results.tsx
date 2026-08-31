@@ -1,4 +1,4 @@
-import { ProductCard } from '@/components/collection'
+import { ProductCard } from '@/components/collection/product-card'
 import type { SearchaniseSearchResult } from '@/lib/searchanise/types'
 
 import { SearchAlert } from './search-alert'

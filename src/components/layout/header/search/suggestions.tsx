@@ -3,14 +3,11 @@ import Link from 'next/link'
 import { LoaderCircle } from 'lucide-react'
 import type { MouseEventHandler } from 'react'
 
-import { Price } from '@/components/ui'
+import { Price } from '@/components/ui/price'
 import type { ProductSummary } from '@/lib/shopify/types'
 import { cn } from '@/lib/utils'
 
-import {
-  SUGGESTIONS_LISTBOX_ID,
-  SUGGESTIONS_PANEL_ID,
-} from './constants'
+import { SUGGESTIONS_LISTBOX_ID, SUGGESTIONS_PANEL_ID } from './constants'
 import type { SearchSuggestionsStatus } from './types'
 
 function getSizedImageUrl(url: string, width: number): string {

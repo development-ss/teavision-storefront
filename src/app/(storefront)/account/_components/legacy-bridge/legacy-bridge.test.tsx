@@ -6,7 +6,7 @@ import { act } from 'react'
 import { createRoot } from 'react-dom/client'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { LegacyBridge } from '.'
+import { LegacyBridge } from './legacy-bridge'
 ;(
   globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT: boolean }
 ).IS_REACT_ACT_ENVIRONMENT = true
@@ -30,13 +30,8 @@ type MockFrameProps = {
   className?: string
 }
 
-vi.mock('@/components/ui', () => ({
-  Button: ({
-    children,
-    className,
-    href,
-    prefetch,
-  }: MockButtonProps) => {
+vi.mock('@/components/ui/button', () => ({
+  Button: ({ children, className, href, prefetch }: MockButtonProps) => {
     buttonCalls.props.push({ href, prefetch })
 
     return (
@@ -45,9 +40,15 @@ vi.mock('@/components/ui', () => ({
       </a>
     )
   },
+}))
+
+vi.mock('@/components/ui/card', () => ({
   Card: ({ children, className }: MockFrameProps) => (
     <div className={className}>{children}</div>
   ),
+}))
+
+vi.mock('@/components/ui/section', () => ({
   Section: {
     Container: ({ children, className }: MockFrameProps) => (
       <div className={className}>{children}</div>

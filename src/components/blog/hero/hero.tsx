@@ -1,6 +1,7 @@
 import Image from 'next/image'
 
-import { Eyebrow, Section } from '@/components/ui'
+import { Eyebrow } from '@/components/ui/eyebrow'
+import { Section } from '@/components/ui/section'
 import { DEFAULT_LISTING_DESCRIPTION } from '@/lib/blog/listing'
 
 import { SearchForm } from './search-form'

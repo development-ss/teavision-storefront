@@ -3,9 +3,10 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
-import { PortableTextContent } from '@/components/blog'
+import { PortableTextContent } from '@/components/blog/portable-text'
 import { RichText } from '@/components/ui/rich-text'
-import { Card, Section } from '@/components/ui'
+import { Card } from '@/components/ui/card'
+import { Section } from '@/components/ui/section'
 import {
   DEFAULT_BLOG_HANDLE,
   formatArticleDate,

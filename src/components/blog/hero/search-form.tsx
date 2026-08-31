@@ -1,6 +1,6 @@
 import { Search } from 'lucide-react'
 
-import { Button } from '@/components/ui'
+import { Button } from '@/components/ui/button'
 
 type SearchFormProps = {
   searchAction?: string

@@ -1,7 +1,5 @@
-import {
-  RelatedProductsCarousel,
-  SearchaniseRecommendations,
-} from '@/components/product'
+import { RelatedProductsCarousel } from '@/components/product/related-products-carousel'
+import { SearchaniseRecommendations } from '@/components/product/searchanise-recommendations'
 import {
   getProduct,
   getProductRecommendations,

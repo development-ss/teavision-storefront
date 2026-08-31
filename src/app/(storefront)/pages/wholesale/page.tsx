@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 
-import { Section } from '@/components/ui'
+import { Section } from '@/components/ui/section'
 import { withNoindexRobots } from '@/lib/seo/noindex'
 
 import { SupplyPaths } from './_components/supply-paths'

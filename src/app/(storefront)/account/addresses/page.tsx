@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { Suspense } from 'react'
 
 import { withNoindexRobots } from '@/lib/seo/noindex'
-import { getCustomerAccountDashboard } from '@/lib/shopify/customer-account'
+import { getCustomerAccountDashboard } from '@/lib/shopify/customer-account/operations'
 import {
   deleteAddressAction,
   setDefaultAddressAction,

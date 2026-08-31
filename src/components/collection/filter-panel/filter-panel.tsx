@@ -4,7 +4,8 @@ import Link from 'next/link'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 
 import type { CollectionProductFilter } from '@/lib/shopify/types'
-import { Button, Checkbox } from '@/components/ui'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import { cn } from '@/lib/utils'
 
 type FilterPanelProps = {

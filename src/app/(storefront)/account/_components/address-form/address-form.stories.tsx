@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { makeCustomerAccountAddress } from '@/tests/fixtures/shopify/customer-account'
 import type { CustomerAccountFormState } from '@/lib/shopify/customer-account/types'
 
-import { AddressForm } from '.'
+import { AddressForm } from './address-form'
 
 const meta: Meta<typeof AddressForm> = {
   title: 'Account/AddressForm',

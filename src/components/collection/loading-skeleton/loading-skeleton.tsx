@@ -1,4 +1,5 @@
-import { Section, Skeleton } from '@/components/ui'
+import { Section } from '@/components/ui/section'
+import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
 
 type LoadingSkeletonProps = {

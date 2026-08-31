@@ -3,7 +3,8 @@
 import { X } from 'lucide-react'
 import { useEffect, useRef, Suspense } from 'react'
 
-import { Eyebrow, IconButton } from '@/components/ui'
+import { Eyebrow } from '@/components/ui/eyebrow'
+import { IconButton } from '@/components/ui/icon-button'
 
 import { Search as SearchWithAutocomplete } from './view'
 import { SearchForm } from './form'

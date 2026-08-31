@@ -1,4 +1,4 @@
-import { Section } from '@/components/ui'
+import { Section } from '@/components/ui/section'
 import type { PaginatedArticles } from '@/lib/blog/operations'
 
 import { ArticleList } from '../article-list'

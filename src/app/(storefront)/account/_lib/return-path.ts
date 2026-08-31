@@ -1,4 +1,4 @@
-import { normalizeReturnTo } from '@/lib/shopify/customer-account'
+import { normalizeReturnTo } from '@/lib/shopify/customer-account/oauth'
 
 export function normalizeAccountReturnPath(value: string | null): string {
   return normalizeReturnTo(value)

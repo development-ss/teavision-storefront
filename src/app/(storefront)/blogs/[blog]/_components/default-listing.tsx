@@ -1,4 +1,4 @@
-import { FeaturedArticles } from '@/components/blog'
+import { FeaturedArticles } from '@/components/blog/featured-articles'
 import { DEFAULT_BLOG_HANDLE } from '@/lib/blog/operations'
 import type { DefaultBlogListing } from '@/lib/blog/operations'
 

@@ -3,7 +3,7 @@ import type {
   SearchanisePagination as SearchanisePaginationData,
 } from '@/lib/searchanise/types'
 import { createPageHref } from '@/lib/searchanise/params'
-import { Pagination } from '@/components/ui'
+import { Pagination } from '@/components/ui/pagination'
 
 type SearchPaginationProps = {
   pagination: SearchanisePaginationData

@@ -1,4 +1,4 @@
-import type { CustomerAccountAddress } from '@/lib/shopify/customer-account'
+import type { CustomerAccountAddress } from '@/lib/shopify/customer-account/types'
 
 export function formatAddressLines(address: CustomerAccountAddress): string[] {
   if (address.formatted.length > 0) return address.formatted

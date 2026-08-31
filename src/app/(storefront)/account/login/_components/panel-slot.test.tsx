@@ -11,8 +11,11 @@ type MockChildProps = {
 
 vi.mock('server-only', () => ({}))
 
-vi.mock('@/components/ui', () => ({
+vi.mock('@/components/ui/button', () => ({
   Button: ({ children, href }: MockChildProps) => <a href={href}>{children}</a>,
+}))
+
+vi.mock('@/components/ui/card', () => ({
   Card: ({ children }: MockChildProps) => <div>{children}</div>,
 }))
 

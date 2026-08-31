@@ -1,6 +1,6 @@
 import { Globe, Leaf, Package, Trophy } from 'lucide-react'
 
-import type { StatBandItem } from '@/components/ui'
+import type { StatBandItem } from '@/components/ui/stat-band'
 
 // Section 1 — Hero
 export const HERO_IMAGE_SRC =

@@ -1,5 +1,6 @@
-import { Button, Card } from '@/components/ui'
-import type { CustomerAccountOrder } from '@/lib/shopify/customer-account'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import type { CustomerAccountOrder } from '@/lib/shopify/customer-account/types'
 
 import {
   formatAccountMoney,

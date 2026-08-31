@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 import Link from 'next/link'
 
-import { FilterPanel } from '@/components/collection'
+import { FilterPanel } from '@/components/collection/filter-panel'
 import type {
   CollectionProductFilter,
   CollectionSummary,

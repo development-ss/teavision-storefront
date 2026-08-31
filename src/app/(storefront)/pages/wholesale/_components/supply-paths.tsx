@@ -1,7 +1,9 @@
 import Link from 'next/link'
 import { CheckCircle2 } from 'lucide-react'
 
-import { Badge, Card, Section } from '@/components/ui'
+import { Badge } from '@/components/ui/badge'
+import { Card } from '@/components/ui/card'
+import { Section } from '@/components/ui/section'
 
 import {
   WHOLESALE_INCLUSIONS,

@@ -2,7 +2,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Check, Leaf } from 'lucide-react'
 
-import { Button, Price } from '@/components/ui'
+import { Button } from '@/components/ui/button'
+import { Price } from '@/components/ui/price'
 import { getSizedShopifyImageUrl } from '@/lib/shopify/image-url'
 import {
   getVariantMaximumQuantity,

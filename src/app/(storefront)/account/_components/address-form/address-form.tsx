@@ -2,15 +2,13 @@
 
 import { useActionState } from 'react'
 
-import {
-  Button,
-  Card,
-  Checkbox,
-  FormLabel,
-  Select,
-  TextInput,
-} from '@/components/ui'
-import type { CustomerAccountAddress } from '@/lib/shopify/customer-account'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { Checkbox } from '@/components/ui/checkbox'
+import { FormLabel } from '@/components/ui/form-label'
+import { Select } from '@/components/ui/select'
+import { TextInput } from '@/components/ui/text-input'
+import type { CustomerAccountAddress } from '@/lib/shopify/customer-account/types'
 import type { CustomerAccountFormState } from '@/lib/shopify/customer-account/types'
 
 type AddressFormProps = {

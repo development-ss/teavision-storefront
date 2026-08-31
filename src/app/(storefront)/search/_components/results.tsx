@@ -1,6 +1,6 @@
 import { SearchHero } from '@/components/search/search-results-view/search-hero'
 import { formatResultCount } from '@/components/search/search-results-view/search-results-helpers'
-import { SearchResultsView } from '@/components/search/search-results-view/search-results-view'
+import { SearchResultsView } from '@/components/search/search-results-view'
 import type {
   SearchRouteState,
   SearchaniseSearchResult,

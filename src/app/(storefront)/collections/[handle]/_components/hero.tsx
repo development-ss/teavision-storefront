@@ -1,7 +1,8 @@
 import Image from 'next/image'
 import Link from 'next/link'
 
-import { Eyebrow, Section } from '@/components/ui'
+import { Eyebrow } from '@/components/ui/eyebrow'
+import { Section } from '@/components/ui/section'
 import { getSizedShopifyImageUrl } from '@/lib/shopify/image-url'
 import { cn } from '@/lib/utils'
 

@@ -1,6 +1,8 @@
 import Image from 'next/image'
 
-import { Eyebrow, Section, StarRating } from '@/components/ui'
+import { Eyebrow } from '@/components/ui/eyebrow'
+import { Section } from '@/components/ui/section'
+import { StarRating } from '@/components/ui/star-rating'
 import type { HomepageContent } from '@/lib/sanity/home-page'
 import { cn } from '@/lib/utils'
 

@@ -1,4 +1,5 @@
-import { Eyebrow, Section } from '@/components/ui'
+import { Eyebrow } from '@/components/ui/eyebrow'
+import { Section } from '@/components/ui/section'
 
 import { CAPABILITY_CARDS } from '../_lib/data'
 import { BlendDetailCard } from './blend-detail-card'

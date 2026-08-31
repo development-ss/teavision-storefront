@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { CircleUserRound, Menu, Phone, ShoppingCart, X } from 'lucide-react'
 import { Suspense, useCallback, useEffect, useState } from 'react'
 
-import { IconButton } from '@/components/ui'
+import { IconButton } from '@/components/ui/icon-button'
 
 import { CartCount } from './cart/count'
 import { MegaNav } from './nav/desktop'
@@ -80,7 +80,7 @@ export function Header() {
 
         {/* Main bar — logo, prominent search, account/cart. The desktop mega-nav
             lives in its own row below so search can hold the center. */}
-        <div className="bg-paper/80 border-hairline border-b backdrop-blur-md lg:border-hairline-2">
+        <div className="bg-paper/80 border-hairline lg:border-hairline-2 border-b backdrop-blur-md">
           <div className="max-w-wide px-gutter mx-auto flex h-16 items-center gap-3 lg:h-19 lg:gap-8">
             {/* Left cluster — negative margin aligns the burger glyph (not its
                 44px hit area) with the gutter; logo takes over at lg. */}

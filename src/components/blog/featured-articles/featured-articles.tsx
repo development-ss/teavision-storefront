@@ -1,4 +1,5 @@
-import { ArticleCard, Section } from '@/components/ui'
+import { ArticleCard } from '@/components/ui/article-card'
+import { Section } from '@/components/ui/section'
 import type { BlogArticleSummary } from '@/lib/blog/operations'
 import { formatArticleDate, getArticlePath } from '@/lib/blog/operations'
 

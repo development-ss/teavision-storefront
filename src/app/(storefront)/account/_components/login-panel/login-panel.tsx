@@ -1,4 +1,5 @@
-import { Button, Card } from '@/components/ui'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
 
 export type LoginReason =
   | 'expired'

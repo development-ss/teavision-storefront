@@ -1,4 +1,4 @@
-import { Section } from '@/components/ui'
+import { Section } from '@/components/ui/section'
 
 import { FEATURE_CARDS_3 } from '../_lib/data'
 

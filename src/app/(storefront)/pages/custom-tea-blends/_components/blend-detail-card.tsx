@@ -1,4 +1,4 @@
-import { Card } from '@/components/ui'
+import { Card } from '@/components/ui/card'
 
 import type { CapabilityCard } from '../_lib/data'
 import { BlendImage } from './blend-image'

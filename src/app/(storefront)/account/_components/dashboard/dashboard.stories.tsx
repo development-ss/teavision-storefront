@@ -3,7 +3,7 @@ import { expect, within } from 'storybook/test'
 
 import { makeCustomerAccountProfile } from '@/tests/fixtures/shopify/customer-account'
 
-import { Dashboard } from '.'
+import { Dashboard } from './dashboard'
 
 const profile = makeCustomerAccountProfile()
 

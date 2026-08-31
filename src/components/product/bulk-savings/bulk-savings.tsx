@@ -1,6 +1,7 @@
 import type { BulkPricingTier, Money } from '@/lib/shopify/types'
 import { cn } from '@/lib/utils'
-import { Button, ToggleButton } from '@/components/ui'
+import { Button } from '@/components/ui/button'
+import { ToggleButton } from '@/components/ui/toggle-button'
 
 type BulkSavingsProps = {
   tiers: BulkPricingTier[]

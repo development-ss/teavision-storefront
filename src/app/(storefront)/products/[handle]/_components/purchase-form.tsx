@@ -3,7 +3,7 @@
 import type { ReactNode } from 'react'
 import { useSearchParams } from 'next/navigation'
 
-import { ProductForm } from '@/components/product'
+import { ProductForm } from '@/components/product/product-form'
 import type { ProductOption, ProductVariant } from '@/lib/shopify/types'
 
 type PurchaseFormProps = {

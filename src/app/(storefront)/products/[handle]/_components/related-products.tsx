@@ -3,8 +3,8 @@ import { getVisibleProductReviewSummary } from '@/lib/reviews/summary'
 import { getCollectionProducts } from '@/lib/shopify/operations/collection'
 import { getProductRecommendations } from '@/lib/shopify/operations/product'
 import type { Product, ProductSummary } from '@/lib/shopify/types'
-import { RelatedProductsCarousel } from '@/components/product'
-import { Section } from '@/components/ui'
+import { RelatedProductsCarousel } from '@/components/product/related-products-carousel'
+import { Section } from '@/components/ui/section'
 
 const RELATED_COLLECTION_FETCH_LIMIT = 12
 const RELATED_PRODUCTS_TITLE = 'Related Products'

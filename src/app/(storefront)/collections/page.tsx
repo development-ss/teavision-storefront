@@ -1,8 +1,9 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 
-import { Eyebrow, Section } from '@/components/ui'
-import { ContactSection } from '@/components/contact'
+import { Eyebrow } from '@/components/ui/eyebrow'
+import { Section } from '@/components/ui/section'
+import { ContactSection } from '@/components/contact/contact-section'
 import { submitContactFormAction } from '@/lib/contact/actions'
 import { withNoindexRobots } from '@/lib/seo/noindex'
 import { serializeInlineJson } from '@/lib/seo/serialize-inline-json'

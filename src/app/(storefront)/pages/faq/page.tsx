@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 
-import { Faq } from '@/components/homepage'
+import { Faq } from '@/components/homepage/faq'
 import { withNoindexRobots } from '@/lib/seo/noindex'
 
 import { HeroSection } from './_components/hero-section'

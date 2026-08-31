@@ -12,7 +12,7 @@ vi.mock('./analytics', () => ({
   SearchAnalytics: () => null,
 }))
 
-vi.mock('@/components/search/search-results-view/search-results-view', () => ({
+vi.mock('@/components/search/search-results-view', () => ({
   SearchResultsView: () => <div>Faceted search results</div>,
 }))
 

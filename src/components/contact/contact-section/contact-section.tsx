@@ -1,6 +1,7 @@
 import { Mail, Phone } from 'lucide-react'
 
-import { Eyebrow, Section } from '@/components/ui'
+import { Eyebrow } from '@/components/ui/eyebrow'
+import { Section } from '@/components/ui/section'
 import type { ContactActionResult } from '@/lib/contact/types'
 import type { HomepageContent } from '@/lib/sanity/home-page'
 

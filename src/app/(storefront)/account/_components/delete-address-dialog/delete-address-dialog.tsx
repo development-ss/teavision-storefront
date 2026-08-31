@@ -2,7 +2,8 @@
 
 import { useActionState, useState } from 'react'
 
-import { Button, Dialog } from '@/components/ui'
+import { Button } from '@/components/ui/button'
+import { Dialog } from '@/components/ui/dialog'
 import type { CustomerAccountFormState } from '@/lib/shopify/customer-account/types'
 
 type DeleteAddressDialogProps = {

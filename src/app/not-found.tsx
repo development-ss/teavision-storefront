@@ -1,8 +1,9 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 
-import { Button, Eyebrow } from '@/components/ui'
-import { Section } from '@/components/ui/section/section'
+import { Button } from '@/components/ui/button'
+import { Eyebrow } from '@/components/ui/eyebrow'
+import { Section } from '@/components/ui/section'
 import { withNoindexRobots } from '@/lib/seo/noindex'
 import { cn } from '@/lib/utils'
 

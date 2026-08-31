@@ -15,7 +15,7 @@ import { RelatedProducts } from './related-products'
 let capturedHeading: ReactNode
 let capturedProducts: ProductSummary[]
 
-vi.mock('@/components/product', () => ({
+vi.mock('@/components/product/related-products-carousel', () => ({
   RelatedProductsCarousel: ({
     heading,
     products,

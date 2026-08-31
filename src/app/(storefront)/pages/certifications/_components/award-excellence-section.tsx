@@ -1,6 +1,8 @@
 import { Star } from 'lucide-react'
 
-import { Badge, Card, Section } from '@/components/ui'
+import { Badge } from '@/components/ui/badge'
+import { Card } from '@/components/ui/card'
+import { Section } from '@/components/ui/section'
 
 import { AWARD_EXCELLENCE } from '../_lib/data'
 

@@ -1,4 +1,4 @@
-import { Faq } from '@/components/homepage'
+import { Faq } from '@/components/homepage/faq'
 
 import { FAQ_ITEMS } from '../_lib/data'
 

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { expect, within } from 'storybook/test'
 
-import { LegacyBridge } from '.'
+import { LegacyBridge } from './legacy-bridge'
 
 const meta: Meta<typeof LegacyBridge> = {
   title: 'Account/LegacyBridge',

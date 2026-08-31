@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { Suspense } from 'react'
 
 import { withNoindexRobots } from '@/lib/seo/noindex'
-import { getCustomerAccountOrders } from '@/lib/shopify/customer-account'
+import { getCustomerAccountOrders } from '@/lib/shopify/customer-account/operations'
 
 import { AccountLoading } from '../_components/loading'
 import { OrderHistory } from '../_components/order-history'

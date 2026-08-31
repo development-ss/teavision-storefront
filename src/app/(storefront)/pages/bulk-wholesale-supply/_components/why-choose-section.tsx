@@ -1,6 +1,7 @@
 import Image from 'next/image'
 
-import { Accordion, Section } from '@/components/ui'
+import { Accordion } from '@/components/ui/accordion'
+import { Section } from '@/components/ui/section'
 
 import { SHIP_AVIF_SRC, WHY_CHOOSE_ITEMS } from '../_lib/data'
 

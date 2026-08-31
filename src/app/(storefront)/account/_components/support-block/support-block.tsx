@@ -1,4 +1,5 @@
-import { Card, Button } from '@/components/ui'
+import { Card } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
 
 export function SupportBlock() {
   return (

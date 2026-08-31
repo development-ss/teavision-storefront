@@ -1,6 +1,7 @@
-import { AnalyticsDestinationLoader } from '@/components/analytics'
-import { ConsentBanner } from '@/components/consent'
-import { Footer, Header } from '@/components/layout'
+import { AnalyticsDestinationLoader } from '@/components/analytics/destination-loader'
+import { ConsentBanner } from '@/components/consent/banner'
+import { Footer } from '@/components/layout/footer'
+import { Header } from '@/components/layout/header'
 
 export default function StorefrontLayout({
   children,

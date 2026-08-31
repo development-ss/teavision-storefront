@@ -1,7 +1,7 @@
 import { ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 
-import { Eyebrow } from '@/components/ui'
+import { Eyebrow } from '@/components/ui/eyebrow'
 
 import { CatalogueLinks } from '../catalogue-links'
 import { ServicesLinks } from './links'

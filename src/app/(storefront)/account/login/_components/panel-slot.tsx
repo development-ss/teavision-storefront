@@ -1,4 +1,5 @@
-import { LoginPanel, type LoginReason } from '../../_components/login-panel'
+import { LoginPanel } from '../../_components/login-panel'
+import type { LoginReason } from '../../_components/login-panel'
 import { getAccountLoginStartHref } from '../../_lib/return-path'
 
 type LoginPanelSlotProps = {

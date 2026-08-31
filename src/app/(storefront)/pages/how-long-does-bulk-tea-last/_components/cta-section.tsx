@@ -1,4 +1,5 @@
-import { Button, Section } from '@/components/ui'
+import { Button } from '@/components/ui/button'
+import { Section } from '@/components/ui/section'
 
 import { CTA } from '../_lib/data'
 
@@ -16,7 +17,11 @@ export function CtaSection() {
           <Button href={CTA.primary.href} variant="inverse" size="cta">
             {CTA.primary.label}
           </Button>
-          <Button href={CTA.secondary.href} variant="inverseSecondary" size="cta">
+          <Button
+            href={CTA.secondary.href}
+            variant="inverseSecondary"
+            size="cta"
+          >
             {CTA.secondary.label}
           </Button>
         </div>

@@ -2,7 +2,8 @@
 
 import type { Metadata } from 'next'
 
-import { Card, Section } from '@/components/ui'
+import { Card } from '@/components/ui/card'
+import { Section } from '@/components/ui/section'
 import { getLegalPolicy } from '@/lib/legal/policies'
 import { withNoindexRobots } from '@/lib/seo/noindex'
 

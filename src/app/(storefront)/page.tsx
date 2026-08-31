@@ -1,21 +1,19 @@
 import type { Metadata } from 'next'
 import { draftMode } from 'next/headers'
 
-import { ContactSection } from '@/components/contact'
-import {
-  CertificationCoverage,
-  Cta,
-  Faq,
-  HomepageHero,
-  HomepageNewsletter,
-  OrganicHerbs,
-  PrivateLabel,
-  ProductRange,
-  SupplyChain,
-  SupplyChainProtection,
-  TeaJournal,
-  Testimonials,
-} from '@/components/homepage'
+import { ContactSection } from '@/components/contact/contact-section'
+import { CertificationCoverage } from '@/components/homepage/certification-coverage'
+import { Cta } from '@/components/homepage/catalogues'
+import { Faq } from '@/components/homepage/faq'
+import { HomepageHero } from '@/components/homepage/hero'
+import { HomepageNewsletter } from '@/components/homepage/newsletter'
+import { OrganicHerbs } from '@/components/homepage/organic-herbs'
+import { PrivateLabel } from '@/components/homepage/private-label'
+import { ProductRange } from '@/components/homepage/product-range'
+import { SupplyChain } from '@/components/homepage/supply-chain'
+import { SupplyChainProtection } from '@/components/homepage/supply-chain-protection'
+import { TeaJournal } from '@/components/homepage/tea-journal'
+import { Testimonials } from '@/components/homepage/testimonials'
 import {
   sendNewsletterSignupFormAction,
   submitContactFormAction,

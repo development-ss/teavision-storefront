@@ -1,4 +1,4 @@
-import { Eyebrow } from '@/components/ui'
+import { Eyebrow } from '@/components/ui/eyebrow'
 
 import { CONTACT_METHODS, SUPPLY_NOTES } from '../_lib/page-data'
 import { Icon } from './icons'

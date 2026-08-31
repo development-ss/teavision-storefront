@@ -1,7 +1,8 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 
-import { Eyebrow, Section } from '@/components/ui'
+import { Eyebrow } from '@/components/ui/eyebrow'
+import { Section } from '@/components/ui/section'
 import {
   WHOLESALE_ACCOUNT_DESCRIPTION,
   WHOLESALE_ACCOUNT_META_TITLE,

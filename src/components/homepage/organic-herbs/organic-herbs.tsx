@@ -1,7 +1,9 @@
 import Image from 'next/image'
 import { Check } from 'lucide-react'
 
-import { Button, Eyebrow, Section } from '@/components/ui'
+import { Button } from '@/components/ui/button'
+import { Eyebrow } from '@/components/ui/eyebrow'
+import { Section } from '@/components/ui/section'
 import type { HomepageContent } from '@/lib/sanity/home-page'
 
 export type OrganicHerbsProps = HomepageContent['organicHerbs']

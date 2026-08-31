@@ -1,7 +1,9 @@
 import Image from 'next/image'
 import { ArrowDown } from 'lucide-react'
 
-import { Button, Eyebrow, Section } from '@/components/ui'
+import { Button } from '@/components/ui/button'
+import { Eyebrow } from '@/components/ui/eyebrow'
+import { Section } from '@/components/ui/section'
 
 import { HERO_IMAGE } from '../_lib/data'
 

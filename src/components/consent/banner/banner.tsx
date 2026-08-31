@@ -2,15 +2,14 @@
 
 import { useEffect, useState } from 'react'
 
-import { Button, Card, Dialog } from '@/components/ui'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { Dialog } from '@/components/ui/dialog'
 import {
   grantOptionalConsent,
   rejectOptionalConsent,
 } from '@/lib/consent/adapter'
-import {
-  readStoredConsent,
-  writeStoredConsent,
-} from '@/lib/consent/storage'
+import { readStoredConsent, writeStoredConsent } from '@/lib/consent/storage'
 import { applyShopifyCustomerPrivacyConsent } from '@/lib/consent/shopify-customer-privacy'
 import { cn } from '@/lib/utils'
 

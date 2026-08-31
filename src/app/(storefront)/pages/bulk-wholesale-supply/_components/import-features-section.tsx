@@ -1,6 +1,6 @@
 import { Check } from 'lucide-react'
 
-import { Section } from '@/components/ui'
+import { Section } from '@/components/ui/section'
 
 import { IMPORT_FEATURE_CARDS } from '../_lib/data'
 

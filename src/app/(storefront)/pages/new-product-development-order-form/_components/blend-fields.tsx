@@ -2,7 +2,10 @@
 
 import { useState } from 'react'
 
-import { FormLabel, Radio, Textarea, TextInput } from '@/components/ui'
+import { FormLabel } from '@/components/ui/form-label'
+import { Radio } from '@/components/ui/radio'
+import { Textarea } from '@/components/ui/textarea'
+import { TextInput } from '@/components/ui/text-input'
 import {
   NPD_ORDER_LIMITS,
   npdBlendFieldName,

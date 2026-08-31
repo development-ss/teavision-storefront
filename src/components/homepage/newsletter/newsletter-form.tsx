@@ -3,7 +3,7 @@
 import { useActionState, useEffect, useId, useRef } from 'react'
 import { ArrowRight } from 'lucide-react'
 
-import { Button } from '@/components/ui'
+import { Button } from '@/components/ui/button'
 import { dispatchClientAnalyticsEvent } from '@/lib/analytics/client'
 import { createLeadSubmitEvent } from '@/lib/analytics/events'
 import type { NewsletterSignupActionResult } from '@/lib/contact/types'

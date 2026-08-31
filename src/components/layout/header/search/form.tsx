@@ -1,7 +1,8 @@
 import Form from 'next/form'
 import { Search } from 'lucide-react'
 
-import { IconButton, TextInput } from '@/components/ui'
+import { IconButton } from '@/components/ui/icon-button'
+import { TextInput } from '@/components/ui/text-input'
 import { cn } from '@/lib/utils'
 
 import { SUGGESTIONS_LISTBOX_ID } from './constants'

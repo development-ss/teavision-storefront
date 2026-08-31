@@ -9,7 +9,7 @@ import {
 } from 'react'
 import useEmblaCarousel from 'embla-carousel-react'
 
-import { ToggleButton } from '@/components/ui'
+import { ToggleButton } from '@/components/ui/toggle-button'
 
 type TestimonialsSliderProps = {
   children: ReactNode

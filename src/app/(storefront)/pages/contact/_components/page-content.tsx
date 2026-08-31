@@ -1,5 +1,6 @@
-import { ContactForm } from '@/components/contact'
-import { Card, Section } from '@/components/ui'
+import { ContactForm } from '@/components/contact/contact-form'
+import { Card } from '@/components/ui/card'
+import { Section } from '@/components/ui/section'
 import { submitContactFormAction } from '@/lib/contact/actions'
 
 import { Hero } from './hero'

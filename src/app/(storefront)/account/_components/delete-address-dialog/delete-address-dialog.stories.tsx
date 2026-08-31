@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 
 import type { CustomerAccountFormState } from '@/lib/shopify/customer-account/types'
 
-import { DeleteAddressDialog } from '.'
+import { DeleteAddressDialog } from './delete-address-dialog'
 
 const meta: Meta<typeof DeleteAddressDialog> = {
   title: 'Account/DeleteAddressDialog',

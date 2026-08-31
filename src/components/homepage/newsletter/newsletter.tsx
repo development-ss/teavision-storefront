@@ -1,4 +1,6 @@
-import { AnimatedElement, Eyebrow, Section } from '@/components/ui'
+import { AnimatedElement } from '@/components/ui/animated-element'
+import { Eyebrow } from '@/components/ui/eyebrow'
+import { Section } from '@/components/ui/section'
 import type { NewsletterSignupActionResult } from '@/lib/contact/types'
 import type { HomepageContent } from '@/lib/sanity/home-page'
 

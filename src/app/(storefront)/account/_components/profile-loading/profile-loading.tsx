@@ -1,4 +1,5 @@
-import { Card, Skeleton } from '@/components/ui'
+import { Card } from '@/components/ui/card'
+import { Skeleton } from '@/components/ui/skeleton'
 
 export function ProfileLoading() {
   return (

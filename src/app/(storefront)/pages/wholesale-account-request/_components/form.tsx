@@ -2,14 +2,12 @@
 
 import { useActionState, useEffect, useState } from 'react'
 
-import {
-  Button,
-  Card,
-  FormLabel,
-  Select,
-  Textarea,
-  TextInput,
-} from '@/components/ui'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { FormLabel } from '@/components/ui/form-label'
+import { Select } from '@/components/ui/select'
+import { Textarea } from '@/components/ui/textarea'
+import { TextInput } from '@/components/ui/text-input'
 import { dispatchClientAnalyticsEvent } from '@/lib/analytics/client'
 import { createLeadSubmitEvent } from '@/lib/analytics/events'
 import { sendWholesaleAccountAction } from '@/lib/contact/actions'

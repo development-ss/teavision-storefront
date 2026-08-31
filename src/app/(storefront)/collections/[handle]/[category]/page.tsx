@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
 
-import { LoadingSkeleton } from '@/components/collection'
+import { LoadingSkeleton } from '@/components/collection/loading-skeleton'
 import { withNoindexRobots } from '@/lib/seo/noindex'
 import { getCollection } from '@/lib/shopify/operations/collection'
 

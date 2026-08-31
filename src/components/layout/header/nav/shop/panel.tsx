@@ -2,7 +2,9 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 
-import { Badge, Eyebrow, ToggleButton } from '@/components/ui'
+import { Badge } from '@/components/ui/badge'
+import { Eyebrow } from '@/components/ui/eyebrow'
+import { ToggleButton } from '@/components/ui/toggle-button'
 
 import { SHOP_IMAGE_SRC, SHOP_SECTIONS } from '../data'
 import { PANEL_LINK_CLASS } from '../styles'

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
 
-import { Section } from '@/components/ui'
+import { Section } from '@/components/ui/section'
 import { getCartAction } from '@/lib/cart/actions'
 import { withNoindexRobots } from '@/lib/seo/noindex'
 import { getCustomerAccountSession } from '@/lib/shopify/customer-account/session'

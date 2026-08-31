@@ -1,6 +1,8 @@
 import Image from 'next/image'
 
-import { Button, Eyebrow, Section } from '@/components/ui'
+import { Button } from '@/components/ui/button'
+import { Eyebrow } from '@/components/ui/eyebrow'
+import { Section } from '@/components/ui/section'
 
 import { YOUR_BRAND_IMAGE_SRC, YOUR_BRAND_LIST_ITEMS } from '../_lib/data'
 

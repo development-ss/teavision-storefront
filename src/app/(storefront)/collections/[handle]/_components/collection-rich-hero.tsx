@@ -1,6 +1,7 @@
 import Image from 'next/image'
 
-import { Button, Section } from '@/components/ui'
+import { Button } from '@/components/ui/button'
+import { Section } from '@/components/ui/section'
 import { getSizedShopifyImageUrl } from '@/lib/shopify/image-url'
 
 import type { CollectionRichHero as CollectionRichHeroData } from '../_lib/page-helpers'

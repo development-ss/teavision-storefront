@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { useOptimistic, useState, useTransition } from 'react'
 
-import { QuantityStepper } from '@/components/ui'
+import { QuantityStepper } from '@/components/ui/quantity-stepper'
 import { dispatchClientAnalyticsEvent } from '@/lib/analytics/client'
 import { createCartUpdateEvent } from '@/lib/analytics/events'
 import { cartLineFormAction, type CartLineFormState } from '@/lib/cart/actions'

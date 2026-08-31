@@ -1,6 +1,7 @@
 import Image from 'next/image'
 
-import { Badge, Section } from '@/components/ui'
+import { Badge } from '@/components/ui/badge'
+import { Section } from '@/components/ui/section'
 
 import { AWARD_IMAGES } from '../_lib/data'
 

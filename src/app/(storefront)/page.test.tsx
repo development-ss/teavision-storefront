@@ -39,22 +39,34 @@ vi.mock('@/lib/seo/noindex', () => ({
   withNoindexRobots: routeMocks.withNoindexRobots,
 }))
 
-vi.mock('@/components/homepage', () => ({
+vi.mock('@/components/homepage/certification-coverage', () => ({
   CertificationCoverage: (props: {
     items: HomepageContent['certificationCoverage']['items']
   }) => <div data-section="CertificationCoverage">{props.items[0]?.label}</div>,
+}))
+
+vi.mock('@/components/homepage/catalogues', () => ({
   Cta: (props: HomepageContent['catalogueCta']) => (
     <div data-section="Cta">{props.intro.title}</div>
   ),
+}))
+
+vi.mock('@/components/homepage/faq', () => ({
   Faq: (props: HomepageContent['faq']) => (
     <div data-section="Faq">{props.intro.title}</div>
   ),
+}))
+
+vi.mock('@/components/homepage/hero', () => ({
   HomepageHero: (props: { hero: HomepageContent['hero'] }) => (
     <div data-section="HomepageHero">
       <h1>{props.hero.title}</h1>
       <a href={props.hero.cta.href}>{props.hero.cta.children}</a>
     </div>
   ),
+}))
+
+vi.mock('@/components/homepage/newsletter', () => ({
   HomepageNewsletter: (props: {
     action: unknown
     intro: HomepageContent['newsletter']['intro']
@@ -66,24 +78,42 @@ vi.mock('@/components/homepage', () => ({
         : 'wrong-newsletter-action'}
     </div>
   ),
+}))
+
+vi.mock('@/components/homepage/organic-herbs', () => ({
   OrganicHerbs: (props: HomepageContent['organicHerbs']) => (
     <div data-section="OrganicHerbs">{props.intro.title}</div>
   ),
+}))
+
+vi.mock('@/components/homepage/private-label', () => ({
   PrivateLabel: (props: HomepageContent['privateLabel']) => (
     <div data-section="PrivateLabel">{props.intro.title}</div>
   ),
+}))
+
+vi.mock('@/components/homepage/product-range', () => ({
   ProductRange: (props: HomepageContent['productRange']) => (
     <div data-section="ProductRange">
       {props.intro.title}
       {props.cards[0]?.title}
     </div>
   ),
+}))
+
+vi.mock('@/components/homepage/supply-chain', () => ({
   SupplyChain: (props: HomepageContent['supplyChain']) => (
     <div data-section="SupplyChain">{props.intro.title}</div>
   ),
+}))
+
+vi.mock('@/components/homepage/supply-chain-protection', () => ({
   SupplyChainProtection: (props: HomepageContent['supplyChainProtection']) => (
     <div data-section="SupplyChainProtection">{props.intro.title}</div>
   ),
+}))
+
+vi.mock('@/components/homepage/tea-journal', () => ({
   TeaJournal: (props: HomepageContent['teaJournal']) => (
     <div data-section="TeaJournal">
       {props.intro.title}
@@ -91,12 +121,15 @@ vi.mock('@/components/homepage', () => ({
       {props.maxPosts}
     </div>
   ),
+}))
+
+vi.mock('@/components/homepage/testimonials', () => ({
   Testimonials: (props: HomepageContent['testimonials']) => (
     <div data-section="Testimonials">{props.intro.title}</div>
   ),
 }))
 
-vi.mock('@/components/contact', () => ({
+vi.mock('@/components/contact/contact-section', () => ({
   ContactSection: (props: {
     action: unknown
     intro: HomepageContent['contact']['intro']

@@ -2,11 +2,8 @@ import { Suspense } from 'react'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 
-import { BlogLoadingSkeleton } from '@/components/blog'
-import {
-  DEFAULT_BLOG_HANDLE,
-  normalizeBlogHandle,
-} from '@/lib/blog/operations'
+import { BlogLoadingSkeleton } from '@/components/blog/loading-skeleton'
+import { DEFAULT_BLOG_HANDLE, normalizeBlogHandle } from '@/lib/blog/operations'
 
 import { HeroSlot } from '../_components/hero-slot'
 import { generateSearchMetadata } from '../_lib/metadata'

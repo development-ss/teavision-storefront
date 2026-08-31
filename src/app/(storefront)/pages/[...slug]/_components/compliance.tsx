@@ -1,7 +1,9 @@
 import { Mail } from 'lucide-react'
 import Link from 'next/link'
 
-import { Button, Eyebrow, Section } from '@/components/ui'
+import { Button } from '@/components/ui/button'
+import { Eyebrow } from '@/components/ui/eyebrow'
+import { Section } from '@/components/ui/section'
 import { cn } from '@/lib/utils'
 
 import {
@@ -39,7 +41,10 @@ export function Compliance({ page }: { page: CompliancePage }) {
                 {COMPLIANCE_PRIVACY_EMAIL}
               </Link>
               , or read our{' '}
-              <Link href={COMPLIANCE_PRIVACY_LINK_HREF} className={LINK_CLASS_NAME}>
+              <Link
+                href={COMPLIANCE_PRIVACY_LINK_HREF}
+                className={LINK_CLASS_NAME}
+              >
                 {COMPLIANCE_PRIVACY_LINK_LABEL}
               </Link>
               .

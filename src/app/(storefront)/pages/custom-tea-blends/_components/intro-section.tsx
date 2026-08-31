@@ -1,6 +1,6 @@
 import { CheckCircle2 } from 'lucide-react'
 
-import { Section } from '@/components/ui'
+import { Section } from '@/components/ui/section'
 
 import { VALUE_POINTS } from '../_lib/data'
 

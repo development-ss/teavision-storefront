@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react'
 
-import { Button } from '@/components/ui'
+import { Button } from '@/components/ui/button'
 import { useAddToCart } from '@/components/product/use-add-to-cart'
 
 type QuickAddButtonProps = {

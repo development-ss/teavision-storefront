@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 import { SlidersHorizontal } from 'lucide-react'
 
-import { Section } from '@/components/ui'
+import { Section } from '@/components/ui/section'
 import {
   createClearFiltersHref,
   createSearchHref,

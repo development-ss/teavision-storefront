@@ -1,6 +1,7 @@
 import Image from 'next/image'
 
-import { Button, Section } from '@/components/ui'
+import { Button } from '@/components/ui/button'
+import { Section } from '@/components/ui/section'
 
 import {
   READY_TO_SHIP_IMAGE_SRC,

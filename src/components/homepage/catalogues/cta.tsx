@@ -1,10 +1,8 @@
-import {
-  AnimatedElement,
-  Button,
-  Eyebrow,
-  Section,
-  type SectionRootProps,
-} from '@/components/ui'
+import { AnimatedElement } from '@/components/ui/animated-element'
+import { Button } from '@/components/ui/button'
+import { Eyebrow } from '@/components/ui/eyebrow'
+import { Section } from '@/components/ui/section'
+import type { SectionRootProps } from '@/components/ui/section'
 import type { HomepageContent } from '@/lib/sanity/home-page'
 
 export interface CtaProps {

@@ -1,4 +1,4 @@
-import { Section } from '@/components/ui'
+import { Section } from '@/components/ui/section'
 
 import { CATALOGUES } from '../_lib/data'
 import { CatalogueRow } from './catalogue-row'

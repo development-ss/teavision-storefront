@@ -3,7 +3,9 @@
 import { ArrowRight, Search, X } from 'lucide-react'
 import { useDeferredValue, useMemo, useState } from 'react'
 
-import { Button, Checkbox, Section } from '@/components/ui'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Section } from '@/components/ui/section'
 import {
   CUSTOM_TEA_BLEND_FLAVOUR_GROUPS,
   CUSTOM_TEA_BLEND_FORM_ID,

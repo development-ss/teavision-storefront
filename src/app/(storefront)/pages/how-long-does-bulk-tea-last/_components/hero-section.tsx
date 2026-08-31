@@ -1,4 +1,6 @@
-import { Badge, Eyebrow, Section } from '@/components/ui'
+import { Badge } from '@/components/ui/badge'
+import { Eyebrow } from '@/components/ui/eyebrow'
+import { Section } from '@/components/ui/section'
 
 import { HERO } from '../_lib/data'
 

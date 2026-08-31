@@ -79,7 +79,7 @@ test('allows the Section primitive to render the native section element', async 
 
 test('reports background and foreground tone classes on Section.Root', async () => {
   const messages = await lintText(
-    `import { Section } from '@/components/ui'
+    `import { Section } from '@/components/ui/section'
 
     export function HomepageBand() {
       return (

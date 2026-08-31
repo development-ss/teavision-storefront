@@ -2,7 +2,10 @@
 
 import { useActionState, useEffect, useId, useRef } from 'react'
 
-import { Button, FormLabel, Textarea, TextInput } from '@/components/ui'
+import { Button } from '@/components/ui/button'
+import { FormLabel } from '@/components/ui/form-label'
+import { Textarea } from '@/components/ui/textarea'
+import { TextInput } from '@/components/ui/text-input'
 import type { ContactActionResult } from '@/lib/contact/types'
 import { cn } from '@/lib/utils'
 

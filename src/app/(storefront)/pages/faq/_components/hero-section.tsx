@@ -1,4 +1,4 @@
-import { Section } from '@/components/ui'
+import { Section } from '@/components/ui/section'
 
 import { FAQ_HERO_SUBHEADING } from '../_lib/data'
 

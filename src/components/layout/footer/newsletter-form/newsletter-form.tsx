@@ -2,7 +2,7 @@
 
 import { useActionState, useEffect } from 'react'
 
-import { Button } from '@/components/ui'
+import { Button } from '@/components/ui/button'
 import { dispatchClientAnalyticsEvent } from '@/lib/analytics/client'
 import { createLeadSubmitEvent } from '@/lib/analytics/events'
 import type { NewsletterSignupActionResult } from '@/lib/contact/types'

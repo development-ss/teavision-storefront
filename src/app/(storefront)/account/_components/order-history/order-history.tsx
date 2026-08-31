@@ -1,10 +1,11 @@
 import Link from 'next/link'
 
-import { Card, Pagination } from '@/components/ui'
+import { Card } from '@/components/ui/card'
+import { Pagination } from '@/components/ui/pagination'
 import type {
   CustomerAccountOrder,
   CustomerAccountPageInfo,
-} from '@/lib/shopify/customer-account'
+} from '@/lib/shopify/customer-account/types'
 
 import {
   formatAccountMoney,

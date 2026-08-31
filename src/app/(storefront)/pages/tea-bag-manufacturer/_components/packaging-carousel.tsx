@@ -5,7 +5,7 @@ import Image from 'next/image'
 import useEmblaCarousel from 'embla-carousel-react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 
-import { IconButton } from '@/components/ui'
+import { IconButton } from '@/components/ui/icon-button'
 
 import type { PackagingImage } from '../_lib/data'
 

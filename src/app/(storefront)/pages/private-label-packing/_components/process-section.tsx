@@ -1,4 +1,4 @@
-import { Section } from '@/components/ui'
+import { Section } from '@/components/ui/section'
 
 import { PROCESS_STEPS } from '../_lib/data'
 
@@ -21,7 +21,9 @@ export function ProcessSection() {
               <span className="bg-brand text-paper grid size-9 shrink-0 place-items-center rounded-full text-sm font-bold">
                 {step.number}
               </span>
-              <h3 className="type-label text-ink font-semibold">{step.title}</h3>
+              <h3 className="type-label text-ink font-semibold">
+                {step.title}
+              </h3>
               <p className="type-body-sm text-ink-soft">{step.description}</p>
             </div>
           ))}

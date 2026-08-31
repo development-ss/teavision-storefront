@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react'
 import { Search } from 'lucide-react'
 
-import { Button, TextInput } from '@/components/ui'
+import { Button } from '@/components/ui/button'
+import { TextInput } from '@/components/ui/text-input'
 import { cn } from '@/lib/utils'
 
 export function SearchPageSearchForm({

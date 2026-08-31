@@ -1,6 +1,8 @@
 import { Shield, Trophy, Users, type LucideIcon } from 'lucide-react'
 
-import { Badge, Card, Section } from '@/components/ui'
+import { Badge } from '@/components/ui/badge'
+import { Card } from '@/components/ui/card'
+import { Section } from '@/components/ui/section'
 
 import { TRUST_POINTS } from '../_lib/data'
 

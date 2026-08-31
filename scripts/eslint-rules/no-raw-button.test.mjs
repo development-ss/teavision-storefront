@@ -76,7 +76,7 @@ test('allows approved native button primitive implementations', async () => {
 
 test('allows the shared Button component to be used', async () => {
   const messages = await lintText(
-    `import { Button } from '@/components/ui'
+    `import { Button } from '@/components/ui/button'
 
     export function HeroCta() {
       return <Button href="/pages/wholesale">Apply for wholesale</Button>

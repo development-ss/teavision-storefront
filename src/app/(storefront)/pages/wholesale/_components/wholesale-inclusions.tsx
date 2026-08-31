@@ -1,5 +1,6 @@
-import { ContactForm } from '@/components/contact'
-import { Card, Eyebrow } from '@/components/ui'
+import { ContactForm } from '@/components/contact/contact-form'
+import { Card } from '@/components/ui/card'
+import { Eyebrow } from '@/components/ui/eyebrow'
 import { submitContactFormAction } from '@/lib/contact/actions'
 
 export function WholesaleInclusions() {

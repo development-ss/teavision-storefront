@@ -1,5 +1,7 @@
 import { HomepageNewsletterForm } from '@/components/homepage/newsletter/newsletter-form'
-import { AnimatedElement, Eyebrow, Section } from '@/components/ui'
+import { AnimatedElement } from '@/components/ui/animated-element'
+import { Eyebrow } from '@/components/ui/eyebrow'
+import { Section } from '@/components/ui/section'
 import { sendNewsletterSignupFormAction } from '@/lib/contact/actions'
 
 export function BlogNewsletterBand() {

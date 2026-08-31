@@ -3,7 +3,8 @@
 import { Search, X } from 'lucide-react'
 import { useDeferredValue, useMemo, useState } from 'react'
 
-import { Button, Checkbox } from '@/components/ui'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import { NPD_FLAVOURS, NPD_ORDER_LIMITS } from '@/lib/contact/npd-order'
 import { cn } from '@/lib/utils'
 

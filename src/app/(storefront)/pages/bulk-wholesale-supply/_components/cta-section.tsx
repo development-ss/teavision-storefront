@@ -1,6 +1,7 @@
 import { Phone } from 'lucide-react'
 
-import { Button, Section } from '@/components/ui'
+import { Button } from '@/components/ui/button'
+import { Section } from '@/components/ui/section'
 
 export function CtaSection() {
   return (

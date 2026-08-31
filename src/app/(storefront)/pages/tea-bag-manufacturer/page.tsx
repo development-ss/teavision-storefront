@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
-import { ContactSection } from '@/components/contact'
-import { Testimonials } from '@/components/homepage'
+import { ContactSection } from '@/components/contact/contact-section'
+import { Testimonials } from '@/components/homepage/testimonials'
 import { submitContactFormAction } from '@/lib/contact/actions'
 import { withNoindexRobots } from '@/lib/seo/noindex'
 

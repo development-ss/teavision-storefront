@@ -1,6 +1,8 @@
 import Image from 'next/image'
 
-import { Badge, Eyebrow, Section } from '@/components/ui'
+import { Badge } from '@/components/ui/badge'
+import { Eyebrow } from '@/components/ui/eyebrow'
+import { Section } from '@/components/ui/section'
 
 export function HeroSection() {
   return (

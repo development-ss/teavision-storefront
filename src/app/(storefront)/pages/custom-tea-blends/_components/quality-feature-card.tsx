@@ -1,4 +1,4 @@
-import { Card } from '@/components/ui'
+import { Card } from '@/components/ui/card'
 
 import type { QualityCard } from '../_lib/data'
 

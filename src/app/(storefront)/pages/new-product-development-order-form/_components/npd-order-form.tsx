@@ -2,14 +2,12 @@
 
 import { useActionState, useEffect, useState } from 'react'
 
-import {
-  Button,
-  Checkbox,
-  FormLabel,
-  Radio,
-  Select,
-  TextInput,
-} from '@/components/ui'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
+import { FormLabel } from '@/components/ui/form-label'
+import { Radio } from '@/components/ui/radio'
+import { Select } from '@/components/ui/select'
+import { TextInput } from '@/components/ui/text-input'
 import { dispatchClientAnalyticsEvent } from '@/lib/analytics/client'
 import { createLeadSubmitEvent } from '@/lib/analytics/events'
 import { sendNpdOrderAction } from '@/lib/contact/actions'

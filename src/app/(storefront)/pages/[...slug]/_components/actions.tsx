@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui'
+import { Button } from '@/components/ui/button'
 
 import type { PageProfile } from '../_lib/page-profile'
 
@@ -9,7 +9,9 @@ type ActionsProps = {
 
 export function Actions({ currentPath, profile }: ActionsProps) {
   const secondaryAction =
-    profile.secondaryAction.href === currentPath ? null : profile.secondaryAction
+    profile.secondaryAction.href === currentPath
+      ? null
+      : profile.secondaryAction
 
   return (
     <div className="mt-8 flex flex-wrap gap-3">

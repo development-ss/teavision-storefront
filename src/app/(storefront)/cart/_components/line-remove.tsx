@@ -2,7 +2,7 @@
 
 import { useActionState, useEffect } from 'react'
 
-import { Button } from '@/components/ui'
+import { Button } from '@/components/ui/button'
 import { dispatchClientAnalyticsEvent } from '@/lib/analytics/client'
 import { createCartUpdateEvent } from '@/lib/analytics/events'
 import { cartLineFormAction, type CartLineFormState } from '@/lib/cart/actions'

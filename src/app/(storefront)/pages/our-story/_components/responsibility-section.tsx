@@ -1,4 +1,5 @@
-import { Card, Section } from '@/components/ui'
+import { Card } from '@/components/ui/card'
+import { Section } from '@/components/ui/section'
 
 import { RESPONSIBILITY_CARDS } from '../_lib/data'
 import { SectionHeading } from './section-heading'

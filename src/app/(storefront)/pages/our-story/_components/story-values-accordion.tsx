@@ -2,7 +2,7 @@
 
 import { useId, useState } from 'react'
 
-import { DisclosureButton } from '@/components/ui'
+import { DisclosureButton } from '@/components/ui/disclosure-button'
 
 import type { StoryValue } from '../_lib/data'
 import { StoryImage } from './story-image'

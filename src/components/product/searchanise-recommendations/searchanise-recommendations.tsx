@@ -4,7 +4,7 @@ import { Suspense, useEffect, useRef, useState, type ReactNode } from 'react'
 
 import { searchanisePublicConfig } from '@/lib/env/public'
 import { cn } from '@/lib/utils'
-import { Section } from '@/components/ui'
+import { Section } from '@/components/ui/section'
 
 import { RecommendationCarouselSkeleton } from '../recommendation-carousel-skeleton'
 import { RelatedProductsCarousel } from '../related-products-carousel'

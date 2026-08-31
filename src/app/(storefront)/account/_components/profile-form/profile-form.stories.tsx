@@ -4,7 +4,7 @@ import { expect, within } from 'storybook/test'
 import { makeCustomerAccountProfile } from '@/tests/fixtures/shopify/customer-account'
 import type { CustomerAccountFormState } from '@/lib/shopify/customer-account/types'
 
-import { ProfileForm } from '.'
+import { ProfileForm } from './profile-form'
 
 const meta: Meta<typeof ProfileForm> = {
   title: 'Account/Profile/Form',
@@ -47,12 +47,8 @@ export const Loaded: Story = {
     await expect(
       canvas.queryByRole('textbox', { name: 'Phone' }),
     ).not.toBeInTheDocument()
-    await expect(
-      canvas.queryByText('Phone'),
-    ).not.toBeInTheDocument()
-    await expect(
-      canvas.queryByText('+61 400 000 000'),
-    ).not.toBeInTheDocument()
+    await expect(canvas.queryByText('Phone')).not.toBeInTheDocument()
+    await expect(canvas.queryByText('+61 400 000 000')).not.toBeInTheDocument()
     await expect(
       canvas.queryByText(
         'Phone changes are managed through Shopify account sign-in.',

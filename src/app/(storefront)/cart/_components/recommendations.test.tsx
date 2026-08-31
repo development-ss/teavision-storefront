@@ -5,13 +5,19 @@ import { isValidElement, type ReactNode } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { getProduct, getProductRecommendations } from '@/lib/shopify/operations/product'
+import {
+  getProduct,
+  getProductRecommendations,
+} from '@/lib/shopify/operations/product'
 import { makeCart } from '@/tests/fixtures/shopify/cart'
-import { makeProduct, makeProductSummary } from '@/tests/fixtures/shopify/product'
+import {
+  makeProduct,
+  makeProductSummary,
+} from '@/tests/fixtures/shopify/product'
 
 import { CartRecommendations } from './recommendations'
 
-vi.mock('@/components/product', () => ({
+vi.mock('@/components/product/related-products-carousel', () => ({
   RelatedProductsCarousel: ({
     ariaLabel,
     heading,
@@ -36,6 +42,9 @@ vi.mock('@/components/product', () => ({
       </ul>
     </div>
   ),
+}))
+
+vi.mock('@/components/product/searchanise-recommendations', () => ({
   SearchaniseRecommendations: ({ fallback }: { fallback?: ReactNode }) => (
     <div data-searchanise-fallback>{fallback}</div>
   ),

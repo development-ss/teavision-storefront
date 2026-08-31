@@ -1,9 +1,9 @@
 import { redirect } from 'next/navigation'
 import { notFound } from 'next/navigation'
 
-import { Toolbar } from '@/components/collection'
+import { Toolbar } from '@/components/collection/toolbar'
 import { SearchPageSearchForm } from '@/components/search/search-results-view/search-page-search-form'
-import { Section } from '@/components/ui'
+import { Section } from '@/components/ui/section'
 import { getVisibleProductReviewSummary } from '@/lib/reviews/summary'
 import { getTrustooProductRatings } from '@/lib/reviews/trustoo'
 import { SITE_URL } from '@/lib/seo/site-url'

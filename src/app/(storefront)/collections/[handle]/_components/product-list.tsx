@@ -1,7 +1,8 @@
 import { Leaf } from 'lucide-react'
 
-import { ProductCard } from '@/components/collection'
-import { Button, Pagination } from '@/components/ui'
+import { ProductCard } from '@/components/collection/product-card'
+import { Button } from '@/components/ui/button'
+import { Pagination } from '@/components/ui/pagination'
 import type { CollectionProductSummary } from '@/lib/shopify/types'
 
 type ProductListProps = {

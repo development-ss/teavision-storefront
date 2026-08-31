@@ -2,7 +2,7 @@
 
 import { Search } from 'lucide-react'
 
-import { Button } from '@/components/ui'
+import { Button } from '@/components/ui/button'
 
 type SearchTriggerProps = {
   onClick: () => void
@@ -22,7 +22,11 @@ export function SearchTrigger({ onClick }: SearchTriggerProps) {
       aria-haspopup="dialog"
       className="w-full"
     >
-      <Search className="size-4 shrink-0" aria-hidden="true" strokeWidth={1.8} />
+      <Search
+        className="size-4 shrink-0"
+        aria-hidden="true"
+        strokeWidth={1.8}
+      />
       <span className="min-w-0 flex-1 truncate text-left">
         Search teas, herbs &amp; spices&hellip;
       </span>

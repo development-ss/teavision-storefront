@@ -1,6 +1,8 @@
 import Image from 'next/image'
 
-import { Button, Eyebrow, Section } from '@/components/ui'
+import { Button } from '@/components/ui/button'
+import { Eyebrow } from '@/components/ui/eyebrow'
+import { Section } from '@/components/ui/section'
 
 import { HERO_CERT_LOGOS, HERO_FEATURES, HERO_IMAGE_SRC } from '../_lib/data'
 

@@ -2,8 +2,11 @@
 
 import { useActionState } from 'react'
 
-import { Button, Card, FormLabel, TextInput } from '@/components/ui'
-import type { CustomerAccountProfile } from '@/lib/shopify/customer-account'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { FormLabel } from '@/components/ui/form-label'
+import { TextInput } from '@/components/ui/text-input'
+import type { CustomerAccountProfile } from '@/lib/shopify/customer-account/types'
 import type { CustomerAccountFormState } from '@/lib/shopify/customer-account/types'
 
 type ProfileFormProps = {

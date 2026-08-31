@@ -1,5 +1,5 @@
-import { ArticleResults } from '@/components/blog'
-import { ContactSection } from '@/components/contact'
+import { ArticleResults } from '@/components/blog/article-results'
+import { ContactSection } from '@/components/contact/contact-section'
 import { DEFAULT_BLOG_HANDLE } from '@/lib/blog/operations'
 import type { PaginatedArticles } from '@/lib/blog/operations'
 import { submitContactFormAction } from '@/lib/contact/actions'

@@ -1,4 +1,6 @@
-import { Card, Section, Skeleton } from '@/components/ui'
+import { Card } from '@/components/ui/card'
+import { Section } from '@/components/ui/section'
+import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
 
 type LoadingSkeletonProps = {

@@ -2,10 +2,8 @@ import type { Metadata } from 'next'
 import { Suspense } from 'react'
 
 import { withNoindexRobots } from '@/lib/seo/noindex'
-import {
-  getCustomerAccountDashboard,
-  type CustomerAccountSession,
-} from '@/lib/shopify/customer-account'
+import { getCustomerAccountDashboard } from '@/lib/shopify/customer-account/operations'
+import type { CustomerAccountSession } from '@/lib/shopify/customer-account/types'
 
 import { Dashboard } from './_components/dashboard'
 import { AccountLoading } from './_components/loading'

@@ -34,7 +34,7 @@ vi.mock('next/script', () => ({
   ),
 }))
 
-vi.mock('@/components/product', () => ({
+vi.mock('@/components/product/product-form', () => ({
   ProductForm: ({
     initialVariantId,
     descriptionSlot,
@@ -47,6 +47,9 @@ vi.mock('@/components/product', () => ({
       {descriptionSlot}
     </div>
   ),
+}))
+
+vi.mock('@/components/product/product-gallery', () => ({
   ProductGallery: ({ title }: { title: string }) => (
     <div data-testid="product-gallery">{title} gallery</div>
   ),

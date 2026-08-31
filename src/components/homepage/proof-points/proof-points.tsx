@@ -10,7 +10,7 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 
-import { Section } from '@/components/ui'
+import { Section } from '@/components/ui/section'
 import type { HomepageProofPoint } from '@/lib/sanity/home-page'
 import { cn } from '@/lib/utils'
 

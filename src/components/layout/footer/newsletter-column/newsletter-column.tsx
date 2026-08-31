@@ -1,9 +1,8 @@
 import { CONTACT_LINKS } from '../data'
-import { MailIcon, PhoneIcon } from '../icons'
-import {
-  FooterNewsletterForm,
-  type FooterNewsletterAction,
-} from '../newsletter-form'
+import { MailIcon } from '../icons'
+import { PhoneIcon } from '../icons'
+import { FooterNewsletterForm } from '../newsletter-form'
+import type { FooterNewsletterAction } from '../newsletter-form'
 
 export function NewsletterColumn({
   action,

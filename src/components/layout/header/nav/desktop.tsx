@@ -5,7 +5,7 @@ import { ChevronDown } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 
-import { DisclosureButton } from '@/components/ui'
+import { DisclosureButton } from '@/components/ui/disclosure-button'
 import { cn } from '@/lib/utils'
 
 import { DIRECT_LINKS, SHOP_SECTIONS, type MenuKey, type ShopKey } from './data'

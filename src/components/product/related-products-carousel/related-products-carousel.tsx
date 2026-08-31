@@ -4,8 +4,8 @@ import { useCallback, useEffect, useState, type ReactNode } from 'react'
 import useEmblaCarousel from 'embla-carousel-react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 
-import { ProductCard } from '@/components/collection'
-import { IconButton } from '@/components/ui'
+import { ProductCard } from '@/components/collection/product-card'
+import { IconButton } from '@/components/ui/icon-button'
 import type { ProductSummary } from '@/lib/shopify/types'
 import { cn } from '@/lib/utils'
 

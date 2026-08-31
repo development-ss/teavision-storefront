@@ -3,7 +3,10 @@
 import { useEffect, useMemo, useState, type SubmitEvent } from 'react'
 
 import type { ProductVariant } from '@/lib/shopify/types'
-import { Button, Price, QuantityStepper, Select } from '@/components/ui'
+import { Button } from '@/components/ui/button'
+import { Price } from '@/components/ui/price'
+import { QuantityStepper } from '@/components/ui/quantity-stepper'
+import { Select } from '@/components/ui/select'
 import {
   type AddToCart,
   useAddToCart,

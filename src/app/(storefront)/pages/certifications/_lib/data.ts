@@ -1,6 +1,6 @@
 import { Award, CheckCircle, Globe, Users } from 'lucide-react'
 
-import type { StatBandItem } from '@/components/ui'
+import type { StatBandItem } from '@/components/ui/stat-band'
 
 export const CERTIFICATION_STATS = [
   { icon: Users, value: '2,500+', label: 'Satisfied customers' },

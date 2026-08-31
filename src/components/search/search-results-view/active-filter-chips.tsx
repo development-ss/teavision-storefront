@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { X } from 'lucide-react'
 
-import { Button } from '@/components/ui'
+import { Button } from '@/components/ui/button'
 
 import type { ActiveFilter } from './search-results-helpers'
 

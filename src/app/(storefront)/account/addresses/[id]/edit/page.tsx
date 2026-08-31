@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 
 import { withNoindexRobots } from '@/lib/seo/noindex'
-import { getCustomerAccountDashboard } from '@/lib/shopify/customer-account'
+import { getCustomerAccountDashboard } from '@/lib/shopify/customer-account/operations'
 import { updateAddressAction } from '@/lib/shopify/customer-account/actions'
 
 import { AddressForm } from '../../../_components/address-form'

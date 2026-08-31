@@ -17,9 +17,12 @@ vi.mock('next/link', () => ({
   ),
 }))
 
-vi.mock('@/components/ui', () => ({
+vi.mock('@/components/ui/button', () => ({
   Button: ({ children, href }: MockChildProps) =>
     href ? <a href={href}>{children}</a> : <span>{children}</span>,
+}))
+
+vi.mock('@/components/ui/card', () => ({
   Card: ({ children }: MockChildProps) => <div>{children}</div>,
 }))
 

@@ -1,6 +1,6 @@
 import Image from 'next/image'
 
-import { Section } from '@/components/ui'
+import { Section } from '@/components/ui/section'
 
 import { SOLUTION_CARDS } from '../_lib/data'
 

@@ -1,4 +1,6 @@
-import { Button, Card, Section } from '@/components/ui'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { Section } from '@/components/ui/section'
 
 type LegacyBridgeProps = {
   body: string

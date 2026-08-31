@@ -20,17 +20,15 @@ import {
   getVariantDisplayTitle,
   isPlaceholderVariantTitle,
 } from '@/lib/shopify/variant-title'
-import {
-  Button,
-  type ButtonProps,
-  Dialog,
-  Eyebrow,
-  Price,
-  QuantityStepper,
-  Skeleton,
-  StarRating,
-  ToggleButton,
-} from '@/components/ui'
+import { Button } from '@/components/ui/button'
+import type { ButtonProps } from '@/components/ui/button'
+import { Dialog } from '@/components/ui/dialog'
+import { Eyebrow } from '@/components/ui/eyebrow'
+import { Price } from '@/components/ui/price'
+import { QuantityStepper } from '@/components/ui/quantity-stepper'
+import { Skeleton } from '@/components/ui/skeleton'
+import { StarRating } from '@/components/ui/star-rating'
+import { ToggleButton } from '@/components/ui/toggle-button'
 import { cn } from '@/lib/utils'
 
 import { ProductQuickViewImage } from './product-quick-view-image'

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react'
 import useEmblaCarousel from 'embla-carousel-react'
 import Image from 'next/image'
 
-import { ToggleButton } from '@/components/ui'
+import { ToggleButton } from '@/components/ui/toggle-button'
 import type { ShopifyImage } from '@/lib/shopify/types'
 import { getSizedShopifyImageUrl } from '@/lib/shopify/image-url'
 import { cn } from '@/lib/utils'

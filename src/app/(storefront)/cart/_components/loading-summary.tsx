@@ -1,4 +1,4 @@
-import { Skeleton } from '@/components/ui'
+import { Skeleton } from '@/components/ui/skeleton'
 
 const CART_LOADING_TRUST_SIGNALS = [
   'businesses-served',
