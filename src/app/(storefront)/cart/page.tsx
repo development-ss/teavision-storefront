@@ -4,6 +4,7 @@ import { Suspense } from 'react'
 import { Section } from '@/components/ui/section'
 import { getCartAction } from '@/lib/cart/actions'
 import { withNoindexRobots } from '@/lib/seo/noindex'
+import { getCustomerAccountIdentity } from '@/lib/shopify/customer-account/operations'
 import { getCustomerAccountSession } from '@/lib/shopify/customer-account/session'
 
 import { CartLoadingSkeleton } from './_components/loading-skeleton'
@@ -27,6 +28,13 @@ async function CartPageContent({ searchParams }: CartPageProps) {
   const session = shouldLoadAccountSession
     ? await getCustomerAccountSession()
     : null
+  const accountIdentity = session
+    ? await getCustomerAccountIdentity(session).catch(() => null)
+    : null
+  const accountEmail =
+    session && accountIdentity?.customerId === session.customerId
+      ? accountIdentity.email
+      : null
   const accountContextState =
     params.checkout === 'identity-sync-failed'
       ? 'sync-failed-blocked'
@@ -41,6 +49,7 @@ async function CartPageContent({ searchParams }: CartPageProps) {
       <CartView
         cart={cart}
         accountContextState={accountContextState}
+        accountEmail={accountEmail}
         checkoutError={checkoutError}
       />
       {cart && cart.totalQuantity > 0 ? (

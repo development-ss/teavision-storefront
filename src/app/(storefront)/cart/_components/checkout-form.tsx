@@ -15,12 +15,14 @@ import {
 } from './account-context'
 
 type CartCheckoutFormProps = {
+  accountEmail?: string | null
   accountContextState: CartAccountContextState
   cartIdPresent: boolean
   checkoutError?: 'note-update-failed' | null
 }
 
 export function CartCheckoutForm({
+  accountEmail = null,
   accountContextState,
   cartIdPresent,
   checkoutError = null,
@@ -65,6 +67,7 @@ export function CartCheckoutForm({
       ) : null}
 
       <CartAccountContext
+        accountEmail={accountEmail}
         state={currentAccountContextState}
         retryDisabled={!agreedToTerms || isSubmitting}
       />

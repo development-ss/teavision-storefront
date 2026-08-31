@@ -7,11 +7,13 @@ export type CartAccountContextState =
   | null
 
 type CartAccountContextProps = {
+  accountEmail?: string | null
   retryDisabled?: boolean
   state: CartAccountContextState
 }
 
 export function CartAccountContext({
+  accountEmail = null,
   retryDisabled = false,
   state,
 }: CartAccountContextProps) {
@@ -62,6 +64,20 @@ export function CartAccountContext({
           ? 'Confirming your account for checkout'
           : 'Checking out with your Teavision account'}
       </p>
+      {state === 'signed-in' ? (
+        <>
+          {accountEmail ? (
+            <p className="type-caption text-ink-soft mt-1">
+              Order confirmation:{' '}
+              <span className="font-medium">{accountEmail}</span>
+            </p>
+          ) : null}
+          <p className="type-caption text-ink-soft mt-1">
+            Shop Pay may show a different email. It does not change the
+            Teavision account used for this order.
+          </p>
+        </>
+      ) : null}
     </div>
   )
 }

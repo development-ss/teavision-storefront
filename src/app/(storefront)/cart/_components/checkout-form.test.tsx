@@ -28,4 +28,18 @@ describe('CartCheckoutForm', () => {
     expect(html).toContain('We could not save your order notes.')
     expect(html).toContain('role="alert"')
   })
+
+  it('shows the Teavision confirmation email and Shop Pay clarification', () => {
+    const html = renderToStaticMarkup(
+      <CartCheckoutForm
+        accountContextState="signed-in"
+        accountEmail="giladianne@gmail.com"
+        cartIdPresent={true}
+      />,
+    )
+
+    expect(html).toContain('Order confirmation:')
+    expect(html).toContain('giladianne@gmail.com')
+    expect(html).toContain('Shop Pay may show a different email')
+  })
 })

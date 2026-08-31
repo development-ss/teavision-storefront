@@ -19,6 +19,7 @@ import { CartLineRemove } from './line-remove'
 import { TrustSignalList } from './trust-signal-list'
 
 type CartViewProps = {
+  accountEmail?: string | null
   accountContextState?: CartAccountContextState
   cart: Cart | null
   checkoutError?: 'note-update-failed' | null
@@ -170,6 +171,7 @@ function isBulkDiscountAllocation(
 }
 
 export function CartView({
+  accountEmail = null,
   accountContextState = null,
   cart,
   checkoutError = null,
@@ -415,6 +417,7 @@ export function CartView({
 
           {/* Order notes, terms, and checkout actions */}
           <CartCheckoutForm
+            accountEmail={accountEmail}
             accountContextState={accountContextState}
             cartIdPresent={Boolean(cart.id)}
             checkoutError={checkoutError}
