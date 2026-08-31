@@ -400,8 +400,14 @@ export function ProductQuickView({
                   }
                   onClick={handleAddToCart}
                 >
-                  <ShoppingCart className="size-4" aria-hidden="true" />
-                  {canAddToCart ? 'Add to Cart' : 'Sold Out'}
+                  {!isPending && (
+                    <ShoppingCart className="size-4" aria-hidden="true" />
+                  )}
+                  {isPending
+                    ? 'Adding…'
+                    : canAddToCart
+                      ? 'Add to Cart'
+                      : 'Sold Out'}
                 </Button>
                 <Button
                   href={`/products/${productData.handle}`}
@@ -412,11 +418,14 @@ export function ProductQuickView({
                 </Button>
               </div>
 
-              {message && (
-                <p role="status" className="type-caption text-brand">
-                  {message}
-                </p>
-              )}
+              <p
+                role="status"
+                className={cn('type-caption text-brand', !message && 'sr-only')}
+              >
+                {isPending
+                  ? `Adding ${effectiveQuantity} ${productData.title} to cart`
+                  : (message ?? '')}
+              </p>
               {error && (
                 <p role="alert" className="type-caption text-danger">
                   {error}

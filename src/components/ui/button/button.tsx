@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils'
 
 const buttonVariants = cva(
   [
-    'items-center justify-center gap-2.5',
+    'items-center justify-center gap-2.5 whitespace-nowrap',
     'inline-flex cursor-pointer',
     // translate is its own CSS property in Tailwind 4 — listing only
     // `transform` would make hover lifts snap instead of animate
@@ -105,9 +105,11 @@ export const Button = React.forwardRef<
     { variant = 'primary', size = 'md', children, className, ...props },
     ref,
   ) => {
-    const classes = cn(buttonVariants({ variant, size }), className)
+    const baseClasses = buttonVariants({ variant, size })
 
     if (props.href !== undefined) {
+      const classes = cn(baseClasses, className)
+
       if (!shouldUseNextLink(props.href)) {
         return (
           <a
@@ -137,6 +139,12 @@ export const Button = React.forwardRef<
       type = 'button',
       ...buttonProps
     } = props
+    const classes = cn(
+      baseClasses,
+      isLoading &&
+        'disabled:opacity-100 hover:translate-y-0 hover:shadow-none hover:[&_svg]:translate-x-0',
+      className,
+    )
 
     return (
       <button
@@ -144,12 +152,13 @@ export const Button = React.forwardRef<
         type={type}
         disabled={disabled || isLoading}
         aria-busy={isLoading || undefined}
+        data-loading={isLoading || undefined}
         className={classes}
         {...buttonProps}
       >
         {isLoading && (
           <LoaderCircle
-            className="size-4 animate-spin motion-reduce:animate-none"
+            className="size-4 shrink-0 animate-spin motion-reduce:animate-none"
             aria-hidden="true"
           />
         )}

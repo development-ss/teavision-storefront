@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 
 import type { ProductVariant } from '@/lib/shopify/types'
+import { cn } from '@/lib/utils'
 
 import { ProductPurchaseForm } from './product-purchase-form'
 
@@ -107,8 +108,13 @@ const meta: Meta<typeof ProductPurchaseForm> = {
     onCartChanged: noopCartRefresh,
   },
   decorators: [
-    (Story) => (
-      <div className="w-[min(24rem,calc(100vw-2rem))]">
+    (Story, context) => (
+      <div
+        className={cn(
+          'w-[min(24rem,calc(100vw-2rem))]',
+          context.args.layout === 'inline' && 'w-[min(48rem,calc(100vw-2rem))]',
+        )}
+      >
         <Story />
       </div>
     ),
@@ -156,14 +162,20 @@ export const AddToCartError: Story = {
 export const AddToCartPending: Story = {
   args: {
     addToCart: pendingAddToCart,
+    layout: 'inline',
+    showPrice: false,
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     await userEvent.click(canvas.getByRole('button', { name: 'Add to cart' }))
 
-    await expect(
-      await canvas.findByRole('button', { name: 'Add to cart' }),
-    ).toBeDisabled()
+    const pendingButton = await canvas.findByRole('button', { name: 'Adding…' })
+    await expect(pendingButton).toBeDisabled()
+    await expect(pendingButton).toHaveAttribute('aria-busy', 'true')
+    await expect(pendingButton).toHaveAttribute('data-loading', 'true')
+    await expect(canvas.getByRole('status')).toHaveTextContent(
+      'Adding 1 Tea Masters Sencha to cart',
+    )
   },
 }
 
@@ -269,9 +281,7 @@ export const CardStandard: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
 
-    await expect(
-      canvas.getByRole('option', { name: 'Standard' }),
-    ).toBeVisible()
+    await expect(canvas.getByRole('option', { name: 'Standard' })).toBeVisible()
     await expect(canvas.queryByText('Default Title')).not.toBeInTheDocument()
     await expect(
       canvas.getByRole('button', { name: 'Add to cart' }),

@@ -35,6 +35,11 @@ type ProductFormProps = {
   className?: string
 }
 
+type PendingAdd = {
+  source: 'primary' | 'bulk'
+  quantity: number
+}
+
 function getAddToCartErrorMessage(error: unknown): string {
   if (
     error instanceof Error &&
@@ -89,6 +94,7 @@ export function ProductForm({
   const [selectedBulkTierQuantity, setSelectedBulkTierQuantity] = useState<
     number | null
   >(null)
+  const [pendingAdd, setPendingAdd] = useState<PendingAdd | null>(null)
   const { addItem, error, isPending, message, reportError, resetFeedback } =
     useAddToCart({
       addToCart,
@@ -132,12 +138,16 @@ export function ProductForm({
     return true
   }
 
-  function addQuantityToCart(nextQuantity: number) {
+  function addQuantityToCart(
+    nextQuantity: number,
+    source: PendingAdd['source'],
+  ) {
     if (!canAddToCart || !selectedVariant || !canUseSelectedVariantQuantity) {
       return
     }
     if (!canUseQuantity(nextQuantity)) return
 
+    setPendingAdd({ source, quantity: nextQuantity })
     addItem(selectedVariant.id, nextQuantity)
   }
 
@@ -171,7 +181,7 @@ export function ProductForm({
   function handleGrabDeal() {
     if (bulkDealQuantity === null) return
 
-    addQuantityToCart(bulkDealQuantity)
+    addQuantityToCart(bulkDealQuantity, 'bulk')
   }
 
   if (variants.length === 0) {
@@ -259,15 +269,19 @@ export function ProductForm({
         <div className="min-w-0 flex-1">
           <Button
             variant="brand"
-            onClick={() => addQuantityToCart(effectiveQuantity)}
-            isLoading={isPending}
+            onClick={() => addQuantityToCart(effectiveQuantity, 'primary')}
+            isLoading={isPending && pendingAdd?.source === 'primary'}
             disabled={
               !canAddToCart || !canUseSelectedVariantQuantity || isPending
             }
             size="lg"
             className="w-full"
           >
-            {canAddToCart ? 'Add to Cart' : 'Sold Out'}
+            {isPending && pendingAdd?.source === 'primary'
+              ? 'Adding…'
+              : canAddToCart
+                ? 'Add to Cart'
+                : 'Sold Out'}
           </Button>
         </div>
       </div>
@@ -281,15 +295,15 @@ export function ProductForm({
           {error}
         </p>
       )}
-      {message && (
-        <p
-          id={quantityStatusId}
-          role="status"
-          className="type-caption text-brand"
-        >
-          {message}
-        </p>
-      )}
+      <p
+        id={quantityStatusId}
+        role="status"
+        className={cn('type-caption text-brand', !message && 'sr-only')}
+      >
+        {isPending
+          ? `Adding ${pendingAdd?.quantity ?? effectiveQuantity} to cart`
+          : (message ?? '')}
+      </p>
 
       {/* Assurance row — design specifies 18px gap above (vs form gap-6=24px), so -6px offset */}
       <div className="border-hairline -mt-1.5 flex flex-wrap gap-x-6.5 gap-y-3.5 border-y py-5">
@@ -316,7 +330,8 @@ export function ProductForm({
           selectedTierQuantity={selectedBulkTierQuantity}
           maximumQuantity={maximumQuantity}
           canAddToCart={canAddToCart && bulkDealQuantity !== null}
-          isPending={isPending}
+          disabled={isPending}
+          isPending={isPending && pendingAdd?.source === 'bulk'}
           onGrabDeal={handleGrabDeal}
           onSelectTier={handleSelectBulkTier}
           className="mt-0.5"

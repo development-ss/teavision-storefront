@@ -36,13 +36,21 @@ export function QuickAddButton({
         isLoading={isPending}
         className="w-full"
         aria-label={
-          justAdded ? `${productTitle} added` : `Add ${productTitle} to cart`
+          isPending
+            ? `Adding ${productTitle} to cart`
+            : justAdded
+              ? `${productTitle} added`
+              : `Add ${productTitle} to cart`
         }
       >
-        {justAdded ? 'Added' : 'Add to cart'}
+        {isPending ? 'Adding…' : justAdded ? 'Added' : 'Add to cart'}
       </Button>
       <p role="status" className="sr-only">
-        {justAdded ? message : ''}
+        {isPending
+          ? `Adding ${productTitle} to cart`
+          : justAdded
+            ? message
+            : ''}
       </p>
       {error && (
         <p role="alert" className="type-body-sm text-danger sr-only">

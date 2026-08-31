@@ -10,6 +10,7 @@ type BulkSavingsProps = {
   selectedTierQuantity?: number | null
   maximumQuantity?: number
   canAddToCart?: boolean
+  disabled?: boolean
   isPending?: boolean
   onGrabDeal?: () => void
   onSelectTier?: (quantity: number) => void
@@ -61,6 +62,7 @@ export function BulkSavings({
   selectedTierQuantity = null,
   maximumQuantity,
   canAddToCart = true,
+  disabled = false,
   isPending = false,
   onGrabDeal,
   onSelectTier,
@@ -117,6 +119,7 @@ export function BulkSavings({
                   isActive && 'border-brand',
                 )}
                 onClick={() => onSelectTier?.(tier.minimumQuantity)}
+                disabled={disabled}
               >
                 {tier.minimumQuantity === bestValueTier.minimumQuantity ? (
                   <span className="bg-brand text-paper absolute -top-2 left-1/2 -translate-x-1/2 rounded-full px-2 py-0.5 font-mono text-[9px] tracking-widest whitespace-nowrap uppercase">
@@ -160,9 +163,9 @@ export function BulkSavings({
             className="w-full"
             onClick={onGrabDeal}
             isLoading={isPending}
-            disabled={!canAddToCart || isPending}
+            disabled={!canAddToCart || disabled || isPending}
           >
-            Grab this deal
+            {isPending ? 'Adding…' : 'Grab this deal'}
           </Button>
           <p className="type-caption text-brand text-center">
             Note: When ordering in sizes over 1kg, your package may not be

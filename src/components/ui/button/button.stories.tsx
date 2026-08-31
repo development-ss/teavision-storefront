@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
+import { expect, within } from 'storybook/test'
 
 import { Button } from './button'
 
@@ -79,6 +80,16 @@ export const AsLink: Story = {
 
 export const Loading: Story = {
   args: { children: 'Adding…', variant: 'primary', isLoading: true },
+  play: async ({ canvasElement }) => {
+    const button = within(canvasElement).getByRole('button', {
+      name: 'Adding…',
+    })
+
+    await expect(button).toBeDisabled()
+    await expect(button).toHaveAttribute('aria-busy', 'true')
+    await expect(button).toHaveAttribute('data-loading', 'true')
+    await expect(button).toHaveClass('disabled:opacity-100')
+  },
 }
 
 export const Disabled: Story = {

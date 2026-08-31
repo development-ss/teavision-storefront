@@ -246,14 +246,24 @@ export function ProductPurchaseForm({
               size={isCompactLayout ? 'sm' : 'md'}
               className="w-full min-w-0"
             >
-              {justAdded ? 'Added' : canAddToCart ? 'Add to cart' : 'Sold out'}
+              {isPending
+                ? 'Adding…'
+                : justAdded
+                  ? 'Added'
+                  : canAddToCart
+                    ? 'Add to cart'
+                    : 'Sold out'}
             </Button>
           </div>
         )}
       </div>
 
       <p role="status" className="sr-only">
-        {justAdded ? message : ''}
+        {isPending
+          ? `Adding ${effectiveQuantity} ${productTitle} to cart`
+          : justAdded
+            ? message
+            : ''}
       </p>
       {error && (
         <p role="alert" className="type-body-sm text-danger">

@@ -209,9 +209,13 @@ export const AddToCartPending: Story = {
     const canvas = within(canvasElement)
     await userEvent.click(canvas.getByRole('button', { name: 'Add to Cart' }))
 
-    await expect(
-      await canvas.findByRole('button', { name: 'Add to Cart' }),
-    ).toBeDisabled()
+    const pendingButton = await canvas.findByRole('button', { name: 'Adding…' })
+    await expect(pendingButton).toBeDisabled()
+    await expect(pendingButton).toHaveAttribute('aria-busy', 'true')
+    await expect(pendingButton).toHaveAttribute('data-loading', 'true')
+    await expect(canvas.getByRole('status')).toHaveTextContent(
+      'Adding 1 to cart',
+    )
   },
 }
 

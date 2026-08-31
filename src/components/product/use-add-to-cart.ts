@@ -44,6 +44,8 @@ export function useAddToCart({
   }
 
   function addItem(variantId: string, quantity: number) {
+    setMessage(null)
+    setError(null)
     setIsPending(true)
 
     void (async () => {
