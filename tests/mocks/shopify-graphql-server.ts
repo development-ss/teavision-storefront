@@ -96,7 +96,12 @@ function toBuyerIdentityPayload(
   return {
     countryCode: readString(input.countryCode),
     customer: customerAccessToken
-      ? { id: 'gid://shopify/Customer/fake-customer' }
+      ? {
+          id:
+            customerAccessToken === 'customer-access-token-b'
+              ? 'gid://shopify/Customer/test-customer-2'
+              : 'gid://shopify/Customer/test-customer-1',
+        }
       : null,
     email: readString(input.email),
     phone: readString(input.phone),

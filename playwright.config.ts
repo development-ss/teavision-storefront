@@ -6,9 +6,14 @@ import {
 } from './src/lib/env/tooling'
 
 const PORT = defaultedNumberEnv('PLAYWRIGHT_PORT', 4173)
-const BASE_URL = `http://localhost:${PORT}`
+const BASE_URL = `http://127.0.0.1:${PORT}`
 const FAKE_SHOPIFY_PORT = defaultedNumberEnv('FAKE_SHOPIFY_PORT', 4517)
 const FAKE_SHOPIFY_URL = `http://127.0.0.1:${FAKE_SHOPIFY_PORT}/graphql`
+const FAKE_CUSTOMER_ACCOUNT_PORT = defaultedNumberEnv(
+  'FAKE_CUSTOMER_ACCOUNT_PORT',
+  4518,
+)
+const FAKE_CUSTOMER_ACCOUNT_URL = `http://127.0.0.1:${FAKE_CUSTOMER_ACCOUNT_PORT}`
 
 export default defineConfig({
   testDir: './tests/e2e',
@@ -35,7 +40,16 @@ export default defineConfig({
       },
     },
     {
-      command: `corepack pnpm exec next dev -p ${PORT}`,
+      command:
+        'node --import tsx tests/mocks/run-customer-account-api-server.ts',
+      url: `${FAKE_CUSTOMER_ACCOUNT_URL}/.well-known/openid-configuration`,
+      reuseExistingServer: false,
+      env: {
+        FAKE_CUSTOMER_ACCOUNT_PORT: String(FAKE_CUSTOMER_ACCOUNT_PORT),
+      },
+    },
+    {
+      command: `corepack pnpm exec next dev -H 127.0.0.1 -p ${PORT}`,
       url: BASE_URL,
       reuseExistingServer: false,
       env: {
@@ -45,6 +59,7 @@ export default defineConfig({
         SHOPIFY_CUSTOMER_ACCOUNT_SESSION_SECRET:
           'test-session-secret-with-at-least-32-characters',
         SHOPIFY_CUSTOMER_ACCOUNT_TEST_MODE: 'true',
+        SHOPIFY_CUSTOMER_ACCOUNT_TEST_URL: FAKE_CUSTOMER_ACCOUNT_URL,
         SHOPIFY_STOREFRONT_TEST_MODE: 'true',
         SHOPIFY_STOREFRONT_TEST_URL: FAKE_SHOPIFY_URL,
         SHOPIFY_ADMIN_TEST_MODE: 'true',

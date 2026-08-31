@@ -14,7 +14,11 @@ test.beforeEach(async ({ page }) => {
   await blockThirdPartyRequests(page)
 })
 
-async function setCustomerSession(page: Page, accessToken: string) {
+async function setCustomerSession(
+  page: Page,
+  accessToken: string,
+  customerId = 'gid://shopify/Customer/test-customer-1',
+) {
   process.env.SHOPIFY_CUSTOMER_ACCOUNT_SESSION_SECRET = customerSessionSecret
   process.env.SHOPIFY_CUSTOMER_ACCOUNT_TEST_MODE = 'true'
   process.env.SHOPIFY_CUSTOMER_ACCOUNT_API_CLIENT_ID = 'test-client-id'
@@ -30,6 +34,7 @@ async function setCustomerSession(page: Page, accessToken: string) {
       url: localBaseUrl,
       value: sealCustomerSession({
         accessToken,
+        customerId,
         expiresAt: Date.now() + 60 * 60 * 1000,
         idToken: 'id-token',
         refreshToken: 'refresh-token',
@@ -165,6 +170,37 @@ test('buyer identity sync failure blocks checkout with recovery actions', async 
   ).toBeVisible()
 
   expect(hostedShopifyCheckoutPattern.test(page.url())).toBe(false)
+})
+
+test('switching Teavision accounts starts a fresh cart instead of transferring items', async ({
+  page,
+}) => {
+  await setCustomerSession(
+    page,
+    'customer-access-token-a',
+    'gid://shopify/Customer/test-customer-1',
+  )
+  await page.goto('/products/test-standard-tea')
+  await page.getByRole('button', { name: 'Add to Cart' }).click()
+  await expect(page.getByText('5 added to cart')).toBeVisible()
+
+  await setCustomerSession(
+    page,
+    'customer-access-token-b',
+    'gid://shopify/Customer/test-customer-2',
+  )
+  await page.goto('/cart')
+
+  await expect(page.getByText('Your cart is empty')).toBeVisible()
+  await expect(page.getByRole('list', { name: 'Cart items' })).toHaveCount(0)
+
+  await page.goto('/products/test-standard-tea')
+  await page.getByRole('button', { name: 'Add to Cart' }).click()
+  await expect(page.getByText('5 added to cart')).toBeVisible()
+  await page.goto('/cart')
+  await expect(page.getByRole('list', { name: 'Cart items' })).toContainText(
+    'Test Standard Tea',
+  )
 })
 
 test('account migration links and legacy routes use the modern bridge', async ({
