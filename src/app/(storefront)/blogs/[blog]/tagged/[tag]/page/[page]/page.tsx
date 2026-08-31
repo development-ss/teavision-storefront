@@ -1,7 +1,7 @@
 import { notFound, redirect } from 'next/navigation'
 import type { Metadata } from 'next'
 
-import { parseListingPage } from '@/lib/blog/listing'
+import { getTagListingHeading, parseListingPage } from '@/lib/blog/listing'
 import {
   DEFAULT_BLOG_HANDLE,
   getBlog,
@@ -59,7 +59,7 @@ export default async function TaggedBlogPaginationPage({ params }: Props) {
       <HeroSlot />
       <ListingResults
         activeTag={listing.activeTag}
-        heading={`${listing.activeTag} Articles`}
+        heading={getTagListingHeading(listing.activeTag)}
         paginated={listing.paginated}
         query={null}
         tags={listing.tags}

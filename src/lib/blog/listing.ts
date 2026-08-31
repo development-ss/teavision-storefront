@@ -11,6 +11,10 @@ export function parseListingPage(page?: string): number {
   return Math.max(1, parseInt(page ?? '1', 10) || 1)
 }
 
+export function getTagListingHeading(tag: string): string {
+  return `${tag.charAt(0).toUpperCase()}${tag.slice(1)} Articles`
+}
+
 // Crawlable, path-based listing URLs. Page 1 is the bare listing path; deeper
 // pages use /page/N so every listing URL is a static, indexable route with no
 // query string.

@@ -8,6 +8,7 @@ import {
   getUniqueArticleTags,
   slugifyTag,
 } from '@/lib/blog/operations'
+import { getTagListingHeading } from '@/lib/blog/listing'
 
 import { HeroSlot } from '../../_components/hero-slot'
 import { ListingResults } from '../../_components/listing-results'
@@ -42,7 +43,7 @@ export default async function TaggedBlogPage({ params }: Props) {
       <HeroSlot />
       <ListingResults
         activeTag={listing.activeTag}
-        heading={`${listing.activeTag} Articles`}
+        heading={getTagListingHeading(listing.activeTag)}
         paginated={listing.paginated}
         query={null}
         tags={listing.tags}
