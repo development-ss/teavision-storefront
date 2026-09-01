@@ -125,8 +125,8 @@ export function AddressBook({
               </div>
 
               <address className="type-body-sm text-ink-soft mt-4 not-italic">
-                {formatAddressLines(address).map((line) => (
-                  <span key={line} className="block">
+                {formatAddressLines(address).map((line, index) => (
+                  <span key={`${line}-${index}`} className="block">
                     {line}
                   </span>
                 ))}
