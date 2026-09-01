@@ -114,6 +114,8 @@ describe('customerAccountFetch', () => {
     expect(calls[2]?.headers.get('Authorization')).toBe(
       'customer-access-token-secret',
     )
+    expect(calls[2]?.headers.get('Origin')).toBe('https://example.test')
+    expect(calls[2]?.headers.get('User-Agent')).toBe('Teavision Storefront')
     expect(calls[2]?.body?.query).toBe('query Test { ok }')
   })
 

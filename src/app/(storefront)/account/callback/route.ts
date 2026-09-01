@@ -1,10 +1,12 @@
 import { syncCartBuyerIdentityForCurrentSession } from '@/lib/cart/actions'
+import { logEvent } from '@/lib/observability/logger'
 import { discoverCustomerAccountEndpoints } from '@/lib/shopify/customer-account/discovery'
 import { getCustomerAccountRedirectOrigin } from '@/lib/shopify/customer-account/env'
 import {
   decodeIdTokenClaims,
   exchangeCustomerAccountCode,
 } from '@/lib/shopify/customer-account/oauth'
+import { getCustomerAccountIdentity } from '@/lib/shopify/customer-account/operations'
 import {
   clearPendingCustomerAuth,
   getPendingCustomerAuth,
@@ -15,6 +17,15 @@ import {
 function getAccountRedirectUrl(path: string): URL {
   return new URL(path, getCustomerAccountRedirectOrigin())
 }
+
+type CallbackFailureStep =
+  | 'customer-identity'
+  | 'invalid-request'
+  | 'invalid-id-token'
+  | 'missing-customer-identity'
+  | 'nonce-mismatch'
+  | 'session-setup'
+  | 'token-exchange'
 
 function redirectToLoginFailure(): Response {
   return Response.redirect(
@@ -31,7 +42,8 @@ function getCartIdentitySyncFailedRedirect(returnTo: string): URL | null {
   return cartUrl
 }
 
-async function failCallback(): Promise<Response> {
+async function failCallback(step: CallbackFailureStep): Promise<Response> {
+  logEvent('error', 'account_oauth_failed', { step })
   await clearPendingCustomerAuth()
   await setCustomerFlash(
     'We could not verify that sign-in. Start sign-in again.',
@@ -47,25 +59,45 @@ export async function GET(request: Request): Promise<Response> {
   const pendingAuth = await getPendingCustomerAuth()
 
   if (!code || !state || !pendingAuth || pendingAuth.state !== state) {
-    return await failCallback()
+    return await failCallback('invalid-request')
   }
 
+  let tokenExchange
   try {
     const endpoints = await discoverCustomerAccountEndpoints()
-    const tokenExchange = await exchangeCustomerAccountCode({
+    tokenExchange = await exchangeCustomerAccountCode({
       code,
       codeVerifier: pendingAuth.codeVerifier,
       tokenEndpoint: endpoints.tokenEndpoint,
     })
-    const claims = decodeIdTokenClaims(tokenExchange.idToken)
+  } catch {
+    return await failCallback('token-exchange')
+  }
 
-    if (!claims || claims.nonce !== pendingAuth.nonce || !claims.sub) {
-      return await failCallback()
+  const claims = decodeIdTokenClaims(tokenExchange.idToken)
+  if (!claims) return await failCallback('invalid-id-token')
+  if (claims.nonce !== pendingAuth.nonce) {
+    return await failCallback('nonce-mismatch')
+  }
+
+  let customerId = claims.sub
+  if (!customerId) {
+    try {
+      customerId = (
+        await getCustomerAccountIdentity({
+          accessToken: tokenExchange.accessToken,
+        })
+      )?.customerId
+    } catch {
+      return await failCallback('customer-identity')
     }
+  }
+  if (!customerId) return await failCallback('missing-customer-identity')
 
+  try {
     await setCustomerAccountSession({
       accessToken: tokenExchange.accessToken,
-      customerId: claims.sub,
+      customerId,
       expiresAt: Date.now() + tokenExchange.expiresIn * 1000,
       idToken: tokenExchange.idToken,
       refreshToken: tokenExchange.refreshToken,
@@ -84,6 +116,6 @@ export async function GET(request: Request): Promise<Response> {
 
     return Response.redirect(getAccountRedirectUrl(pendingAuth.returnTo))
   } catch {
-    return await failCallback()
+    return await failCallback('session-setup')
   }
 }

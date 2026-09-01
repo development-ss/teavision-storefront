@@ -526,7 +526,7 @@ export async function getCustomerAccountDashboard(
 }
 
 export async function getCustomerAccountIdentity(
-  session: CustomerAccountSession,
+  session: Pick<CustomerAccountSession, 'accessToken'>,
 ): Promise<{ customerId: string; email: string | null } | null> {
   const data = await customerAccountFetch<IdentityResponse>({
     query: CUSTOMER_ACCOUNT_IDENTITY_QUERY,

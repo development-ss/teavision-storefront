@@ -4,6 +4,7 @@ import type { TypedDocumentNode } from '@graphql-typed-document-node/core'
 import { logEvent } from '@/lib/observability/logger'
 
 import { discoverCustomerAccountEndpoints } from './discovery'
+import { getCustomerAccountRedirectOrigin } from './env'
 import type { CustomerAccountSession } from './types'
 
 type CustomerAccountFetchOptions<T, TVariables> = {
@@ -29,7 +30,10 @@ function redactTokenValues(message: string, tokenValues: string[]): string {
   )
 }
 
-async function readErrorBody(response: Response, token: string): Promise<string> {
+async function readErrorBody(
+  response: Response,
+  token: string,
+): Promise<string> {
   try {
     const body = await response.text()
     if (!body) return ''
@@ -61,6 +65,8 @@ export async function customerAccountFetch<
     headers: {
       Authorization: token,
       'Content-Type': 'application/json',
+      Origin: getCustomerAccountRedirectOrigin(),
+      'User-Agent': 'Teavision Storefront',
     },
     body: JSON.stringify({
       query: typeof query === 'string' ? query : print(query),
