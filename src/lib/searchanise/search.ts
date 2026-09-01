@@ -4,6 +4,14 @@ import sanitizeHtml from 'sanitize-html'
 
 import { searchanisePublicConfig } from '@/lib/env/public'
 import { logEvent } from '@/lib/observability/logger'
+import { shopifyFetch } from '@/lib/shopify/client'
+import {
+  parseProductRating,
+  reshapeImage,
+  reshapeMoney,
+  type MoneyLike,
+  type ShopifyImageLike,
+} from '@/lib/shopify/operations/mappers'
 import type {
   CollectionProductSummary,
   Money,
@@ -27,6 +35,149 @@ import {
 const SEARCHANISE_RESULTS_ENDPOINT = 'https://searchserverapi1.com/getresults'
 const MAX_SEARCHANISE_RESULTS = 48
 const SEARCHANISE_CURRENCY_CODE = 'AUD'
+const SHOPIFY_SEARCH_PAGE_SIZE = 250
+const MAX_FALLBACK_FACET_VALUES = 40
+
+const SHOPIFY_SEARCH_QUERY = `
+  query SearchProducts(
+    $first: Int!
+    $after: String
+    $query: String!
+    $sortKey: ProductSortKeys!
+    $reverse: Boolean!
+  ) {
+    products(
+      first: $first
+      after: $after
+      query: $query
+      sortKey: $sortKey
+      reverse: $reverse
+    ) {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      edges {
+        node {
+          id
+          handle
+          title
+          description
+          updatedAt
+          availableForSale
+          productType
+          tags
+          featuredImage {
+            url
+            altText
+            width
+            height
+          }
+          priceRange {
+            minVariantPrice {
+              amount
+              currencyCode
+            }
+          }
+          variants(first: 20) {
+            edges {
+              node {
+                id
+                title
+                availableForSale
+                currentlyNotInStock
+                quantityRule {
+                  minimum
+                  maximum
+                  increment
+                }
+                price {
+                  amount
+                  currencyCode
+                }
+                quantityPriceBreaks(first: 10) {
+                  nodes {
+                    minimumQuantity
+                    price {
+                      amount
+                      currencyCode
+                    }
+                  }
+                }
+                image {
+                  url
+                  altText
+                  width
+                  height
+                }
+              }
+            }
+          }
+          ratingMetafield: metafield(namespace: "reviews", key: "rating") {
+            value
+          }
+          ratingCountMetafield: metafield(namespace: "reviews", key: "rating_count") {
+            value
+          }
+        }
+      }
+    }
+  }
+`
+
+type ShopifySearchVariantNode = {
+  id: string
+  title: string
+  availableForSale: boolean
+  currentlyNotInStock: boolean
+  quantityRule: {
+    minimum: number
+    maximum: number | null
+    increment: number
+  }
+  price: MoneyLike
+  quantityPriceBreaks?: {
+    nodes: Array<{ minimumQuantity: number; price: MoneyLike }>
+  }
+  image?: ShopifyImageLike | null
+}
+
+type ShopifySearchProductNode = {
+  id: string
+  handle: string
+  title: string
+  description?: string | null
+  updatedAt?: string | null
+  availableForSale: boolean
+  productType: string
+  tags: string[]
+  featuredImage?: ShopifyImageLike | null
+  priceRange: { minVariantPrice: MoneyLike }
+  variants: { edges: Array<{ node: ShopifySearchVariantNode }> }
+  ratingMetafield?: { value: string } | null
+  ratingCountMetafield?: { value: string } | null
+}
+
+type ShopifySearchProductsResponse = {
+  products: {
+    edges: Array<{ node: ShopifySearchProductNode }>
+    pageInfo: { hasNextPage: boolean; endCursor?: string | null }
+  }
+}
+
+const SHOPIFY_SEARCH_SORT: Record<
+  SearchSortValue,
+  { sortKey: string; reverse: boolean }
+> = {
+  relevance: { sortKey: 'RELEVANCE', reverse: false },
+  'title-asc': { sortKey: 'TITLE', reverse: false },
+  'title-desc': { sortKey: 'TITLE', reverse: true },
+  'price-asc': { sortKey: 'PRICE', reverse: false },
+  'price-desc': { sortKey: 'PRICE', reverse: true },
+  newest: { sortKey: 'CREATED_AT', reverse: true },
+  // Shopify's BEST_SELLING ordering is already highest-to-lowest by default.
+  'best-selling': { sortKey: 'BEST_SELLING', reverse: false },
+}
 
 const SORT_PARAMS: Record<
   SearchSortValue,
@@ -534,6 +685,267 @@ function mapResponse(
   }
 }
 
+function reshapeShopifySearchVariant(
+  variant: ShopifySearchVariantNode,
+): ProductVariant {
+  return {
+    id: variant.id,
+    title: variant.title,
+    availableForSale: variant.availableForSale,
+    currentlyNotInStock: variant.currentlyNotInStock,
+    quantityAvailable: null,
+    quantityRule: {
+      minimum: variant.quantityRule.minimum,
+      maximum: variant.quantityRule.maximum,
+      increment: variant.quantityRule.increment,
+    },
+    price: reshapeMoney(variant.price),
+    quantityPriceBreaks: (variant.quantityPriceBreaks?.nodes ?? []).map(
+      (tier) => ({
+        minimumQuantity: tier.minimumQuantity,
+        price: reshapeMoney(tier.price),
+      }),
+    ),
+    image: variant.image ? reshapeImage(variant.image) : null,
+  }
+}
+
+function reshapeShopifySearchProduct(
+  product: ShopifySearchProductNode,
+): CollectionProductSummary {
+  const { rating, reviewCount } = parseProductRating(product)
+
+  return {
+    id: product.id,
+    handle: product.handle,
+    title: product.title,
+    description: product.description ?? undefined,
+    updatedAt: product.updatedAt ?? undefined,
+    availableForSale: product.availableForSale,
+    productType: product.productType,
+    tags: product.tags,
+    featuredImage: product.featuredImage
+      ? reshapeImage(product.featuredImage)
+      : null,
+    priceRange: {
+      minVariantPrice: reshapeMoney(product.priceRange.minVariantPrice),
+    },
+    variants: product.variants.edges.map((edge) =>
+      reshapeShopifySearchVariant(edge.node),
+    ),
+    rating,
+    reviewCount,
+  }
+}
+
+function normalizeFilterAttribute(attribute: string): string {
+  return attribute
+    .trim()
+    .toLocaleLowerCase()
+    .replace(/[\s-]+/g, '_')
+}
+
+function matchesFallbackFilter(
+  product: CollectionProductSummary,
+  filter: SearchFilterSelection,
+): boolean {
+  const attribute = normalizeFilterAttribute(filter.attribute)
+  const value = filter.value.trim().toLocaleLowerCase()
+
+  if (!value) return true
+
+  if (attribute === 'product_type' || attribute === 'producttype') {
+    return product.productType.toLocaleLowerCase() === value
+  }
+
+  if (attribute === 'tag' || attribute === 'tags') {
+    return product.tags.some((tag) => tag.toLocaleLowerCase() === value)
+  }
+
+  if (attribute === 'available' || attribute === 'availability') {
+    const available = ['1', 'true', 'yes', 'in_stock'].includes(value)
+    return product.availableForSale === available
+  }
+
+  // Unknown provider-specific filters stay visible rather than making the
+  // fallback silently claim that no products match.
+  return true
+}
+
+function hasSelectedFilter(
+  filters: SearchFilterSelection[],
+  attribute: string,
+  value: string,
+): boolean {
+  return filters.some(
+    (filter) =>
+      normalizeFilterAttribute(filter.attribute) === attribute &&
+      filter.value.toLocaleLowerCase() === value.toLocaleLowerCase(),
+  )
+}
+
+function createFallbackFacet(
+  attribute: string,
+  label: string,
+  values: Array<{ value: string; count: number }>,
+  filters: SearchFilterSelection[],
+): SearchaniseFacet | null {
+  const uniqueValues = new Map<string, { label: string; count: number }>()
+
+  values.forEach(({ value, count }) => {
+    const normalizedValue = value.trim()
+    if (!normalizedValue) return
+
+    const key = normalizedValue.toLocaleLowerCase()
+    const current = uniqueValues.get(key)
+    uniqueValues.set(key, {
+      label: current?.label ?? normalizedValue,
+      count: (current?.count ?? 0) + count,
+    })
+  })
+
+  const facetValues = [...uniqueValues.entries()]
+    .sort(([, first], [, second]) => second.count - first.count)
+    .slice(0, MAX_FALLBACK_FACET_VALUES)
+    .map(([key, entry]) => ({
+      id: `${attribute}:${key}`,
+      label: entry.label,
+      value: entry.label,
+      count: entry.count,
+      selected: hasSelectedFilter(filters, attribute, entry.label),
+    }))
+
+  return facetValues.length > 0
+    ? { attribute, label, type: 'select', values: facetValues }
+    : null
+}
+
+function createFallbackFacets(
+  products: CollectionProductSummary[],
+  filters: SearchFilterSelection[],
+): SearchaniseFacet[] {
+  const productTypeValues = products.map((product) => ({
+    value: product.productType,
+    count: 1,
+  }))
+  const tagValues = products.flatMap((product) =>
+    product.tags.map((tag) => ({ value: tag, count: 1 })),
+  )
+  const availabilityValues = products.map((product) => ({
+    value: product.availableForSale ? 'true' : 'false',
+    count: 1,
+  }))
+
+  return [
+    createFallbackFacet(
+      'product_type',
+      'Product type',
+      productTypeValues,
+      filters,
+    ),
+    createFallbackFacet('tag', 'Tags', tagValues, filters),
+    createFallbackFacet(
+      'available',
+      'Availability',
+      availabilityValues,
+      filters,
+    ),
+  ].filter((facet): facet is SearchaniseFacet => facet !== null)
+}
+
+async function fetchShopifySearchProducts(
+  input: SearchaniseSearchInput,
+): Promise<CollectionProductSummary[]> {
+  const sort = SHOPIFY_SEARCH_SORT[input.sort]
+  const products: CollectionProductSummary[] = []
+  let after: string | null = null
+
+  while (true) {
+    const response: ShopifySearchProductsResponse =
+      await shopifyFetch<ShopifySearchProductsResponse>({
+        query: SHOPIFY_SEARCH_QUERY,
+        variables: {
+          after,
+          first: SHOPIFY_SEARCH_PAGE_SIZE,
+          query: input.query,
+          reverse: sort.reverse,
+          sortKey: sort.sortKey,
+        },
+      })
+    const page: ShopifySearchProductsResponse['products'] = response.products
+
+    products.push(
+      ...page.edges.map((edge) => reshapeShopifySearchProduct(edge.node)),
+    )
+
+    if (!page.pageInfo.hasNextPage || !page.pageInfo.endCursor) break
+
+    if (page.pageInfo.endCursor === after) {
+      logEvent('warn', 'searchanise_failed', {
+        ...getSearchLogContext(input),
+        status: 'shopify-fallback-repeated-cursor',
+      })
+      break
+    }
+
+    after = page.pageInfo.endCursor
+  }
+
+  return products
+}
+
+async function getShopifyFallbackResult(
+  input: SearchaniseSearchInput,
+): Promise<SearchaniseSearchResult> {
+  try {
+    const allProducts = await fetchShopifySearchProducts(input)
+    const filteredProducts = allProducts.filter((product) =>
+      input.filters.every((filter) => matchesFallbackFilter(product, filter)),
+    )
+    const pageSize = clampPageSize(input.pageSize)
+    const totalItems = filteredProducts.length
+    const totalPages = Math.max(1, Math.ceil(totalItems / pageSize))
+    const currentPage = Math.min(Math.max(1, input.page), totalPages)
+    const startIndex = (currentPage - 1) * pageSize
+
+    return {
+      status: 'success',
+      query: input.query,
+      products: filteredProducts.slice(startIndex, startIndex + pageSize),
+      facets: createFallbackFacets(allProducts, input.filters),
+      pagination: {
+        currentPage,
+        pageSize,
+        totalPages,
+        totalItems,
+        startIndex,
+        hasNextPage: currentPage < totalPages,
+        hasPreviousPage: currentPage > 1,
+      },
+    }
+  } catch {
+    logEvent('warn', 'searchanise_failed', {
+      ...getSearchLogContext(input),
+      status: 'shopify-fallback-failed',
+    })
+
+    return createEmptyResult(
+      input,
+      'error',
+      'Search results are unavailable right now.',
+    )
+  }
+}
+
+async function getProviderOrFallbackResult(
+  input: SearchaniseSearchInput,
+  providerResult: SearchaniseSearchResult,
+): Promise<SearchaniseSearchResult> {
+  const fallbackResult = await getShopifyFallbackResult(input)
+
+  return fallbackResult.status === 'success' ? fallbackResult : providerResult
+}
+
 export async function getSearchaniseSearchResults(
   input: SearchaniseSearchInput,
 ): Promise<SearchaniseSearchResult> {
@@ -542,11 +954,7 @@ export async function getSearchaniseSearchResults(
   }
 
   if (!searchanisePublicConfig.enabled || !searchanisePublicConfig.apiKey) {
-    return createEmptyResult(
-      input,
-      'unavailable',
-      'Search is unavailable while Searchanise is not configured.',
-    )
+    return getShopifyFallbackResult(input)
   }
 
   try {
@@ -563,26 +971,36 @@ export async function getSearchaniseSearchResults(
         status: response.status,
       })
 
-      return createEmptyResult(
+      return getProviderOrFallbackResult(
         input,
-        'error',
-        'Search results are unavailable right now.',
+        createEmptyResult(
+          input,
+          'error',
+          'Search results are unavailable right now.',
+        ),
       )
     }
 
     const data: unknown = await response.json()
 
-    return mapResponse(data, input)
+    const providerResult = mapResponse(data, input)
+
+    return providerResult.status === 'error'
+      ? getProviderOrFallbackResult(input, providerResult)
+      : providerResult
   } catch {
     logEvent('warn', 'searchanise_failed', {
       ...getSearchLogContext(input),
       status: 'exception',
     })
 
-    return createEmptyResult(
+    return getProviderOrFallbackResult(
       input,
-      'error',
-      'Search results are unavailable right now.',
+      createEmptyResult(
+        input,
+        'error',
+        'Search results are unavailable right now.',
+      ),
     )
   }
 }

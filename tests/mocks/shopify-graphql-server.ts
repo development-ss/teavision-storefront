@@ -486,6 +486,48 @@ export async function createFakeShopifyServer({
       return
     }
 
+    if (operationName === 'SearchProducts') {
+      const query =
+        readString(graphqlRequest.variables?.query)?.toLowerCase() ?? ''
+      const standardProduct = {
+        ...makeCollectionProductNode(),
+        tags: ['Tea', 'Wholesale'],
+        description: 'A reliable test tea for search fallback coverage.',
+        updatedAt: '2026-06-04T00:00:00Z',
+      }
+      const organicProduct = {
+        ...standardProduct,
+        id: 'gid://shopify/Product/organic-test-tea',
+        handle: 'organic-test-tea',
+        title: 'Organic Test Tea',
+        productType: 'Green Tea',
+        tags: ['Tea', 'Organic'],
+      }
+      const manyProducts = Array.from({ length: 25 }, (_, index) => ({
+        ...standardProduct,
+        id: `gid://shopify/Product/many-test-tea-${index + 1}`,
+        handle: `many-test-tea-${index + 1}`,
+        title: `Many Test Tea ${String(index + 1).padStart(2, '0')}`,
+      }))
+      const products = query.includes('nomatch')
+        ? []
+        : query.includes('many')
+          ? manyProducts
+          : query.includes('organic')
+            ? [organicProduct]
+            : [standardProduct, organicProduct]
+
+      writeJson(response, 200, {
+        data: {
+          products: {
+            edges: products.map((node) => ({ node })),
+            pageInfo: { hasNextPage: false, endCursor: null },
+          },
+        },
+      })
+      return
+    }
+
     if (operationName === 'GetPage') {
       const handle = readString(graphqlRequest.variables?.handle)
       writeJson(response, 200, {

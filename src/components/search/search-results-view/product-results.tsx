@@ -31,6 +31,7 @@ export function ProductResults({
             product={product}
             layout="list"
             priority={index < PRODUCT_IMAGE_PRELOAD_COUNT}
+            showQuickView
           />
         </li>
       ))}

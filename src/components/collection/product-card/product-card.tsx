@@ -34,6 +34,7 @@ type ProductCardProps = {
   product: ProductCardProduct
   priority?: boolean
   layout?: 'grid' | 'list'
+  showQuickView?: boolean
   className?: string
 }
 
@@ -41,6 +42,7 @@ export function ProductCard({
   product,
   priority = false,
   layout = 'grid',
+  showQuickView = false,
   className,
 }: ProductCardProps) {
   const productUrl = `/products/${product.handle}`
@@ -136,7 +138,7 @@ export function ProductCard({
         )}
 
         {/* Recommendation feeds without variant data retain Quick View. */}
-        {!isSoldOut && !hasKnownVariants && (
+        {!isSoldOut && (showQuickView || !hasKnownVariants) && (
           <div
             className={cn(
               'absolute right-0 bottom-0 left-0 p-2.5',
