@@ -83,7 +83,7 @@ export function FooterNewsletterForm({ action }: FooterNewsletterFormProps) {
             'mt-3 rounded-sm border px-3 py-2 text-sm leading-[1.4]',
             state.success
               ? 'border-brand-mid text-paper'
-              : 'border-paper/20 bg-paper/5 text-paper/75',
+              : 'border-danger/40 bg-danger-tint text-danger',
           )}
         >
           {state.success

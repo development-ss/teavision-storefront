@@ -118,7 +118,7 @@ export function ContactForm({
 
       <div className="grid gap-5 sm:grid-cols-2">
         <div>
-          <FormLabel className={labelClassName} htmlFor="contact-name">
+          <FormLabel className={labelClassName} htmlFor="contact-name" required>
             Name
           </FormLabel>
           <TextInput
@@ -148,7 +148,7 @@ export function ContactForm({
       </div>
 
       <div>
-        <FormLabel className={labelClassName} htmlFor="contact-email">
+        <FormLabel className={labelClassName} htmlFor="contact-email" required>
           Email
         </FormLabel>
         <TextInput
@@ -163,7 +163,11 @@ export function ContactForm({
       </div>
 
       <div>
-        <FormLabel className={labelClassName} htmlFor="contact-message">
+        <FormLabel
+          className={labelClassName}
+          htmlFor="contact-message"
+          required
+        >
           Message
         </FormLabel>
         <Textarea
