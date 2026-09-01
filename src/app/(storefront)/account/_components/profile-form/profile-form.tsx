@@ -64,12 +64,15 @@ export function ProfileForm({
 
         <div className="grid gap-5 sm:grid-cols-2">
           <div className="grid gap-2">
-            <FormLabel htmlFor="firstName">First name</FormLabel>
+            <FormLabel htmlFor="firstName" required>
+              First name
+            </FormLabel>
             <TextInput
               id="firstName"
               name="firstName"
               autoComplete="given-name"
               defaultValue={profile.firstName ?? ''}
+              required
               aria-invalid={firstNameError ? true : undefined}
               aria-describedby={
                 firstNameError ? 'profile-first-name-error' : undefined
@@ -86,12 +89,15 @@ export function ProfileForm({
           </div>
 
           <div className="grid gap-2">
-            <FormLabel htmlFor="lastName">Last name</FormLabel>
+            <FormLabel htmlFor="lastName" required>
+              Last name
+            </FormLabel>
             <TextInput
               id="lastName"
               name="lastName"
               autoComplete="family-name"
               defaultValue={profile.lastName ?? ''}
+              required
               aria-invalid={lastNameError ? true : undefined}
               aria-describedby={
                 lastNameError ? 'profile-last-name-error' : undefined

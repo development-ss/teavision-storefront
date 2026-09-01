@@ -81,12 +81,15 @@ export function AddressForm({
 
         <div className="grid gap-5 sm:grid-cols-2">
           <div className="grid gap-2">
-            <FormLabel htmlFor="firstName">First name</FormLabel>
+            <FormLabel htmlFor="firstName" required>
+              First name
+            </FormLabel>
             <TextInput
               id="firstName"
               name="firstName"
               autoComplete="given-name"
               defaultValue={address?.firstName ?? ''}
+              required
               aria-invalid={firstNameError ? true : undefined}
               aria-describedby={
                 firstNameError ? 'address-first-name-error' : undefined
@@ -103,12 +106,15 @@ export function AddressForm({
           </div>
 
           <div className="grid gap-2">
-            <FormLabel htmlFor="lastName">Last name</FormLabel>
+            <FormLabel htmlFor="lastName" required>
+              Last name
+            </FormLabel>
             <TextInput
               id="lastName"
               name="lastName"
               autoComplete="family-name"
               defaultValue={address?.lastName ?? ''}
+              required
               aria-invalid={lastNameError ? true : undefined}
               aria-describedby={
                 lastNameError ? 'address-last-name-error' : undefined
@@ -127,12 +133,15 @@ export function AddressForm({
 
         <div className="grid gap-5">
           <div className="grid gap-2">
-            <FormLabel htmlFor="address1">Address line 1</FormLabel>
+            <FormLabel htmlFor="address1" required>
+              Address line 1
+            </FormLabel>
             <TextInput
               id="address1"
               name="address1"
               autoComplete="address-line1"
               defaultValue={address?.address1 ?? ''}
+              required
               aria-invalid={address1Error ? true : undefined}
               aria-describedby={
                 address1Error ? 'address-line-1-error' : undefined
@@ -158,12 +167,15 @@ export function AddressForm({
 
         <div className="grid gap-5 sm:grid-cols-3">
           <div className="grid gap-2">
-            <FormLabel htmlFor="city">City</FormLabel>
+            <FormLabel htmlFor="city" required>
+              City
+            </FormLabel>
             <TextInput
               id="city"
               name="city"
               autoComplete="address-level2"
               defaultValue={address?.city ?? ''}
+              required
               aria-invalid={cityError ? true : undefined}
               aria-describedby={cityError ? 'address-city-error' : undefined}
             />
@@ -197,12 +209,15 @@ export function AddressForm({
           </div>
 
           <div className="grid gap-2">
-            <FormLabel htmlFor="zip">Postcode</FormLabel>
+            <FormLabel htmlFor="zip" required>
+              Postcode
+            </FormLabel>
             <TextInput
               id="zip"
               name="zip"
               autoComplete="postal-code"
               defaultValue={address?.zip ?? ''}
+              required
               aria-invalid={zipError ? true : undefined}
               aria-describedby={zipError ? 'address-zip-error' : undefined}
             />
@@ -216,12 +231,15 @@ export function AddressForm({
 
         <div className="grid gap-5 sm:grid-cols-2">
           <div className="grid gap-2">
-            <FormLabel htmlFor="countryCodeV2">Country</FormLabel>
+            <FormLabel htmlFor="countryCodeV2" required>
+              Country
+            </FormLabel>
             <Select
               id="countryCodeV2"
               name="countryCodeV2"
               autoComplete="country"
               defaultValue={address?.countryCodeV2 ?? 'AU'}
+              required
               aria-invalid={countryError ? true : undefined}
               aria-describedby={
                 countryError ? 'address-country-error' : undefined

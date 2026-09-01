@@ -142,6 +142,33 @@ describe('Customer Account Server Actions', () => {
     expect(state.status).toBe('success')
   })
 
+  test('profile action rejects missing or malformed names before Shopify mutation', async () => {
+    const missingState = await updateProfileAction(
+      initialState,
+      makeFormData({ firstName: 'Mira' }),
+    )
+
+    expect(missingState).toEqual({
+      fieldErrors: { lastName: 'This field is required.' },
+      message: null,
+      status: 'error',
+    })
+
+    const malformedState = await updateProfileAction(
+      initialState,
+      makeFormData({ firstName: 'Mira123', lastName: 'Patel' }),
+    )
+
+    expect(malformedState).toEqual({
+      fieldErrors: {
+        firstName: 'Use letters, spaces, apostrophes, or hyphens for names.',
+      },
+      message: null,
+      status: 'error',
+    })
+    expect(updateCustomerProfile).not.toHaveBeenCalled()
+  })
+
   test('profile action ignores stale phone fields because Shopify manages phone sign-in', async () => {
     await updateProfileAction(
       initialState,
@@ -203,7 +230,12 @@ describe('Customer Account Server Actions', () => {
       initialState,
       makeFormData({
         addressId: 'gid://shopify/CustomerAddress/test-address-1',
-        address1: '',
+        address1: 'invalid',
+        city: 'Brisbane',
+        countryCodeV2: 'AU',
+        firstName: 'Mira',
+        lastName: 'Patel',
+        zip: '4000',
       }),
     )
 
@@ -212,6 +244,24 @@ describe('Customer Account Server Actions', () => {
       message: null,
       status: 'error',
     })
+  })
+
+  test('address action rejects missing required fields before Shopify mutation', async () => {
+    const state = await createAddressAction(
+      initialState,
+      makeFormData({ firstName: 'Mira', city: 'Brisbane' }),
+    )
+
+    expect(state).toEqual({
+      fieldErrors: {
+        lastName: 'This field is required.',
+        address1: 'This field is required.',
+        zip: 'This field is required.',
+      },
+      message: null,
+      status: 'error',
+    })
+    expect(createCustomerAddress).not.toHaveBeenCalled()
   })
 
   test('delete action requires a session before reading mutation id', async () => {

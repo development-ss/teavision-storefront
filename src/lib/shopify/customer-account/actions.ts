@@ -27,6 +27,10 @@ const GENERIC_MUTATION_ERROR =
   'We could not save those account changes. Please review the form and try again.'
 const INVALID_FORM_MESSAGE =
   'We could not read that account request. Refresh the page and try again.'
+const INVALID_NAME_MESSAGE =
+  'Use letters, spaces, apostrophes, or hyphens for names.'
+
+const NAME_PATTERN = /^[\p{L}\p{M}][\p{L}\p{M}'’ -]*$/u
 
 function unauthorizedState(): CustomerAccountFormState {
   return { fieldErrors: {}, message: UNAUTHORIZED_MESSAGE, status: 'error' }
@@ -96,6 +100,51 @@ function getAddressInput(formData: FormData): CustomerAccountAddressInput {
   return input
 }
 
+function getFieldValidationErrors(
+  fields: Record<string, string | null | undefined>,
+): Record<string, string> {
+  const errors: Record<string, string> = {}
+
+  for (const [field, value] of Object.entries(fields)) {
+    if (!value) errors[field] = 'This field is required.'
+  }
+
+  return errors
+}
+
+function getProfileValidationErrors(
+  input: CustomerAccountProfileInput,
+): Record<string, string> {
+  const errors = getFieldValidationErrors({
+    firstName: input.firstName,
+    lastName: input.lastName,
+  })
+
+  for (const [field, value] of Object.entries({
+    firstName: input.firstName,
+    lastName: input.lastName,
+  })) {
+    if (value && (value.length > 100 || !NAME_PATTERN.test(value))) {
+      errors[field] = INVALID_NAME_MESSAGE
+    }
+  }
+
+  return errors
+}
+
+function getAddressValidationErrors(
+  input: CustomerAccountAddressInput,
+): Record<string, string> {
+  return getFieldValidationErrors({
+    firstName: input.firstName,
+    lastName: input.lastName,
+    address1: input.address1,
+    city: input.city,
+    zip: input.zip,
+    countryCodeV2: input.countryCodeV2,
+  })
+}
+
 function mutationResultHasErrors<T>(
   result: CustomerAccountMutationResult<T>,
 ): boolean {
@@ -119,10 +168,13 @@ export async function updateProfileAction(
   }
 
   try {
-    const result = await updateCustomerProfile(
-      session,
-      getProfileInput(formData),
-    )
+    const input = getProfileInput(formData)
+    const fieldErrors = getProfileValidationErrors(input)
+    if (Object.keys(fieldErrors).length > 0) {
+      return { fieldErrors, message: null, status: 'error' }
+    }
+
+    const result = await updateCustomerProfile(session, input)
     if (mutationResultHasErrors(result))
       return userErrorState(result.userErrors)
 
@@ -149,10 +201,13 @@ export async function createAddressAction(
   }
 
   try {
-    const result = await createCustomerAddress(
-      session,
-      getAddressInput(formData),
-    )
+    const input = getAddressInput(formData)
+    const fieldErrors = getAddressValidationErrors(input)
+    if (Object.keys(fieldErrors).length > 0) {
+      return { fieldErrors, message: null, status: 'error' }
+    }
+
+    const result = await createCustomerAddress(session, input)
     if (mutationResultHasErrors(result))
       return userErrorState(result.userErrors)
 
@@ -180,11 +235,13 @@ export async function updateAddressAction(
 
   try {
     const addressId = getRequiredFormString(formData, 'addressId')
-    const result = await updateCustomerAddress(
-      session,
-      addressId,
-      getAddressInput(formData),
-    )
+    const input = getAddressInput(formData)
+    const fieldErrors = getAddressValidationErrors(input)
+    if (Object.keys(fieldErrors).length > 0) {
+      return { fieldErrors, message: null, status: 'error' }
+    }
+
+    const result = await updateCustomerAddress(session, addressId, input)
     if (mutationResultHasErrors(result))
       return userErrorState(result.userErrors)
 
