@@ -1,18 +1,4 @@
-import type { Money, VolumeDiscountTier } from '@/lib/shopify/types'
-
-/**
- * Storefront projection of the active Hulk Shopify Function offer.
- *
- * Shopify remains authoritative after an item is added: cart and checkout
- * prices are rendered from Storefront API costs and discount allocations.
- * Keep these display tiers in sync with the active Hulk offer in Shopify.
- */
-export const HULK_VOLUME_DISCOUNT_TIERS = [
-  { minimumQuantity: 5, discountPercent: 5 },
-  { minimumQuantity: 10, discountPercent: 10 },
-  { minimumQuantity: 20, discountPercent: 12 },
-  { minimumQuantity: 40, discountPercent: 15 },
-] as const satisfies readonly VolumeDiscountTier[]
+import type { Money } from '@/lib/shopify/types'
 
 /**
  * Mirrors the verified Hulk Function calculation: discount each unit by a

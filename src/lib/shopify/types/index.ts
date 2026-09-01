@@ -52,6 +52,7 @@ export type Product = {
   description: string
   descriptionHtml: string
   tags: string[]
+  collectionIds?: string[]
   images: ShopifyImage[]
   priceRange: { minVariantPrice: Money }
   variants: ProductVariant[]

@@ -172,7 +172,7 @@ test('product and collection routes preserve crawlable content and layout-stable
 
   assert.doesNotMatch(productPage, /await searchParams/)
   assert.doesNotMatch(productPage, /searchParams\.then/)
-  assert.match(productPage, /<PurchaseForm/)
+  assert.match(productPage, /<DynamicPurchaseForm/)
   assert.match(productPage, /<ProductContent params=\{params\} \/>/)
   assert.doesNotMatch(productPage, /Loading product/)
 })

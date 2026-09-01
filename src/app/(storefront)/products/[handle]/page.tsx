@@ -16,7 +16,6 @@ import { SITE_URL } from '@/lib/seo/site-url'
 import { getVisibleProductReviewSummary } from '@/lib/reviews/summary'
 import { getTrustooProductRatings } from '@/lib/reviews/trustoo'
 import { sanitizeShopifyCompactHtml } from '@/lib/shopify/html-content'
-import { HULK_VOLUME_DISCOUNT_TIERS } from '@/lib/shopify/volume-discounts'
 import { RichText } from '@/components/ui/rich-text'
 import { Badge } from '@/components/ui/badge'
 import { Eyebrow } from '@/components/ui/eyebrow'
@@ -24,7 +23,7 @@ import { StarRating } from '@/components/ui/star-rating'
 import { ProductForm } from '@/components/product/product-form'
 import { ProductGallery } from '@/components/product/product-gallery'
 
-import { PurchaseForm } from './_components/purchase-form'
+import { DynamicPurchaseForm } from './_components/dynamic-purchase-form'
 import { RelatedProducts } from './_components/related-products'
 import {
   getNumericShopifyId,
@@ -322,16 +321,13 @@ export async function ProductContent({
               <ProductForm
                 variants={product.variants}
                 options={product.options}
-                volumeDiscountTiers={HULK_VOLUME_DISCOUNT_TIERS}
                 descriptionSlot={descriptionSlotNode}
                 className="mt-6.5"
               />
             }
           >
-            <PurchaseForm
-              variants={product.variants}
-              options={product.options}
-              volumeDiscountTiers={HULK_VOLUME_DISCOUNT_TIERS}
+            <DynamicPurchaseForm
+              product={product}
               descriptionSlot={descriptionSlotNode}
               className="mt-6.5"
             />

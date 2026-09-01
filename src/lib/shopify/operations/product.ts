@@ -25,7 +25,7 @@ import {
 } from './mappers'
 
 const SHOPIFY_PAGE_SIZE = 250
-export const PRODUCT_DETAIL_CACHE_VERSION = 'shopify-native-pricing-v3'
+export const PRODUCT_DETAIL_CACHE_VERSION = 'hulk-context-v4'
 
 type ShopifyProductNode = NonNullable<GetProductQuery['product']>
 
@@ -174,6 +174,7 @@ function reshapeProduct(
     description: p.description,
     descriptionHtml: String(p.descriptionHtml),
     tags: [...p.tags],
+    collectionIds: p.collections.nodes.map((collection) => collection.id),
     images: p.images.edges.map((e) => reshapeImage(e.node)),
     priceRange: {
       minVariantPrice: reshapeMoney(p.priceRange.minVariantPrice),

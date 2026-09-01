@@ -33,6 +33,7 @@ function makeShopifyProductPayload() {
       description: '',
       descriptionHtml: '',
       tags: [],
+      collections: { nodes: [] },
       images: { edges: [] },
       priceRange: {
         minVariantPrice: { amount: '40.65', currencyCode: 'AUD' },
@@ -75,7 +76,7 @@ describe('Shopify product operations', () => {
     vi.stubGlobal('fetch', fetchMock)
   })
 
-  test('maps only Shopify-native variant quantity price breaks', async () => {
+  test('maps Shopify-native price breaks and discount context', async () => {
     shopifyFetchMock.mockResolvedValueOnce(makeShopifyProductPayload())
 
     await expect(
@@ -91,6 +92,7 @@ describe('Shopify product operations', () => {
           ],
         },
       ],
+      collectionIds: [],
     })
     expect(fetchMock).not.toHaveBeenCalled()
   })

@@ -1,20 +1,8 @@
 import { describe, expect, test } from 'vitest'
 
-import {
-  getHulkDiscountedUnitPrice,
-  HULK_VOLUME_DISCOUNT_TIERS,
-} from './volume-discounts'
+import { getHulkDiscountedUnitPrice } from './volume-discounts'
 
-describe('Hulk volume discount storefront projection', () => {
-  test('matches the active Shopify Functions offer', () => {
-    expect(HULK_VOLUME_DISCOUNT_TIERS).toEqual([
-      { minimumQuantity: 5, discountPercent: 5 },
-      { minimumQuantity: 10, discountPercent: 10 },
-      { minimumQuantity: 20, discountPercent: 12 },
-      { minimumQuantity: 40, discountPercent: 15 },
-    ])
-  })
-
+describe('Hulk volume discount pricing', () => {
   test.each([
     { discountPercent: 5, expectedUnitPrice: '10.90' },
     { discountPercent: 10, expectedUnitPrice: '10.33' },
