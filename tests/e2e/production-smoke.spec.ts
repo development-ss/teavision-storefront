@@ -182,7 +182,128 @@ test('/search?q=tea loads search UI state', async ({ page }) => {
   await expect(
     page.getByRole('heading', { name: 'Results for "tea"' }),
   ).toBeVisible()
-  await expect(page.getByText(/Search unavailable|No matches/)).toBeVisible()
+  await expect(
+    page.getByText('2 results', { exact: true }).first(),
+  ).toBeVisible()
+  await expect(
+    page.getByRole('button', { name: 'Quick View' }).first(),
+  ).toBeVisible()
+  assertNoLiveFlow()
+})
+
+test('search fallback supports filters, clearing, and sort changes', async ({
+  page,
+}) => {
+  const assertNoLiveFlow = observeForbiddenLiveFlowUrls(page)
+
+  await gotoWithoutServerError(page, '/search?q=tea')
+  const desktopFilters = page.locator('aside')
+
+  await desktopFilters.getByRole('link', { name: /^Organic\s+1$/ }).click()
+  await expect(page).toHaveURL(/filter=tag(?:%3A|:)Organic/)
+  await expect(
+    page.getByText('1 result', { exact: true }).first(),
+  ).toBeVisible()
+  await expect(
+    desktopFilters.getByRole('link', { name: /^Organic\s+1$/ }),
+  ).toHaveAttribute('aria-current', 'page')
+
+  await desktopFilters.getByRole('link', { name: 'Clear' }).click()
+  await expect(page).toHaveURL(/\/search\?q=tea$/)
+  await expect(
+    page.getByText('2 results', { exact: true }).first(),
+  ).toBeVisible()
+
+  await page.getByLabel('Sort').selectOption('title-desc')
+  await expect(page).toHaveURL(/sort=title-desc/)
+  await expect(
+    page.getByRole('heading', { name: 'Results for "tea"' }),
+  ).toBeVisible()
+  assertNoLiveFlow()
+})
+
+test('search fallback preserves result pages', async ({ page }) => {
+  const assertNoLiveFlow = observeForbiddenLiveFlowUrls(page)
+
+  await gotoWithoutServerError(page, '/search?q=many')
+  await expect(
+    page.getByText('25 results', { exact: true }).first(),
+  ).toBeVisible()
+  await expect(page.getByRole('link', { name: 'Page 1' })).toHaveAttribute(
+    'aria-current',
+    'page',
+  )
+
+  await page.getByRole('link', { name: 'Page 2' }).click()
+  await expect(page).toHaveURL(/\/search\?q=many&page=2/)
+  await expect(
+    page.getByText('Many Test Tea 25', { exact: true }),
+  ).toBeVisible()
+  await expect(page.getByRole('link', { name: 'Page 2' })).toHaveAttribute(
+    'aria-current',
+    'page',
+  )
+  assertNoLiveFlow()
+})
+
+test('legacy Search Results links redirect to the canonical search route', async ({
+  request,
+}) => {
+  const redirects = [
+    {
+      path: '/pages/search-results?query=tea&page=2',
+      query: 'query=tea',
+      state: 'page=2',
+    },
+    {
+      path: '/pages/search-results-page?q=tea&sort=title-desc',
+      query: 'q=tea',
+      state: 'sort=title-desc',
+    },
+  ]
+
+  for (const { path, query, state } of redirects) {
+    const response = await request.get(path, { maxRedirects: 0 })
+
+    expect(response.status()).toBe(308)
+    expect(response.headers().location).toMatch(/^\/search\?/)
+    expect(response.headers().location).toContain(query)
+    expect(response.headers().location).toContain(state)
+  }
+})
+
+test('service CTAs are actionable', async ({ page }) => {
+  const assertNoLiveFlow = observeForbiddenLiveFlowUrls(page)
+
+  await gotoWithoutServerError(page, '/pages/private-label-packing')
+  await expect(
+    page.getByRole('link', { name: 'Private Label Now' }),
+  ).toHaveAttribute('href', '/pages/contact')
+  await expect(
+    page.getByRole('link', { name: 'Start Private Label' }),
+  ).toHaveAttribute('href', '/pages/contact')
+
+  await gotoWithoutServerError(page, '/pages/certifications')
+  await expect(
+    page.getByRole('link', { name: 'Request Certifications' }),
+  ).toHaveAttribute('href', '/pages/contact')
+
+  assertNoLiveFlow()
+})
+
+test('custom blend flavour choices carry into the contact brief', async ({
+  page,
+}) => {
+  const assertNoLiveFlow = observeForbiddenLiveFlowUrls(page)
+
+  await gotoWithoutServerError(page, '/pages/custom-tea-blends')
+  await page.getByRole('checkbox', { name: 'Peach' }).check()
+  await page.getByRole('link', { name: 'Continue to Brief' }).click()
+
+  await expect(page).toHaveURL(/\/pages\/contact\?flavours=Peach#need-help/)
+  await expect(page.getByRole('textbox', { name: 'Message' })).toHaveValue(
+    'Custom blend flavour direction: Peach\n\n',
+  )
   assertNoLiveFlow()
 })
 
@@ -275,4 +396,14 @@ test('/api/health returns public service status', async ({ page }) => {
     status: 'ok',
   })
   assertNoLiveFlow()
+})
+
+test('serves the Teavision favicon icon', async ({ request }) => {
+  const response = await request.get('/icon.svg')
+
+  expect(response.status()).toBe(200)
+  expect(response.headers()['content-type']).toContain('image/svg+xml')
+  const icon = await response.text()
+  expect(icon).toContain('Teavision')
+  expect(icon).not.toContain('Vercel')
 })

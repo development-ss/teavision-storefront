@@ -5,7 +5,7 @@ import { sealCustomerSession } from '../../src/lib/shopify/customer-account/sess
 import { blockThirdPartyRequests } from '../mocks/third-party-network'
 
 const customerSessionSecret = 'test-session-secret-with-at-least-32-characters'
-const localBaseUrl = `http://localhost:${process.env.PLAYWRIGHT_PORT ?? '4173'}`
+const localBaseUrl = `http://127.0.0.1:${process.env.PLAYWRIGHT_PORT ?? '4173'}`
 const fakeShopifyBaseUrl = `http://127.0.0.1:${process.env.FAKE_SHOPIFY_PORT ?? '4517'}`
 const hostedShopifyCheckoutPattern =
   /myshopify\.com\/checkouts|checkout\.shopify\.com/
@@ -68,7 +68,10 @@ test('adds a product to cart, updates the cart, removes it, and exposes only fak
   await page.getByLabel('I have read and agree to the Terms of Service').click()
   await expect(
     page.getByRole('button', { name: 'Proceed to checkout' }),
-  ).toBeEnabled()
+  ).toHaveCount(0)
+  await expect(
+    page.getByRole('link', { name: 'Sign in to checkout' }),
+  ).toBeVisible()
 
   await page
     .getByRole('button', { name: 'Increase quantity of Test Standard Tea' })
@@ -222,7 +225,7 @@ test('account migration links and legacy routes use the modern bridge', async ({
   ).toBeVisible()
   await expect(page.locator('input[type="password"]')).toHaveCount(0)
   await expect(
-    page.getByRole('link', { name: 'Sign in with Shopify' }),
+    page.getByRole('link', { name: 'Create account with Shopify' }),
   ).toHaveAttribute('href', '/account/login/start?returnTo=%2Fcart')
 
   await page.goto('/account/classic/bookmark?redirect=https%3A%2F%2Fevil.test')
