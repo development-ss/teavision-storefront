@@ -8,6 +8,10 @@ type QuantityRuleSource = {
   }
 }
 
+type QuantityTier = {
+  minimumQuantity: number
+}
+
 export function getVariantMinimumQuantity(
   variant: QuantityRuleSource | undefined,
 ): number {
@@ -35,6 +39,44 @@ export function getVariantQuantityIncrement(
   variant: QuantityRuleSource | undefined,
 ): number {
   return Math.max(1, variant?.quantityRule?.increment ?? 1)
+}
+
+export function alignTiersToQuantityRule<T extends QuantityTier>(
+  tiers: readonly T[],
+  {
+    maximumQuantity,
+    minimumQuantity,
+    quantityIncrement,
+  }: {
+    maximumQuantity: number | undefined
+    minimumQuantity: number
+    quantityIncrement: number
+  },
+): T[] {
+  const alignedTiers = new Map<number, T>()
+
+  for (const tier of [...tiers].sort(
+    (a, b) => a.minimumQuantity - b.minimumQuantity,
+  )) {
+    const steps = Math.max(
+      0,
+      Math.ceil((tier.minimumQuantity - minimumQuantity) / quantityIncrement),
+    )
+    const reachableQuantity = minimumQuantity + steps * quantityIncrement
+
+    if (maximumQuantity !== undefined && reachableQuantity > maximumQuantity) {
+      continue
+    }
+
+    // If thresholds land on the same reachable quantity, keep the deeper
+    // tier because Shopify evaluates the highest qualifying threshold.
+    alignedTiers.set(reachableQuantity, {
+      ...tier,
+      minimumQuantity: reachableQuantity,
+    })
+  }
+
+  return [...alignedTiers.values()]
 }
 
 export function clampQuantity({

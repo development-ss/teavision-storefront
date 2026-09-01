@@ -7,8 +7,14 @@ import { Button } from '@/components/ui/button'
 import { Price } from '@/components/ui/price'
 import { QuantityStepper } from '@/components/ui/quantity-stepper'
 import { ToggleButton } from '@/components/ui/toggle-button'
-import type { ProductOption, ProductVariant } from '@/lib/shopify/types'
+import type {
+  BulkPricingTier,
+  ProductOption,
+  ProductVariant,
+  VolumeDiscountTier,
+} from '@/lib/shopify/types'
 import {
+  alignTiersToQuantityRule,
   clampQuantity,
   getVariantMaximumQuantity,
   getVariantMinimumQuantity,
@@ -26,6 +32,7 @@ import { type AddToCart, useAddToCart } from '../use-add-to-cart'
 type ProductFormProps = {
   variants: ProductVariant[]
   options: ProductOption[]
+  volumeDiscountTiers?: readonly VolumeDiscountTier[]
   initialVariantId?: string
   onVariantChange?: (variantId: string) => void
   addToCart?: AddToCart
@@ -80,6 +87,7 @@ function getInitialSelectedVariantId(
 export function ProductForm({
   variants,
   options,
+  volumeDiscountTiers = [],
   initialVariantId,
   onVariantChange,
   addToCart,
@@ -118,10 +126,19 @@ export function ProductForm({
   })
   const canUseSelectedVariantQuantity =
     maximumQuantity === undefined || maximumQuantity >= minimumQuantity
-  // Only Shopify-native variant price breaks are safe to advertise here.
-  // Product-level tiers can come from display-only metafields or legacy apps
-  // that do not apply to Storefront API checkout URLs.
-  const selectedBulkPricingTiers = selectedVariant?.quantityPriceBreaks ?? []
+  // Native B2B price breaks take precedence. Public tiers mirror the active
+  // Hulk Shopify Function; the cart still renders only Shopify-confirmed costs.
+  const rawSelectedBulkPricingTiers: readonly (
+    | BulkPricingTier
+    | VolumeDiscountTier
+  )[] =
+    selectedVariant && selectedVariant.quantityPriceBreaks.length > 0
+      ? selectedVariant.quantityPriceBreaks
+      : volumeDiscountTiers
+  const selectedBulkPricingTiers = alignTiersToQuantityRule(
+    rawSelectedBulkPricingTiers,
+    { maximumQuantity, minimumQuantity, quantityIncrement },
+  )
   const activeBulkTier =
     selectedBulkPricingTiers
       .filter((tier) => effectiveQuantity >= tier.minimumQuantity)

@@ -223,6 +223,128 @@ describe('ProductForm', () => {
     host.remove()
   })
 
+  it('shows the exact Hulk percentage total and submits its tier quantity', async () => {
+    capturedAddToCartPayloads.length = 0
+    const host = document.createElement('div')
+    document.body.append(host)
+    const root = createRoot(host)
+    const op1Variant: ProductVariant = {
+      ...variants[0],
+      id: 'gid://shopify/ProductVariant/op1-1kg',
+      title: '1kg',
+      quantityAvailable: 50,
+      quantityRule: {
+        minimum: 1,
+        maximum: 50,
+        increment: 1,
+      },
+      price: { amount: '51.44', currencyCode: 'AUD' },
+    }
+
+    await act(async () => {
+      root.render(
+        <ProductFormWithInitialVariant
+          variants={[op1Variant]}
+          options={options}
+          volumeDiscountTiers={[
+            { minimumQuantity: 5, discountPercent: 5 },
+            { minimumQuantity: 10, discountPercent: 10 },
+            { minimumQuantity: 20, discountPercent: 12 },
+            { minimumQuantity: 40, discountPercent: 15 },
+          ]}
+          addToCart={captureAddToCart}
+        />,
+      )
+    })
+
+    expect(host.textContent).toContain('Buy 10 for 10% Off')
+    expect(host.textContent).toContain('Total $463.00')
+    expect(host.textContent).not.toContain('Total $462.96')
+
+    const buyTenButton = Array.from(host.querySelectorAll('button')).find(
+      (button) => button.textContent?.includes('Buy 10 for 10% Off') === true,
+    )
+    if (!buyTenButton) throw new Error('Expected volume tier button to render')
+
+    await act(async () => {
+      buyTenButton.click()
+    })
+
+    const grabDealButton = Array.from(host.querySelectorAll('button')).find(
+      (button) => button.textContent === 'Grab this deal',
+    )
+    if (!grabDealButton) throw new Error('Expected grab deal button to render')
+
+    await act(async () => {
+      grabDealButton.click()
+    })
+
+    expect(capturedAddToCartPayloads.at(-1)).toEqual({
+      variantId: 'gid://shopify/ProductVariant/op1-1kg',
+      quantity: 10,
+    })
+
+    await act(async () => {
+      root.unmount()
+    })
+    host.remove()
+  })
+
+  it('submits the next reachable quantity for an off-step Hulk tier', async () => {
+    capturedAddToCartPayloads.length = 0
+    const host = document.createElement('div')
+    document.body.append(host)
+    const root = createRoot(host)
+    const steppedVariant: ProductVariant = {
+      ...variants[0],
+      quantityAvailable: 10,
+      quantityRule: {
+        minimum: 2,
+        maximum: 10,
+        increment: 4,
+      },
+    }
+
+    await act(async () => {
+      root.render(
+        <ProductFormWithInitialVariant
+          variants={[steppedVariant]}
+          options={options}
+          volumeDiscountTiers={[{ minimumQuantity: 5, discountPercent: 5 }]}
+          addToCart={captureAddToCart}
+        />,
+      )
+    })
+
+    const tierButton = Array.from(host.querySelectorAll('button')).find(
+      (button) => button.textContent?.includes('Buy 6 for 5% Off') === true,
+    )
+    if (!tierButton) throw new Error('Expected aligned tier button to render')
+
+    await act(async () => {
+      tierButton.click()
+    })
+
+    const grabDealButton = Array.from(host.querySelectorAll('button')).find(
+      (button) => button.textContent === 'Grab this deal',
+    )
+    if (!grabDealButton) throw new Error('Expected grab deal button to render')
+
+    await act(async () => {
+      grabDealButton.click()
+    })
+
+    expect(capturedAddToCartPayloads.at(-1)).toEqual({
+      variantId: steppedVariant.id,
+      quantity: 6,
+    })
+
+    await act(async () => {
+      root.unmount()
+    })
+    host.remove()
+  })
+
   it('resets quantity to the new variant minimum when pack size changes', async () => {
     capturedAddToCartPayloads.length = 0
     const host = document.createElement('div')

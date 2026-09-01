@@ -1,7 +1,11 @@
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
 
-import type { BulkPricingTier, Money } from '@/lib/shopify/types'
+import type {
+  BulkPricingTier,
+  Money,
+  VolumeDiscountTier,
+} from '@/lib/shopify/types'
 
 import { BulkSavings } from './bulk-savings'
 
@@ -24,6 +28,13 @@ const nativePriceBreaks: BulkPricingTier[] = [
     minimumQuantity: 40,
     price: { amount: '9.75', currencyCode: 'AUD' },
   },
+]
+
+const hulkFunctionTiers: VolumeDiscountTier[] = [
+  { minimumQuantity: 5, discountPercent: 5 },
+  { minimumQuantity: 10, discountPercent: 10 },
+  { minimumQuantity: 20, discountPercent: 12 },
+  { minimumQuantity: 40, discountPercent: 15 },
 ]
 
 describe('BulkSavings', () => {
@@ -54,6 +65,25 @@ describe('BulkSavings', () => {
     expect(html).toContain('$10.90')
     expect(html).toContain('$10.32')
     expect(html).toContain('$10.09')
+    expect(html).toContain('$9.75')
+  })
+
+  it('mirrors verified Hulk Function unit and line rounding', () => {
+    const html = renderToStaticMarkup(
+      <BulkSavings
+        tiers={hulkFunctionTiers}
+        basePrice={basePrice}
+        selectedQuantity={1}
+      />,
+    )
+
+    expect(html).toContain('Total $54.50')
+    expect(html).toContain('Total $103.30')
+    expect(html).toContain('Total $202.00')
+    expect(html).toContain('Total $390.00')
+    expect(html).toContain('$10.90')
+    expect(html).toContain('$10.33')
+    expect(html).toContain('$10.10')
     expect(html).toContain('$9.75')
   })
 

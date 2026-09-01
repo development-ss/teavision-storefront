@@ -10,6 +10,11 @@ export type BulkPricingTier = {
   price: Money
 }
 
+export type VolumeDiscountTier = {
+  minimumQuantity: number
+  discountPercent: number
+}
+
 export type ShopifyImage = {
   url: string
   altText: string | null

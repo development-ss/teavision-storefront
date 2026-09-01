@@ -1,10 +1,15 @@
-import type { BulkPricingTier, Money } from '@/lib/shopify/types'
+import type {
+  BulkPricingTier,
+  Money,
+  VolumeDiscountTier,
+} from '@/lib/shopify/types'
+import { getHulkDiscountedUnitPrice } from '@/lib/shopify/volume-discounts'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { ToggleButton } from '@/components/ui/toggle-button'
 
 type BulkSavingsProps = {
-  tiers: BulkPricingTier[]
+  tiers: readonly (BulkPricingTier | VolumeDiscountTier)[]
   basePrice: Money
   selectedQuantity: number
   selectedTierQuantity?: number | null
@@ -29,12 +34,33 @@ function formatCurrency(money: Money): string {
   }).format(parseAmount(money))
 }
 
-function getTierLabel(tier: BulkPricingTier): string {
+function isVolumeDiscountTier(
+  tier: BulkPricingTier | VolumeDiscountTier,
+): tier is VolumeDiscountTier {
+  return 'discountPercent' in tier
+}
+
+function formatPercent(value: number): string {
+  return Number.isInteger(value)
+    ? String(value)
+    : value.toFixed(2).replace(/\.?0+$/, '')
+}
+
+function getTierLabel(tier: BulkPricingTier | VolumeDiscountTier): string {
+  if (isVolumeDiscountTier(tier)) {
+    return `Buy ${tier.minimumQuantity} for ${formatPercent(tier.discountPercent)}% Off`
+  }
+
   return `Buy ${tier.minimumQuantity}+`
 }
 
-function getTierUnitAmount(tier: BulkPricingTier): number {
-  return parseAmount(tier.price)
+function getTierPrice(
+  tier: BulkPricingTier | VolumeDiscountTier,
+  basePrice: Money,
+): Money {
+  if (!isVolumeDiscountTier(tier)) return tier.price
+
+  return getHulkDiscountedUnitPrice(basePrice, tier.discountPercent)
 }
 
 function getTotalPrice(price: Money, quantity: number): Money {
@@ -45,9 +71,9 @@ function getTotalPrice(price: Money, quantity: number): Money {
 }
 
 function getActiveTier(
-  tiers: BulkPricingTier[],
+  tiers: readonly (BulkPricingTier | VolumeDiscountTier)[],
   selectedQuantity: number,
-): BulkPricingTier | null {
+): BulkPricingTier | VolumeDiscountTier | null {
   return (
     tiers
       .filter((tier) => selectedQuantity >= tier.minimumQuantity)
@@ -97,15 +123,11 @@ export function BulkSavings({
         Buy in Bulk and Save
       </h2>
 
-      <ul className="grid grid-cols-1 gap-2.5 sm:grid-cols-3" role="list">
+      <ul className="grid grid-cols-1 gap-2.5 sm:grid-cols-2" role="list">
         {visibleTiers.map((tier) => {
           const isActive = activeTier?.minimumQuantity === tier.minimumQuantity
-          const tierUnitAmount = getTierUnitAmount(tier)
-          const tierPrice = tier.price
-          const tierTotal = {
-            amount: (tierUnitAmount * tier.minimumQuantity).toFixed(2),
-            currencyCode: tierPrice.currencyCode,
-          }
+          const tierPrice = getTierPrice(tier, basePrice)
+          const tierTotal = getTotalPrice(tierPrice, tier.minimumQuantity)
           const baseTotal = getTotalPrice(basePrice, tier.minimumQuantity)
 
           return (

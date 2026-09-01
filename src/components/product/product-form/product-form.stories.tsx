@@ -52,6 +52,13 @@ const bulkPricingTiers: BulkPricingTier[] = [
   },
 ]
 
+const hulkVolumeDiscountTiers = [
+  { minimumQuantity: 5, discountPercent: 5 },
+  { minimumQuantity: 10, discountPercent: 10 },
+  { minimumQuantity: 20, discountPercent: 12 },
+  { minimumQuantity: 40, discountPercent: 15 },
+] as const
+
 const baseVariant: ProductVariant = {
   id: 'gid://shopify/ProductVariant/organic-chamomile-1kg',
   title: 'Default Title',
@@ -124,6 +131,25 @@ export const MultipleVariants: Story = {
   args: {
     variants: multiVariants,
     options,
+  },
+}
+
+export const HulkVolumeDiscounts: Story = {
+  args: {
+    variants: [
+      {
+        ...baseVariant,
+        quantityAvailable: 50,
+        quantityRule: {
+          minimum: 1,
+          maximum: 50,
+          increment: 1,
+        },
+        quantityPriceBreaks: [],
+      },
+    ],
+    options: [],
+    volumeDiscountTiers: hulkVolumeDiscountTiers,
   },
 }
 

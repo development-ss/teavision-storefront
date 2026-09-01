@@ -4,11 +4,16 @@ import type { ReactNode } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 
 import { ProductForm } from '@/components/product/product-form'
-import type { ProductOption, ProductVariant } from '@/lib/shopify/types'
+import type {
+  ProductOption,
+  ProductVariant,
+  VolumeDiscountTier,
+} from '@/lib/shopify/types'
 
 type PurchaseFormProps = {
   variants: ProductVariant[]
   options: ProductOption[]
+  volumeDiscountTiers?: readonly VolumeDiscountTier[]
   descriptionSlot?: ReactNode
   className?: string
 }
@@ -16,6 +21,7 @@ type PurchaseFormProps = {
 export function PurchaseForm({
   variants,
   options,
+  volumeDiscountTiers,
   descriptionSlot,
   className,
 }: PurchaseFormProps) {
@@ -39,6 +45,7 @@ export function PurchaseForm({
     <ProductForm
       variants={variants}
       options={options}
+      volumeDiscountTiers={volumeDiscountTiers}
       initialVariantId={initialVariantId}
       onVariantChange={handleVariantChange}
       descriptionSlot={descriptionSlot}

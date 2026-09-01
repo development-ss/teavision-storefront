@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'vitest'
 
 import {
+  alignTiersToQuantityRule,
   clampQuantity,
   getVariantMaximumQuantity,
   getVariantMinimumQuantity,
@@ -62,5 +63,40 @@ describe('Shopify quantity rules', () => {
         value: 12,
       }),
     ).toBe(10)
+  })
+
+  test('aligns discount thresholds to reachable variant quantities', () => {
+    expect(
+      alignTiersToQuantityRule(
+        [
+          { minimumQuantity: 5, discountPercent: 5 },
+          { minimumQuantity: 10, discountPercent: 10 },
+        ],
+        {
+          maximumQuantity: 10,
+          minimumQuantity: 2,
+          quantityIncrement: 4,
+        },
+      ),
+    ).toEqual([
+      { minimumQuantity: 6, discountPercent: 5 },
+      { minimumQuantity: 10, discountPercent: 10 },
+    ])
+  })
+
+  test('keeps the deepest tier when thresholds share a reachable quantity', () => {
+    expect(
+      alignTiersToQuantityRule(
+        [
+          { minimumQuantity: 5, discountPercent: 5 },
+          { minimumQuantity: 10, discountPercent: 10 },
+        ],
+        {
+          maximumQuantity: 11,
+          minimumQuantity: 1,
+          quantityIncrement: 10,
+        },
+      ),
+    ).toEqual([{ minimumQuantity: 11, discountPercent: 10 }])
   })
 })
