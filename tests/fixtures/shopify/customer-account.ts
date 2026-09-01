@@ -80,6 +80,7 @@ export function makeCustomerAccountProfile(
         city: 'Sydney',
         provinceCode: 'NSW',
         zip: '2000',
+        formatted: ['Avery Nguyen', '45 Tea Street', 'Sydney NSW 2000'],
       }),
     ],
     orders: [makeCustomerAccountOrder()],

@@ -1,6 +1,7 @@
 'use client'
 
 import { useActionState, useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 import { Button } from '@/components/ui/button'
 import { Dialog } from '@/components/ui/dialog'
@@ -33,7 +34,23 @@ export function DeleteAddressDialog({
   openByDefault = false,
 }: DeleteAddressDialogProps) {
   const [open, setOpen] = useState(openByDefault)
-  const [state, formAction, isPending] = useActionState(action, initialState)
+  const router = useRouter()
+  const [state, formAction, isPending] = useActionState(
+    async (
+      previousState: CustomerAccountFormState,
+      formData: FormData,
+    ): Promise<CustomerAccountFormState> => {
+      const nextState = await action(previousState, formData)
+
+      if (nextState.status === 'success') {
+        setOpen(false)
+        router.refresh()
+      }
+
+      return nextState
+    },
+    initialState,
+  )
   const pending = isPendingOverride ?? isPending
 
   return (

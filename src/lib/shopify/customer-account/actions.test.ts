@@ -275,6 +275,26 @@ describe('Customer Account Server Actions', () => {
     expect(deleteCustomerAddress).not.toHaveBeenCalled()
   })
 
+  test('delete action revalidates the address list after success', async () => {
+    const state = await deleteAddressAction(
+      initialState,
+      makeFormData({
+        addressId: 'gid://shopify/CustomerAddress/test-address-1',
+      }),
+    )
+
+    expect(deleteCustomerAddress).toHaveBeenCalledWith(
+      expect.objectContaining({ accessToken: 'customer-access-token' }),
+      'gid://shopify/CustomerAddress/test-address-1',
+    )
+    expect(revalidatePath).toHaveBeenCalledWith('/account')
+    expect(revalidatePath).toHaveBeenCalledWith('/account/addresses')
+    expect(state).toEqual({
+      fieldErrors: {},
+      message: 'Address deleted.',
+      status: 'success',
+    })
+  })
   test('default address refresh failure returns success guidance', async () => {
     vi.mocked(getCustomerAccountDashboard).mockRejectedValue(
       new Error('refresh unavailable'),
