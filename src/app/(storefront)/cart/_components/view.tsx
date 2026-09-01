@@ -418,13 +418,13 @@ export function CartView({
               className="type-body bg-ink text-paper mt-4 rounded-md px-4 py-3 text-center font-medium"
               role="status"
             >
-              Congratulations! You saved{' '}
+              Congratulations! You have saved{' '}
               <Price
                 price={cartDisplayPricing.savings}
                 size="md"
                 className="text-paper"
               />{' '}
-              by buying in bulk!
+              today.
             </p>
           ) : null}
 
@@ -454,6 +454,16 @@ export function CartView({
                 {itemCountLabel}
               </span>
             </div>
+            {cartDisplayPricing.savings ? (
+              <div className="type-body-sm flex justify-between gap-4">
+                <span className="text-ink-soft">Total savings</span>
+                <Price
+                  price={cartDisplayPricing.savings}
+                  size="sm"
+                  className="text-brand font-semibold"
+                />
+              </div>
+            ) : null}
             <div className="flex justify-between gap-4">
               <span className="font-display text-ink text-xl">Grand total</span>
               <Price

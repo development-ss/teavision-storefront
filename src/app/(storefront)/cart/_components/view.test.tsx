@@ -74,6 +74,12 @@ describe('CartView', () => {
     expect(html).toContain('aria-label="Now $1,382.10"')
     expect(html).toContain('value="40"')
     expect(html).toContain('Remove')
+    expect(getTextContent(html)).toContain(
+      'Congratulations! You have saved $243.90 today.',
+    )
+    expect(html).toContain('>Total savings</span>')
+    expect(getTextContent(html).match(/\$243\.90/g)).toHaveLength(2)
+
     expect(html).not.toContain('Bulk discount')
   })
 
@@ -141,7 +147,8 @@ describe('CartView', () => {
     expect(getTextContent(html)).toContain('$624.92')
     expect(html).not.toContain('$16.17')
     expect(html).not.toContain('$549.93')
-    expect(html).not.toContain('Congratulations! You saved')
+    expect(html).not.toContain('Congratulations! You have saved')
+    expect(html).not.toContain('Total savings')
     expect(html).not.toContain('Bulk pricing estimated')
   })
 
@@ -184,7 +191,8 @@ describe('CartView', () => {
     expect(html).not.toContain('$38.62')
     expect(html).not.toContain('$193.09')
     expect(html).not.toContain('$10.16')
-    expect(html).not.toContain('Congratulations! You saved')
+    expect(html).not.toContain('Congratulations! You have saved')
+    expect(html).not.toContain('Total savings')
   })
 
   it('keeps non-bulk discount labels visible when a line has discounted totals', () => {
