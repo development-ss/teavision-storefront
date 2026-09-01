@@ -109,6 +109,29 @@ async function expectFooterParity(canvasElement: HTMLElement) {
     label: link.textContent?.trim() ?? '',
   }))
 
+  const repairedPopularSearches = new Map([
+    ['dandelion tea', '/collections/dandelion-root'],
+    ['lemon myrtle tea', '/collections/lemon-myrtle-tea'],
+    ['olive leaf tea', '/collections/olive-leaf'],
+    ['yerba mate tea', '/collections/yerba-mate-tea'],
+    ['australian tea', '/collections/australian-tea'],
+    ['digestive tea', '/collections/digestive-tea'],
+    ['licorice root tea', '/collections/licorice-root-tea'],
+    ['rose bud tea', '/collections/rose-bud-tea'],
+    ['nettle leaf', '/collections/nettle-leaf-tea'],
+    ['calendula tea', '/collections/calendula-flowers-petals-tea'],
+    ['tea packaging', '/collections/private-label-packaging'],
+  ])
+
+  repairedPopularSearches.forEach((expectedHref, label) => {
+    const matchingLink = popularSearchLinks.find((link) => link.label === label)
+    if (matchingLink?.href !== expectedHref) {
+      throw new Error(
+        `Popular Searches link mismatch for ${label}: expected ${expectedHref}, found ${matchingLink?.href ?? 'missing'}`,
+      )
+    }
+  })
+
   if (
     popularSearchLinks.at(0)?.label !== 'teas australia' ||
     popularSearchLinks.at(0)?.href !== '/'
