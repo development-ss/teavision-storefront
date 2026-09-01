@@ -1,7 +1,6 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
 
 import {
   createCustomerAddress,
@@ -213,6 +212,7 @@ export async function createAddressAction(
       return userErrorState(result.userErrors)
 
     revalidateAccountPaths('/account/addresses')
+    return successState('Address saved.')
   } catch (error) {
     if (error instanceof Error && error.message === INVALID_FORM_MESSAGE) {
       return errorState(error.message)
@@ -220,8 +220,6 @@ export async function createAddressAction(
 
     return errorState(GENERIC_MUTATION_ERROR)
   }
-
-  redirect('/account/addresses')
 }
 
 export async function updateAddressAction(
@@ -248,6 +246,7 @@ export async function updateAddressAction(
       return userErrorState(result.userErrors)
 
     revalidateAccountPaths('/account/addresses')
+    return successState('Address saved.')
   } catch (error) {
     if (error instanceof Error && error.message === INVALID_FORM_MESSAGE) {
       return errorState(error.message)
@@ -255,8 +254,6 @@ export async function updateAddressAction(
 
     return errorState(GENERIC_MUTATION_ERROR)
   }
-
-  redirect('/account/addresses')
 }
 
 export async function deleteAddressAction(

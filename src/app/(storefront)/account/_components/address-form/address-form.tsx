@@ -1,6 +1,7 @@
 'use client'
 
 import { useActionState } from 'react'
+import { useRouter } from 'next/navigation'
 
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -37,7 +38,22 @@ export function AddressForm({
   initialState = initialAddressFormState,
   mode,
 }: AddressFormProps) {
-  const [state, formAction, isPending] = useActionState(action, initialState)
+  const router = useRouter()
+  const [state, formAction, isPending] = useActionState(
+    async (
+      previousState: CustomerAccountFormState,
+      formData: FormData,
+    ): Promise<CustomerAccountFormState> => {
+      const nextState = await action(previousState, formData)
+
+      if (nextState.status === 'success') {
+        router.replace('/account/addresses')
+      }
+
+      return nextState
+    },
+    initialState,
+  )
   const pending = isPendingOverride ?? isPending
   const submitLabel = mode === 'create' ? 'Save address' : 'Save address'
   const title = mode === 'create' ? 'New address' : 'Edit address'

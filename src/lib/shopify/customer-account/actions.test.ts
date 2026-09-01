@@ -1,5 +1,4 @@
 import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 
 import {
@@ -27,12 +26,6 @@ import type { CustomerAccountFormState, CustomerAccountSession } from './types'
 
 vi.mock('next/cache', () => ({
   revalidatePath: vi.fn(),
-}))
-
-vi.mock('next/navigation', () => ({
-  redirect: vi.fn(() => {
-    throw new Error('NEXT_REDIRECT')
-  }),
 }))
 
 vi.mock('./session', () => ({
@@ -196,22 +189,20 @@ describe('Customer Account Server Actions', () => {
   })
 
   test('address action ignores client-provided customer identity', async () => {
-    await expect(
-      createAddressAction(
-        initialState,
-        makeFormData({
-          address1: '99 Tea Road',
-          city: 'Brisbane',
-          countryCodeV2: 'AU',
-          customerId: 'gid://shopify/Customer/not-this-one',
-          firstName: 'Mira',
-          lastName: 'Patel',
-          phone: '+61 411 111 111',
-          provinceCode: 'QLD',
-          zip: '4000',
-        }),
-      ),
-    ).rejects.toThrow('NEXT_REDIRECT')
+    const state = await createAddressAction(
+      initialState,
+      makeFormData({
+        address1: '99 Tea Road',
+        city: 'Brisbane',
+        countryCodeV2: 'AU',
+        customerId: 'gid://shopify/Customer/not-this-one',
+        firstName: 'Mira',
+        lastName: 'Patel',
+        phone: '+61 411 111 111',
+        provinceCode: 'QLD',
+        zip: '4000',
+      }),
+    )
 
     expect(createCustomerAddress).toHaveBeenCalledWith(
       expect.objectContaining({ accessToken: 'customer-access-token' }),
@@ -229,7 +220,11 @@ describe('Customer Account Server Actions', () => {
     )
     expect(revalidatePath).toHaveBeenCalledWith('/account')
     expect(revalidatePath).toHaveBeenCalledWith('/account/addresses')
-    expect(redirect).toHaveBeenCalledWith('/account/addresses')
+    expect(state).toEqual({
+      fieldErrors: {},
+      message: 'Address saved.',
+      status: 'success',
+    })
   })
 
   test('address user errors become field-level action state', async () => {
@@ -258,21 +253,19 @@ describe('Customer Account Server Actions', () => {
     })
   })
 
-  test('successful address edits refresh and return to the address list', async () => {
-    await expect(
-      updateAddressAction(
-        initialState,
-        makeFormData({
-          addressId: 'gid://shopify/CustomerAddress/test-address-1',
-          address1: '100 Tea Road',
-          city: 'Brisbane',
-          countryCodeV2: 'AU',
-          firstName: 'Mira',
-          lastName: 'Patel',
-          zip: '4000',
-        }),
-      ),
-    ).rejects.toThrow('NEXT_REDIRECT')
+  test('successful address edits return explicit success state', async () => {
+    const state = await updateAddressAction(
+      initialState,
+      makeFormData({
+        addressId: 'gid://shopify/CustomerAddress/test-address-1',
+        address1: '100 Tea Road',
+        city: 'Brisbane',
+        countryCodeV2: 'AU',
+        firstName: 'Mira',
+        lastName: 'Patel',
+        zip: '4000',
+      }),
+    )
 
     expect(updateCustomerAddress).toHaveBeenCalledWith(
       expect.objectContaining({ accessToken: 'customer-access-token' }),
@@ -291,7 +284,11 @@ describe('Customer Account Server Actions', () => {
     )
     expect(revalidatePath).toHaveBeenCalledWith('/account')
     expect(revalidatePath).toHaveBeenCalledWith('/account/addresses')
-    expect(redirect).toHaveBeenCalledWith('/account/addresses')
+    expect(state).toEqual({
+      fieldErrors: {},
+      message: 'Address saved.',
+      status: 'success',
+    })
   })
 
   test('address action rejects missing required fields before Shopify mutation', async () => {
