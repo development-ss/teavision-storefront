@@ -6,6 +6,7 @@ type LegacyBridgeProps = {
   body: string
   heading: string
   primaryHref: string
+  primaryLabel?: string
 }
 
 const hostedSignInCopy =
@@ -15,10 +16,11 @@ export function LegacyBridge({
   body,
   heading,
   primaryHref,
+  primaryLabel = 'Sign in with Shopify',
 }: LegacyBridgeProps) {
   return (
     <Section.Root tone="surface" spacing="default">
-      <Section.Container variant="compact">
+      <Section.Container>
         <Card
           padding="lg"
           radius="lg"
@@ -41,10 +43,18 @@ export function LegacyBridge({
               variant="brand"
               size="lg"
               prefetch={false}
+              className="w-full sm:w-auto"
             >
-              Sign in with Shopify
+              <span className="whitespace-normal sm:whitespace-nowrap">
+                {primaryLabel}
+              </span>
             </Button>
-            <Button href="/pages/contact" variant="secondary" size="lg">
+            <Button
+              href="/pages/contact"
+              variant="secondary"
+              size="lg"
+              className="w-full sm:w-auto"
+            >
               Contact support
             </Button>
           </div>

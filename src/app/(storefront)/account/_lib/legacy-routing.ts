@@ -1,4 +1,7 @@
-import { getAccountLoginStartHref, normalizeAccountReturnPath } from './return-path'
+import {
+  getAccountLoginStartHref,
+  normalizeAccountReturnPath,
+} from './return-path'
 
 export type LegacyAccountSearchParams = {
   checkout_url?: string | string[]
@@ -11,6 +14,7 @@ export type LegacyAccountBridgeCopy = {
   body: string
   heading: string
   primaryHref: string
+  primaryLabel?: string
 }
 
 const LEGACY_RETURN_PARAM_NAMES = [
@@ -74,6 +78,7 @@ export function getLegacyAccountBridgeCopy(
       body: 'Classic account registration has moved to the modern Shopify customer account flow.',
       heading: 'Create your account with Shopify',
       primaryHref: getAccountLoginStartHref('/account'),
+      primaryLabel: 'Create account with Shopify',
     }
   }
 

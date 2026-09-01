@@ -26,6 +26,7 @@ const registerArgs = {
   body: 'Classic account registration has moved to the modern Shopify customer account flow.',
   heading: 'Create your account with Shopify',
   primaryHref: '/account/login/start?returnTo=%2Faccount',
+  primaryLabel: 'Create account with Shopify',
 }
 
 const recoverArgs = {
@@ -48,6 +49,24 @@ async function assertBridgeFit(
 ) {
   const canvas = within(canvasElement)
   const headingElement = canvas.getByRole('heading', { name: heading })
+  const primaryAction = canvas.getByRole('link', {
+    name: /(?:Create account|Sign in) with Shopify/,
+  })
+  const supportAction = canvas.getByRole('link', { name: 'Contact support' })
+  const cardElement = headingElement.parentElement?.parentElement
+
+  if (!cardElement) {
+    throw new Error('Could not find the account bridge card')
+  }
+
+  const cardBounds = cardElement.getBoundingClientRect()
+
+  for (const action of [primaryAction, supportAction]) {
+    const actionBounds = action.getBoundingClientRect()
+
+    expect(actionBounds.left).toBeGreaterThanOrEqual(cardBounds.left)
+    expect(actionBounds.right).toBeLessThanOrEqual(cardBounds.right)
+  }
 
   expect(canvasElement.scrollWidth).toBeLessThanOrEqual(
     canvasElement.clientWidth + 1,
@@ -61,9 +80,10 @@ async function assertBridgeFit(
       'Teavision now uses Shopify-hosted Customer Account sign-in.',
     ),
   ).toBeInTheDocument()
-  await expect(
-    canvas.getByRole('link', { name: 'Sign in with Shopify' }),
-  ).toHaveAttribute('href', '/account/login/start?returnTo=%2Faccount')
+  await expect(primaryAction).toHaveAttribute(
+    'href',
+    '/account/login/start?returnTo=%2Faccount',
+  )
 }
 
 export const Register: Story = {
