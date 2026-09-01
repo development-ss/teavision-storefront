@@ -288,4 +288,55 @@ describe('ProductForm', () => {
     })
     host.remove()
   })
+
+  it('shows add failures while keeping the add action available for retry', async () => {
+    capturedAddToCartPayloads.length = 0
+    let attempts = 0
+    const flakyAddToCart = async (variantId: string, quantity: number) => {
+      attempts += 1
+      if (attempts === 1) throw new Error('temporary failure')
+      await captureAddToCart(variantId, quantity)
+    }
+    const host = document.createElement('div')
+    document.body.append(host)
+    const root = createRoot(host)
+
+    await act(async () => {
+      root.render(
+        <ProductFormWithInitialVariant
+          variants={[variants[0]]}
+          options={options}
+          addToCart={flakyAddToCart}
+        />,
+      )
+    })
+
+    const addToCartButton = Array.from(host.querySelectorAll('button')).find(
+      (button) => button.textContent === 'Add to Cart',
+    )
+    if (!addToCartButton)
+      throw new Error('Expected add-to-cart button to render')
+
+    await act(async () => {
+      addToCartButton.click()
+      await new Promise((resolve) => setTimeout(resolve, 10))
+    })
+    expect(host.textContent).toContain(
+      'Unable to add to cart. Please try again.',
+    )
+
+    await act(async () => {
+      addToCartButton.click()
+      await new Promise((resolve) => setTimeout(resolve, 10))
+    })
+    expect(capturedAddToCartPayloads.at(-1)).toEqual({
+      variantId: variants[0].id,
+      quantity: 1,
+    })
+
+    await act(async () => {
+      root.unmount()
+    })
+    host.remove()
+  })
 })
