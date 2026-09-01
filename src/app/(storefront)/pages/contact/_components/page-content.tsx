@@ -6,7 +6,11 @@ import { submitContactFormAction } from '@/lib/contact/actions'
 import { Hero } from './hero'
 import { Sidebar } from './sidebar'
 
-export function PageContent() {
+type PageContentProps = {
+  initialMessage?: string
+}
+
+export function PageContent({ initialMessage }: PageContentProps) {
   return (
     <>
       <Hero />
@@ -16,7 +20,10 @@ export function PageContent() {
           <div className="grid gap-10 lg:grid-cols-2 lg:items-start">
             <Sidebar />
             <Card className="p-5 sm:p-8" radius="lg">
-              <ContactForm action={submitContactFormAction} />
+              <ContactForm
+                action={submitContactFormAction}
+                initialMessage={initialMessage}
+              />
             </Card>
           </div>
         </Section.Container>

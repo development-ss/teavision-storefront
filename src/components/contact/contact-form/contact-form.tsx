@@ -19,6 +19,7 @@ type ContactFormProps = {
   eyebrow?: string
   title?: string
   description?: string
+  initialMessage?: string
   submitLabel?: string
   pendingLabel?: string
 }
@@ -39,6 +40,7 @@ export function ContactForm({
   eyebrow = 'Procurement desk',
   title = 'Start an enquiry',
   description = 'Tell us what you need sourced, blended, packed, or quoted. A short brief is enough to start the conversation.',
+  initialMessage = '',
   submitLabel = 'Send enquiry',
   pendingLabel = 'Sending enquiry...',
 }: ContactFormProps) {
@@ -171,6 +173,7 @@ export function ContactForm({
           rows={6}
           maxLength={2000}
           className="mt-2 min-h-40"
+          defaultValue={initialMessage}
           placeholder="Wholesale account, custom blend, private label, sample request, or general supply question."
         />
       </div>

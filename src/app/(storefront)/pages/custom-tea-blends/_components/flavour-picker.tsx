@@ -8,7 +8,6 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Section } from '@/components/ui/section'
 import {
   CUSTOM_TEA_BLEND_FLAVOUR_GROUPS,
-  CUSTOM_TEA_BLEND_FORM_ID,
   CUSTOM_TEA_BLEND_LIMITS,
 } from '@/lib/contact/custom-tea-blend'
 import { cn } from '@/lib/utils'
@@ -24,6 +23,14 @@ export function FlavourPicker() {
   const query = normaliseSearch(deferredSearch)
   const hasReachedLimit =
     selectedFlavours.length >= CUSTOM_TEA_BLEND_LIMITS.maxFlavours
+  const briefHref = useMemo(() => {
+    if (selectedFlavours.length === 0) return '/pages/contact#need-help'
+
+    const params = new URLSearchParams()
+    params.set('flavours', selectedFlavours.join(','))
+
+    return `/pages/contact?${params.toString()}#need-help`
+  }, [selectedFlavours])
 
   const flavourGroups = useMemo(() => {
     if (!query) return CUSTOM_TEA_BLEND_FLAVOUR_GROUPS
@@ -65,11 +72,11 @@ export function FlavourPicker() {
             </h2>
             <p className="type-lede text-ink-soft mt-4 max-w-prose">
               Select one or more starting points for the product development
-              team. The choices below will be attached to your custom blend
-              brief.
+              team. Continue to the contact brief when you&rsquo;re ready to
+              share the direction.
             </p>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-              <Button href="#need-help" variant="secondary">
+              <Button href={briefHref} variant="secondary">
                 Continue to Brief
                 <ArrowRight className="size-4" aria-hidden="true" />
               </Button>
@@ -99,16 +106,6 @@ export function FlavourPicker() {
             </div>
 
             <div className="mt-4" aria-live="polite">
-              {selectedFlavours.map((flavour) => (
-                <input
-                  key={flavour}
-                  form={CUSTOM_TEA_BLEND_FORM_ID}
-                  type="hidden"
-                  name="flavours"
-                  value={flavour}
-                />
-              ))}
-
               {selectedFlavours.length > 0 ? (
                 <ul className="flex flex-wrap gap-2" role="list">
                   {selectedFlavours.map((flavour) => (
