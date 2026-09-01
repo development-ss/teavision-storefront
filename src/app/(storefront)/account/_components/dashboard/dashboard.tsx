@@ -32,11 +32,21 @@ export function Dashboard({ dashboard }: DashboardProps) {
   return (
     <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_22rem] xl:items-start xl:gap-10">
       <div className="grid min-w-0 gap-6">
-        <div className="grid gap-2">
-          <p className="type-mono-meta text-gold-deep">Customer account</p>
-          <h1 className="type-heading-01 text-ink">
-            {getDisplayName(dashboard)}
-          </h1>
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div className="grid gap-2">
+            <p className="type-mono-meta text-gold-deep">Customer account</p>
+            <h1 className="type-heading-01 text-ink">
+              {getDisplayName(dashboard)}
+            </h1>
+          </div>
+          <Button
+            href="/account/logout"
+            variant="secondary"
+            size="sm"
+            prefetch={false}
+          >
+            Log out
+          </Button>
         </div>
 
         <Card padding="lg" radius="lg" tone="surface">
@@ -170,12 +180,6 @@ export function Dashboard({ dashboard }: DashboardProps) {
         </Card>
 
         <SupportBlock />
-
-        <form action="/account/logout" method="post">
-          <Button type="submit" variant="quiet" size="quiet">
-            Log out
-          </Button>
-        </form>
       </aside>
     </div>
   )
