@@ -41,7 +41,7 @@ export function LoginPanel({ loginHref, reason = 'default' }: LoginPanelProps) {
           variant="primary"
           size="md"
           className="w-full"
-          prefetch={false}
+          reloadDocument
         >
           Sign in with Shopify
         </Button>

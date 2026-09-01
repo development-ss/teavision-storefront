@@ -78,6 +78,14 @@ export const AsLink: Story = {
   args: { children: 'Read Tea Journal', href: '/blogs/tea-journal' },
 }
 
+export const WithDocumentNavigation: Story = {
+  args: {
+    children: 'Sign in with Shopify',
+    href: '/account/login/start',
+    reloadDocument: true,
+  },
+}
+
 export const Loading: Story = {
   args: { children: 'Adding…', variant: 'primary', isLoading: true },
   play: async ({ canvasElement }) => {

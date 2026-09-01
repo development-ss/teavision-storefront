@@ -58,7 +58,7 @@ test('account login bridge keeps the shared account geometry stable', async () =
 
   assert.match(loginPanel, /min-h-72/)
   assert.match(loginPanel, /content-start/)
-  assert.match(loginPanel, /prefetch=\{false\}/)
+  assert.match(loginPanel, /reloadDocument/)
   assert.doesNotMatch(login, /<Section\.Root/)
   assert.doesNotMatch(login, /<Section\.Container/)
   assert.match(loginLoading, /<LoginPanel/)

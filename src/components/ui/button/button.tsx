@@ -92,6 +92,8 @@ type ButtonAsAnchor = ButtonSharedProps &
   LinkProps & {
     disabled?: never
     isLoading?: never
+    /** Use native browser navigation instead of Next.js client navigation. */
+    reloadDocument?: boolean
     type?: never
   }
 
@@ -109,13 +111,14 @@ export const Button = React.forwardRef<
 
     if (props.href !== undefined) {
       const classes = cn(baseClasses, className)
+      const { reloadDocument = false, ...linkProps } = props
 
-      if (!shouldUseNextLink(props.href)) {
+      if (reloadDocument || !shouldUseNextLink(props.href)) {
         return (
           <a
             ref={ref as React.Ref<HTMLAnchorElement>}
             className={classes}
-            {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
+            {...(linkProps as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
           >
             {children}
           </a>
@@ -126,7 +129,7 @@ export const Button = React.forwardRef<
         <Link
           ref={ref as React.Ref<HTMLAnchorElement>}
           className={classes}
-          {...props}
+          {...linkProps}
         >
           {children}
         </Link>

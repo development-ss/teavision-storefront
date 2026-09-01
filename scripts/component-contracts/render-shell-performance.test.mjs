@@ -46,7 +46,7 @@ function assertAccountShellContract(wrapperSources, loginPanel) {
 
   assert.match(loginPanel, /min-h-72/)
   assert.match(loginPanel, /content-start/)
-  assert.match(loginPanel, /prefetch=\{false\}/)
+  assert.match(loginPanel, /reloadDocument/)
 
   const loginLoading = wrapperSources[4]
   assert.match(loginLoading, /<LoginPanel/)

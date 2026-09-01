@@ -42,7 +42,7 @@ export function LegacyBridge({
               href={primaryHref}
               variant="brand"
               size="lg"
-              prefetch={false}
+              reloadDocument
               className="w-full sm:w-auto"
             >
               <span className="whitespace-normal sm:whitespace-nowrap">

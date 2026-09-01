@@ -14,7 +14,7 @@ import { LoginPanel } from './login-panel'
 const buttonCalls = vi.hoisted(() => ({
   props: [] as Array<{
     href?: string
-    prefetch?: boolean | null
+    reloadDocument?: boolean
   }>,
 }))
 
@@ -22,7 +22,7 @@ type MockButtonProps = {
   children?: ReactNode
   className?: string
   href?: string
-  prefetch?: boolean | null
+  reloadDocument?: boolean
 }
 
 type MockFrameProps = {
@@ -31,11 +31,15 @@ type MockFrameProps = {
 }
 
 vi.mock('@/components/ui/button', () => ({
-  Button: ({ children, className, href, prefetch }: MockButtonProps) => {
-    buttonCalls.props.push({ href, prefetch })
+  Button: ({ children, className, href, reloadDocument }: MockButtonProps) => {
+    buttonCalls.props.push({ href, reloadDocument })
 
     return (
-      <a className={className} href={href} data-prefetch={String(prefetch)}>
+      <a
+        className={className}
+        href={href}
+        data-reload-document={String(reloadDocument)}
+      >
         {children}
       </a>
     )
@@ -53,7 +57,7 @@ describe('LoginPanel', () => {
     buttonCalls.props = []
   })
 
-  it('disables prefetch on the primary OAuth-start link only', async () => {
+  it('uses document navigation on the primary OAuth-start link only', async () => {
     const host = document.createElement('div')
     document.body.append(host)
     const root = createRoot(host)
@@ -67,11 +71,11 @@ describe('LoginPanel', () => {
 
       expect(buttonCalls.props).toContainEqual({
         href: '/account/login/start?returnTo=%2Faccount',
-        prefetch: false,
+        reloadDocument: true,
       })
       expect(buttonCalls.props).toContainEqual({
         href: '/collections/all',
-        prefetch: undefined,
+        reloadDocument: undefined,
       })
     } finally {
       await act(async () => {
