@@ -23,8 +23,7 @@ describe('security headers', () => {
       },
       {
         key: 'Permissions-Policy',
-        value:
-          'camera=(), microphone=(), geolocation=(), browsing-topics=()',
+        value: 'camera=(), microphone=(), geolocation=(), browsing-topics=()',
       },
       {
         key: 'X-Frame-Options',
@@ -104,5 +103,23 @@ describe('security headers', () => {
     expect(contentSecurityPolicy).toContain('google-analytics.com')
     expect(contentSecurityPolicy).not.toContain('facebook.net')
     expect(contentSecurityPolicy).not.toContain('klaviyo')
+  })
+
+  test('adds Zotabox hosts only when its embed URL is configured', () => {
+    const disabledPolicy = buildContentSecurityPolicy({})
+    const enabledPolicy = buildContentSecurityPolicy({
+      NEXT_PUBLIC_ZOTABOX_EMBED_URL:
+        'https://static.zotabox.com/5/f/example/widgets.js',
+    })
+
+    expect(disabledPolicy).not.toContain('zotabox.com')
+    expect(enabledPolicy).toContain(
+      "script-src 'self' 'unsafe-inline' https://searchserverapi.com https://static.zotabox.com",
+    )
+    expect(enabledPolicy).toContain("connect-src 'self'")
+    expect(enabledPolicy).toContain('https://*.zotabox.com')
+    expect(enabledPolicy).toContain(
+      "frame-src 'self' https://maps.google.com https://*.zotabox.com",
+    )
   })
 })

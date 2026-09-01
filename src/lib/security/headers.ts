@@ -12,6 +12,7 @@ type SecurityHeaderEnvKey =
   | 'NEXT_PUBLIC_META_PIXEL_ID'
   | 'NEXT_PUBLIC_KLAVIYO_PUBLIC_KEY'
   | 'NEXT_PUBLIC_SHOPIFY_PIXEL_ENABLED'
+  | 'NEXT_PUBLIC_ZOTABOX_EMBED_URL'
 
 type SecurityHeaderEnv = Record<string, string | undefined>
 
@@ -32,7 +33,11 @@ function isTruthyEnv(
 export function buildContentSecurityPolicy(
   env: SecurityHeaderEnv = process.env,
 ): string {
-  const scriptSources = ["'self'", "'unsafe-inline'", 'https://searchserverapi.com']
+  const scriptSources = [
+    "'self'",
+    "'unsafe-inline'",
+    'https://searchserverapi.com',
+  ]
   const imgSources = [
     "'self'",
     'blob:',
@@ -50,6 +55,7 @@ export function buildContentSecurityPolicy(
     'https://*.myshopify.com',
     'https://*.shopify.com',
   ]
+  const frameSources = ["'self'", 'https://maps.google.com']
 
   const ga4Enabled = hasEnvValue(env, 'NEXT_PUBLIC_GA4_MEASUREMENT_ID')
   const gtmEnabled = hasEnvValue(env, 'NEXT_PUBLIC_GTM_CONTAINER_ID')
@@ -59,6 +65,7 @@ export function buildContentSecurityPolicy(
     env,
     'NEXT_PUBLIC_SHOPIFY_PIXEL_ENABLED',
   )
+  const zotaboxEnabled = hasEnvValue(env, 'NEXT_PUBLIC_ZOTABOX_EMBED_URL')
 
   if (ga4Enabled || gtmEnabled) {
     scriptSources.push('https://www.googletagmanager.com')
@@ -88,6 +95,13 @@ export function buildContentSecurityPolicy(
     connectSources.push('https://monorail-edge.shopifysvc.com')
   }
 
+  if (zotaboxEnabled) {
+    scriptSources.push('https://static.zotabox.com')
+    connectSources.push('https://*.zotabox.com')
+    imgSources.push('https://*.zotabox.com')
+    frameSources.push('https://*.zotabox.com')
+  }
+
   return [
     "default-src 'self'",
     "base-uri 'self'",
@@ -99,7 +113,7 @@ export function buildContentSecurityPolicy(
     `img-src ${imgSources.join(' ')}`,
     "font-src 'self' data:",
     `connect-src ${connectSources.join(' ')}`,
-    "frame-src 'self' https://maps.google.com",
+    `frame-src ${frameSources.join(' ')}`,
     "media-src 'self'",
     "manifest-src 'self'",
     // 'upgrade-insecure-requests' is intentionally omitted: it is ignored in a

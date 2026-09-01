@@ -1,7 +1,13 @@
+import Script from 'next/script'
+import { Suspense } from 'react'
+
 import { AnalyticsDestinationLoader } from '@/components/analytics/destination-loader'
 import { ConsentBanner } from '@/components/consent/banner'
 import { Footer } from '@/components/layout/footer'
 import { Header } from '@/components/layout/header'
+import { NewsletterPopup } from '@/components/layout/newsletter-popup'
+import { sendNewsletterSignupFormAction } from '@/lib/contact/actions'
+import { zotaboxPublicConfig } from '@/lib/env/public'
 
 export default function StorefrontLayout({
   children,
@@ -23,6 +29,18 @@ export default function StorefrontLayout({
       <Footer />
       <ConsentBanner />
       <AnalyticsDestinationLoader />
+      {zotaboxPublicConfig.embedUrl ? (
+        <Script
+          id="zotabox-widgets"
+          src={zotaboxPublicConfig.embedUrl}
+          strategy="lazyOnload"
+          data-cfasync="false"
+        />
+      ) : (
+        <Suspense fallback={null}>
+          <NewsletterPopup action={sendNewsletterSignupFormAction} />
+        </Suspense>
+      )}
     </div>
   )
 }
