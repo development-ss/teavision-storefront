@@ -140,19 +140,35 @@ function getNextBulkDiscountPrompt(line: CartLine): {
 
 function getCartDisplayPricing(cart: Cart): CartDisplayPricing {
   const subtotalPrice = cart.cost.totalAmount
-  const subtotalCompareAtPrice = getSavingsAmount(
-    cart.cost.subtotalAmount,
-    subtotalPrice,
-  )
-    ? cart.cost.subtotalAmount
+  const currencyCode = subtotalPrice.currencyCode
+  let lineSavingsAmount = 0
+
+  for (const line of cart.lines) {
+    const lineSavings = getSavingsAmount(
+      line.cost.subtotalAmount,
+      line.cost.totalAmount,
+    )
+
+    if (lineSavings?.currencyCode === currencyCode) {
+      lineSavingsAmount += parseMoneyAmount(lineSavings)
+    }
+  }
+
+  const savings =
+    lineSavingsAmount > SAVINGS_EPSILON
+      ? makeMoney(lineSavingsAmount, currencyCode)
+      : getSavingsAmount(cart.cost.subtotalAmount, subtotalPrice)
+  const subtotalCompareAtPrice = savings
+    ? makeMoney(
+        parseMoneyAmount(subtotalPrice) + parseMoneyAmount(savings),
+        currencyCode,
+      )
     : undefined
 
   return {
     subtotalPrice,
     subtotalCompareAtPrice,
-    savings: subtotalCompareAtPrice
-      ? getSavingsAmount(subtotalCompareAtPrice, subtotalPrice)
-      : null,
+    savings,
   }
 }
 

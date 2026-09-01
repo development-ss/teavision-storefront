@@ -34,7 +34,7 @@ describe('CartView', () => {
       <CartView
         cart={makeCart({
           cost: {
-            subtotalAmount: makeMoney('1626.00'),
+            subtotalAmount: makeMoney('1382.10'),
             totalAmount: makeMoney('1382.10'),
           },
           lines: [
