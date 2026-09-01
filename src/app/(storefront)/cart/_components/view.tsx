@@ -177,6 +177,19 @@ export function CartView({
   checkoutError = null,
 }: CartViewProps) {
   if (!cart || cart.totalQuantity === 0) {
+    if (accountContextState === 'sync-failed-blocked') {
+      return (
+        <div className="mx-auto max-w-2xl py-8 sm:py-12">
+          <CartCheckoutForm
+            accountEmail={accountEmail}
+            accountContextState={accountContextState}
+            cartIdPresent={Boolean(cart?.id)}
+            checkoutError={checkoutError}
+          />
+        </div>
+      )
+    }
+
     return (
       <div className="py-16 text-center sm:py-24">
         <div className="bg-paper-2 mx-auto mb-8 flex size-20 items-center justify-center rounded-2xl">
