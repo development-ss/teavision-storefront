@@ -6,6 +6,12 @@ import { getCartAction } from '@/lib/cart/actions'
 import { withNoindexRobots } from '@/lib/seo/noindex'
 import { getCustomerAccountIdentity } from '@/lib/shopify/customer-account/operations'
 import { getCustomerAccountSession } from '@/lib/shopify/customer-account/session'
+import {
+  getProduct,
+  PRODUCT_DETAIL_CACHE_VERSION,
+} from '@/lib/shopify/operations/product'
+import { getHulkVolumeDiscountTiers } from '@/lib/shopify/operations/hulk-volume-discounts'
+import type { Cart, VolumeDiscountTier } from '@/lib/shopify/types'
 
 import { CartLoadingSkeleton } from './_components/loading-skeleton'
 import { CartRecommendations } from './_components/recommendations'
@@ -21,13 +27,43 @@ type CartPageProps = {
   }>
 }
 
+async function getCartVolumeDiscountTiers(
+  cart: Cart | null,
+): Promise<Record<string, readonly VolumeDiscountTier[]>> {
+  if (!cart) return {}
+
+  const handles = [
+    ...new Set(cart.lines.map((line) => line.merchandise.product.handle)),
+  ]
+  const products = await Promise.all(
+    handles.map((handle) => getProduct(handle, PRODUCT_DETAIL_CACHE_VERSION)),
+  )
+  const tiers = await Promise.all(
+    products.map((product) =>
+      product
+        ? getHulkVolumeDiscountTiers({
+            productId: product.id,
+            variantIds: product.variants.map((variant) => variant.id),
+            collectionIds: product.collectionIds ?? [],
+            tags: product.tags,
+          })
+        : [],
+    ),
+  )
+
+  return Object.fromEntries(
+    handles.map((handle, index) => [handle, tiers[index] ?? []]),
+  )
+}
+
 async function CartPageContent({ searchParams }: CartPageProps) {
   const [params, cart] = await Promise.all([searchParams, getCartAction()])
   const shouldLoadAccountSession =
     Boolean(cart) || params.checkout === 'identity-sync-failed'
-  const session = shouldLoadAccountSession
-    ? await getCustomerAccountSession()
-    : null
+  const [session, volumeDiscountTiersByHandle] = await Promise.all([
+    shouldLoadAccountSession ? getCustomerAccountSession() : null,
+    getCartVolumeDiscountTiers(cart),
+  ])
   const accountIdentity = session
     ? await getCustomerAccountIdentity(session).catch(() => null)
     : null
@@ -51,6 +87,7 @@ async function CartPageContent({ searchParams }: CartPageProps) {
         accountContextState={accountContextState}
         accountEmail={accountEmail}
         checkoutError={checkoutError}
+        volumeDiscountTiersByHandle={volumeDiscountTiersByHandle}
       />
       {cart && cart.totalQuantity > 0 ? (
         <CartRecommendations cart={cart} />

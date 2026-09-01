@@ -86,7 +86,7 @@ test('cart render shell avoids the empty-cart account-session waterfall', async 
   assert.ok(sessionIndex > identitySyncIndex)
   assert.match(
     cartPage,
-    /shouldLoadAccountSession\s*\?\s*await getCustomerAccountSession\(\)\s*:\s*null/,
+    /shouldLoadAccountSession\s*\?\s*(?:await\s+)?getCustomerAccountSession\(\)\s*:\s*null/,
   )
   assert.match(loadingSkeleton, /Loading cart/)
   assert.match(loadingSkeleton, /xl:grid-cols-\[minmax\(0,1fr\)_22rem\]/)

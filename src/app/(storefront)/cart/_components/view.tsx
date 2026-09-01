@@ -10,7 +10,7 @@ import {
   getVariantMinimumQuantity,
   getVariantQuantityIncrement,
 } from '@/lib/shopify/quantity-rules'
-import type { Cart, Money } from '@/lib/shopify/types'
+import type { Cart, Money, VolumeDiscountTier } from '@/lib/shopify/types'
 
 import { CartCheckoutForm } from './checkout-form'
 import type { CartAccountContextState } from './account-context'
@@ -23,6 +23,9 @@ type CartViewProps = {
   accountContextState?: CartAccountContextState
   cart: Cart | null
   checkoutError?: 'note-update-failed' | null
+  volumeDiscountTiersByHandle?: Readonly<
+    Record<string, readonly VolumeDiscountTier[]>
+  >
 }
 
 const SAVINGS_EPSILON = 0.005
@@ -106,7 +109,10 @@ function getLineDisplayPricing(line: CartLine): LineDisplayPricing {
   }
 }
 
-function getNextBulkDiscountPrompt(line: CartLine): {
+function getNextBulkDiscountPrompt(
+  line: CartLine,
+  volumeDiscountTiers: readonly VolumeDiscountTier[],
+): {
   quantityNeeded: number
   discountPercent: number
 } | null {
@@ -116,7 +122,7 @@ function getNextBulkDiscountPrompt(line: CartLine): {
   const baseAmount = parseMoneyAmount(baseUnitPrice)
   if (baseAmount <= 0) return null
 
-  const nextTier = line.merchandise.quantityPriceBreaks
+  const nextNativeTier = line.merchandise.quantityPriceBreaks
     .filter(
       (tier) =>
         tier.minimumQuantity > line.quantity &&
@@ -125,16 +131,27 @@ function getNextBulkDiscountPrompt(line: CartLine): {
     .sort((a, b) => a.minimumQuantity - b.minimumQuantity)
     .find((tier) => parseMoneyAmount(tier.price) < baseAmount - SAVINGS_EPSILON)
 
-  if (!nextTier) return null
+  if (nextNativeTier) {
+    const tierDiscountPercent =
+      ((baseAmount - parseMoneyAmount(nextNativeTier.price)) / baseAmount) * 100
 
-  const tierDiscountPercent =
-    ((baseAmount - parseMoneyAmount(nextTier.price)) / baseAmount) * 100
+    if (tierDiscountPercent <= 0) return null
 
-  if (tierDiscountPercent <= 0) return null
+    return {
+      quantityNeeded: nextNativeTier.minimumQuantity - line.quantity,
+      discountPercent: tierDiscountPercent,
+    }
+  }
+
+  const nextVolumeTier = volumeDiscountTiers
+    .filter((tier) => tier.minimumQuantity > line.quantity)
+    .sort((a, b) => a.minimumQuantity - b.minimumQuantity)[0]
+
+  if (!nextVolumeTier) return null
 
   return {
-    quantityNeeded: nextTier.minimumQuantity - line.quantity,
-    discountPercent: tierDiscountPercent,
+    quantityNeeded: nextVolumeTier.minimumQuantity - line.quantity,
+    discountPercent: nextVolumeTier.discountPercent,
   }
 }
 
@@ -191,6 +208,7 @@ export function CartView({
   accountContextState = null,
   cart,
   checkoutError = null,
+  volumeDiscountTiersByHandle = {},
 }: CartViewProps) {
   if (!cart || cart.totalQuantity === 0) {
     if (accountContextState === 'sync-failed-blocked') {
@@ -266,7 +284,10 @@ export function CartView({
                 hasDiscounts &&
                 (!lineDisplayPricing.totalCompareAtPrice ||
                   !line.discountAllocations.every(isBulkDiscountAllocation))
-              const nextBulkDiscountPrompt = getNextBulkDiscountPrompt(line)
+              const nextBulkDiscountPrompt = getNextBulkDiscountPrompt(
+                line,
+                volumeDiscountTiersByHandle[product.handle] ?? [],
+              )
 
               return (
                 <li

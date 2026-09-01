@@ -152,6 +152,49 @@ describe('CartView', () => {
     expect(html).not.toContain('Bulk pricing estimated')
   })
 
+  it('prompts for the next tier from the configured Hulk offer', () => {
+    const html = renderToStaticMarkup(
+      <CartView
+        cart={makeCart({
+          cost: {
+            subtotalAmount: makeMoney('54.50'),
+            totalAmount: makeMoney('54.50'),
+          },
+          lines: [
+            makeCartLine({
+              quantity: 5,
+              cost: {
+                amountPerQuantity: makeMoney('10.90'),
+                compareAtAmountPerQuantity: null,
+                subtotalAmount: makeMoney('57.35'),
+                totalAmount: makeMoney('54.50'),
+              },
+              merchandise: {
+                ...makeCartLine().merchandise,
+                quantityPriceBreaks: [],
+                product: {
+                  ...makeCartLine().merchandise.product,
+                  handle: 'black-assam-op1',
+                  title: 'Organic Black Assam Tea (OP1)',
+                },
+              },
+            }),
+          ],
+        })}
+        volumeDiscountTiersByHandle={{
+          'black-assam-op1': [
+            { minimumQuantity: 5, discountPercent: 5 },
+            { minimumQuantity: 10, discountPercent: 10 },
+            { minimumQuantity: 20, discountPercent: 12 },
+            { minimumQuantity: 40, discountPercent: 15 },
+          ],
+        }}
+      />,
+    )
+
+    expect(html).toContain('Buy 5 more and get 10% on each product')
+  })
+
   it('does not present a discount when Shopify returns no price break', () => {
     const html = renderToStaticMarkup(
       <CartView
