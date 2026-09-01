@@ -36,9 +36,12 @@ export const SubmittedSuccess: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
 
-    await userEvent.type(canvas.getByLabelText('Name'), 'Buyer')
-    await userEvent.type(canvas.getByLabelText('Email'), 'buyer@example.com')
-    await userEvent.type(canvas.getByLabelText('Message'), 'Please contact me.')
+    await userEvent.type(canvas.getByLabelText(/^Name/), 'Buyer')
+    await userEvent.type(canvas.getByLabelText(/^Email/), 'buyer@example.com')
+    await userEvent.type(
+      canvas.getByLabelText(/^Message/),
+      'Please contact me.',
+    )
     await userEvent.click(canvas.getByRole('button', { name: 'Send enquiry' }))
 
     await expect(
