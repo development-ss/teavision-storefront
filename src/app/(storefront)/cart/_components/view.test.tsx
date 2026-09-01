@@ -324,6 +324,18 @@ describe('CartView', () => {
     expect(occurrences).toBeGreaterThanOrEqual(2)
   })
 
+  it('explains guest checkout while keeping checkout available', () => {
+    const html = renderToStaticMarkup(
+      <CartView cart={makeCart()} accountContextState="guest" />,
+    )
+
+    expect(getTextContent(html)).toContain(
+      'Checking out as a guest. Sign in to use saved addresses and view orders.',
+    )
+    expect(html).toContain('href="/account/login?returnTo=/cart"')
+    expect(html).toContain('Sign in to use saved addresses')
+    expect(html).toContain('aria-label="Proceed to checkout"')
+  })
   it('keeps notes and terms with a single checkout control', () => {
     const html = renderToStaticMarkup(
       <CartView

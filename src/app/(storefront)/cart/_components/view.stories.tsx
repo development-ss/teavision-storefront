@@ -89,6 +89,23 @@ export const SingleItem: Story = {
   },
 }
 
+export const GuestCheckout: Story = {
+  args: {
+    accountContextState: 'guest',
+    cart: makeCart(),
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    await expect(canvas.getByText(/Checking out as a guest/)).toBeVisible()
+    await expect(
+      canvas.getByRole('link', { name: 'Sign in to use saved addresses' }),
+    ).toBeVisible()
+    await expect(
+      canvas.getByRole('button', { name: 'Proceed to checkout' }),
+    ).toBeDisabled()
+  },
+}
 export const SignedInCheckout: Story = {
   args: {
     accountContextState: 'signed-in',
@@ -200,9 +217,7 @@ export const Discounted: Story = {
     await expect(
       canvas.getAllByLabelText('Now $1,382.10')[0],
     ).toBeInTheDocument()
-    await expect(
-      canvas.getByText(/Congratulations! You saved/),
-    ).toBeVisible()
+    await expect(canvas.getByText(/Congratulations! You saved/)).toBeVisible()
     await expect(canvas.getByText('Total savings')).toBeVisible()
     await expect(canvas.getAllByText('$243.90')).toHaveLength(2)
   },
@@ -305,9 +320,7 @@ export const NativePriceBreakDiscounted: Story = {
     ).toBeVisible()
     await expect(canvas.getAllByLabelText('Was $624.92')[0]).toBeVisible()
     await expect(canvas.getAllByLabelText('Now $549.93')[0]).toBeVisible()
-    await expect(
-      canvas.getByText(/Congratulations! You saved/),
-    ).toBeVisible()
+    await expect(canvas.getByText(/Congratulations! You saved/)).toBeVisible()
     await expect(canvas.getByText('Total savings')).toBeVisible()
   },
 }

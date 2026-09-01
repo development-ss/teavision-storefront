@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button'
 
 export type CartAccountContextState =
+  | 'guest'
   | 'signed-in'
   | 'sync-pending'
   | 'sync-failed-blocked'
@@ -19,6 +20,27 @@ export function CartAccountContext({
 }: CartAccountContextProps) {
   if (!state) return null
 
+  if (state === 'guest') {
+    return (
+      <div
+        className="bg-paper-2 border-hairline rounded-lg border px-4 py-3"
+        role="status"
+      >
+        <p className="type-body-sm text-ink">
+          Checking out as a guest. Sign in to use saved addresses and view
+          orders.
+        </p>
+        <Button
+          href="/account/login?returnTo=/cart"
+          variant="secondary"
+          size="sm"
+          className="mt-3"
+        >
+          Sign in to use saved addresses
+        </Button>
+      </div>
+    )
+  }
   if (state === 'sync-failed-blocked') {
     return (
       <div

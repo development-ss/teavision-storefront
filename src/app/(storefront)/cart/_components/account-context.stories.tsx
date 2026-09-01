@@ -19,6 +19,20 @@ export default meta
 
 type Story = StoryObj<typeof CartAccountContext>
 
+export const Guest: Story = {
+  name: 'guest',
+  args: {
+    state: 'guest',
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    await expect(canvas.getByText(/Checking out as a guest/)).toBeVisible()
+    await expect(
+      canvas.getByRole('link', { name: 'Sign in to use saved addresses' }),
+    ).toHaveAttribute('href', '/account/login?returnTo=/cart')
+  },
+}
 export const SignedIn: Story = {
   name: 'signed-in',
   args: {

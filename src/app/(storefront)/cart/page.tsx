@@ -76,7 +76,9 @@ async function CartPageContent({ searchParams }: CartPageProps) {
       ? 'sync-failed-blocked'
       : session
         ? 'signed-in'
-        : null
+        : cart
+          ? 'guest'
+          : null
   const checkoutError =
     params.checkout === 'note-update-failed' ? 'note-update-failed' : null
 

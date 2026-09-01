@@ -66,12 +66,13 @@ test('adds a product to cart, updates the cart, removes it, and exposes only fak
     /\/cart\/checkout$/,
   )
   await page.getByLabel('I have read and agree to the Terms of Service').click()
+  await expect(page.getByText(/Checking out as a guest/)).toBeVisible()
+  await expect(
+    page.getByRole('link', { name: 'Sign in to use saved addresses' }),
+  ).toBeVisible()
   await expect(
     page.getByRole('button', { name: 'Proceed to checkout' }),
-  ).toHaveCount(0)
-  await expect(
-    page.getByRole('link', { name: 'Sign in to checkout' }),
-  ).toBeVisible()
+  ).toBeEnabled()
 
   await page
     .getByRole('button', { name: 'Increase quantity of Test Standard Tea' })
