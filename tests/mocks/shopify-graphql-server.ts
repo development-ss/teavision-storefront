@@ -171,6 +171,7 @@ function makeRawProduct() {
     description: product.description,
     descriptionHtml: product.descriptionHtml,
     tags: product.tags,
+    collections: { nodes: [] },
     images: {
       edges: [{ node: fakeProductImage }],
     },
