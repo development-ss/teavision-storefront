@@ -263,7 +263,7 @@ describe('cart Server Actions', () => {
     })
 
     await expect(getCartAction()).resolves.toBeNull()
-    expect(cookieStore.delete).toHaveBeenCalledWith('teavision_cart')
+    expect(cookieStore.delete).not.toHaveBeenCalled()
   })
 
   test('checkout refuses to mutate a cart after the signed-in customer changes', async () => {

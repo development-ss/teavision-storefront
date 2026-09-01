@@ -251,12 +251,10 @@ export async function getCartAction(): Promise<Cart | null> {
     getOptionalCustomerAccountSession(),
   ])
   if (!cart) {
-    await clearCartCookie()
     return null
   }
 
   if (!cartBelongsToSession(cart, session)) {
-    await clearCartCookie()
     return null
   }
 
