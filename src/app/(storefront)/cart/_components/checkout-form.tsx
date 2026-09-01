@@ -29,7 +29,9 @@ export function CartCheckoutForm({
 }: CartCheckoutFormProps) {
   const [agreedToTerms, setAgreedToTerms] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const isBlocked = accountContextState === 'sync-failed-blocked'
+  const isBlocked =
+    accountContextState === 'sync-failed-blocked' ||
+    accountContextState === 'guest'
   const currentAccountContextState = isSubmitting
     ? 'sync-pending'
     : accountContextState

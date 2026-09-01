@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button'
 
 export type CartAccountContextState =
+  | 'guest'
   | 'signed-in'
   | 'sync-pending'
   | 'sync-failed-blocked'
@@ -18,6 +19,28 @@ export function CartAccountContext({
   state,
 }: CartAccountContextProps) {
   if (!state) return null
+
+  if (state === 'guest') {
+    return (
+      <div
+        className="bg-paper-2 border-hairline rounded-lg border px-4 py-3"
+        role="status"
+      >
+        <p className="type-body-sm text-ink">
+          Sign in to connect this cart to your Teavision account before
+          checkout.
+        </p>
+        <Button
+          href="/account/login?returnTo=/cart"
+          variant="secondary"
+          size="sm"
+          className="mt-3"
+        >
+          Sign in to checkout
+        </Button>
+      </div>
+    )
+  }
 
   if (state === 'sync-failed-blocked') {
     return (
