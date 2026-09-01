@@ -127,19 +127,21 @@ export function decodeIdTokenClaims(idToken: string): IdTokenClaims | null {
 export async function exchangeCustomerAccountCode(input: {
   code: string
   codeVerifier: string
-  nonce: string
   tokenEndpoint: string
 }): Promise<CustomerAccountTokenExchange> {
   const config = getCustomerAccountConfig()
   const response = await fetch(input.tokenEndpoint, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      Origin: new URL(config.redirectUri).origin,
+      'User-Agent': 'Teavision Storefront',
+    },
     body: new URLSearchParams({
       client_id: config.clientId,
       code: input.code,
       code_verifier: input.codeVerifier,
       grant_type: 'authorization_code',
-      nonce: input.nonce,
       redirect_uri: config.redirectUri,
     }),
     cache: 'no-store',

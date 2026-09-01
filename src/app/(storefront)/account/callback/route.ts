@@ -55,7 +55,6 @@ export async function GET(request: Request): Promise<Response> {
     const tokenExchange = await exchangeCustomerAccountCode({
       code,
       codeVerifier: pendingAuth.codeVerifier,
-      nonce: pendingAuth.nonce,
       tokenEndpoint: endpoints.tokenEndpoint,
     })
     const claims = decodeIdTokenClaims(tokenExchange.idToken)

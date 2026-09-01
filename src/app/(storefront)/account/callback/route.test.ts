@@ -167,6 +167,18 @@ describe('account OAuth callback route', () => {
       accessToken: 'customer-access-token',
     })
     expect(cookieState.delete).toHaveBeenCalledWith('teavision_customer_auth')
+
+    const tokenRequest = (fetch as unknown as Mock).mock.calls.find(([input]) =>
+      String(input).endsWith('/token'),
+    )
+    const tokenRequestInit = tokenRequest?.[1] as RequestInit | undefined
+    const tokenRequestBody = new URLSearchParams(String(tokenRequestInit?.body))
+
+    expect(tokenRequestInit?.headers).toMatchObject({
+      Origin: 'https://teavision.test',
+      'User-Agent': 'Teavision Storefront',
+    })
+    expect(tokenRequestBody.has('nonce')).toBe(false)
   })
 
   test('successful callback syncs an existing cart after session creation', async () => {
