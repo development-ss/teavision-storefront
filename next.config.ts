@@ -5,9 +5,17 @@ import { getPolicyRedirects } from './src/lib/legal/policies'
 import { CANONICAL_BLOG_LISTING_PATH } from './src/lib/blog/paths'
 import { securityHeaders } from './src/lib/security/headers'
 
+const developmentProxyOrigins = ['detonate-trickster-venus.ngrok-free.dev']
+
 const nextConfig: NextConfig = {
-  allowedDevOrigins: ['detonate-trickster-venus.ngrok-free.dev'],
+  allowedDevOrigins: developmentProxyOrigins,
   cacheComponents: true,
+  experimental: {
+    serverActions: {
+      allowedOrigins:
+        process.env.NODE_ENV === 'development' ? developmentProxyOrigins : [],
+    },
+  },
   env: {
     // Build-time copyright year — avoids per-request new Date() in components,
     // which breaks Next 16 prerendering. Refreshes on every build/deploy.

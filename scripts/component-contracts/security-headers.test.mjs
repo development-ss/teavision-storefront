@@ -37,3 +37,16 @@ test('Next config applies the shared security header baseline', async () => {
   assert.match(securityHeadersSource, /facebook\.net/)
   assert.match(securityHeadersSource, /klaviyo/)
 })
+
+test('Next config permits Server Actions through the approved development proxy', async () => {
+  const nextConfigSource = await readFile(sourcePath('next.config.ts'), 'utf8')
+
+  assert.match(nextConfigSource, /developmentProxyOrigins/)
+  assert.match(nextConfigSource, /detonate-trickster-venus\.ngrok-free\.dev/)
+  assert.match(nextConfigSource, /allowedDevOrigins:\s*developmentProxyOrigins/)
+  assert.match(nextConfigSource, /serverActions:\s*{/)
+  assert.match(
+    nextConfigSource,
+    /NODE_ENV === 'development' \? developmentProxyOrigins : \[\]/,
+  )
+})
