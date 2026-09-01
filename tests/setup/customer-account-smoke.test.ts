@@ -34,12 +34,15 @@ describe('Customer Account API test infrastructure smoke test', () => {
       `${server.url}/authentication/oauth/token`,
       {
         method: 'POST',
+        headers: {
+          Origin: 'https://example.test',
+          'User-Agent': 'Teavision test',
+        },
         body: new URLSearchParams({
           client_id: 'test-client-id',
           code: 'valid-code',
           code_verifier: 'valid-verifier',
           grant_type: 'authorization_code',
-          nonce: 'test-nonce',
           redirect_uri: 'https://example.test/account/callback',
         }),
       },

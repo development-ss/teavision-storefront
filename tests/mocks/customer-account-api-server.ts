@@ -310,6 +310,8 @@ export async function createFakeCustomerAccountApiServer(
   } = options
   let profile = initialProfile
   const requests: GraphqlRequest[] = []
+  const authorizationNonces = new Map<string, string>()
+  let authorizationCodeSequence = 0
   let tokens: FakeTokenRecord = {
     accessToken: 'customer-access-token',
     idToken: makeIdToken('test-nonce', profile.id),
@@ -346,21 +348,62 @@ export async function createFakeCustomerAccountApiServer(
     }
 
     if (
+      request.method === 'GET' &&
+      requestUrl.pathname === '/authentication/oauth/authorize'
+    ) {
+      const redirectUri = requestUrl.searchParams.get('redirect_uri')
+      const state = requestUrl.searchParams.get('state')
+      const nonce = requestUrl.searchParams.get('nonce')
+
+      if (!redirectUri || !state || !nonce) {
+        writeJson(response, 400, { error: 'invalid_request' })
+        return
+      }
+
+      authorizationCodeSequence += 1
+      const code = `browser-code-${authorizationCodeSequence}`
+      authorizationNonces.set(code, nonce)
+
+      const callbackUrl = new URL(redirectUri)
+      callbackUrl.searchParams.set('code', code)
+      callbackUrl.searchParams.set('state', state)
+      response.writeHead(302, { Location: callbackUrl.toString() })
+      response.end()
+      return
+    }
+
+    if (
       request.method === 'POST' &&
       requestUrl.pathname === '/authentication/oauth/token'
     ) {
       const form = new URLSearchParams(await readRequestBody(request))
       const code = form.get('code')
       const codeVerifier = form.get('code_verifier')
-      const nonce = form.get('nonce') ?? 'test-nonce'
+      const redirectUri = form.get('redirect_uri')
+      const nonce = code
+        ? (authorizationNonces.get(code) ?? 'test-nonce')
+        : 'test-nonce'
+      const expectedOrigin = redirectUri
+        ? new URL(redirectUri).origin
+        : undefined
 
-      if (!code || code === invalidTokenCode || !codeVerifier) {
+      if (
+        !code ||
+        code === invalidTokenCode ||
+        !codeVerifier ||
+        !redirectUri ||
+        form.has('nonce') ||
+        request.headers.origin !== expectedOrigin ||
+        !request.headers['user-agent']
+      ) {
         writeJson(response, 400, {
           error: 'invalid_grant',
           error_description: 'Invalid authorization code or verifier',
         })
         return
       }
+
+      authorizationNonces.delete(code)
 
       tokens = {
         accessToken: `customer-access-token-${code}`,
