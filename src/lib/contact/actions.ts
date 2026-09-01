@@ -25,7 +25,10 @@ import {
   WHOLESALE_ACCOUNT_LIMITS,
   isWholesaleAccountStartOption,
 } from '@/lib/contact/wholesale-account'
-import { normalizeAustralianDateInput } from '@/lib/date-formatting'
+import {
+  isAustralianDateTodayOrFuture,
+  normalizeAustralianDateInput,
+} from '@/lib/date-formatting'
 import { logEvent } from '@/lib/observability/logger'
 import { checkRateLimit, getClientIpFromHeaders } from '@/lib/rate-limit'
 import { ShopifyAdminConfigurationError } from '@/lib/shopify/admin-client'
@@ -593,7 +596,11 @@ function isValidNpdOrderSubmission(submission: NpdOrderSubmission) {
     return false
   }
 
-  if (!submission.date || submission.date.length > NPD_ORDER_LIMITS.field) {
+  if (
+    !submission.date ||
+    submission.date.length > NPD_ORDER_LIMITS.field ||
+    !isAustralianDateTodayOrFuture(submission.date)
+  ) {
     return false
   }
 

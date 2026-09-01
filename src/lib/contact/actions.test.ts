@@ -123,7 +123,7 @@ const VALID_WHOLESALE_SUBMISSION = {
 
 const VALID_NPD_ORDER_SUBMISSION = {
   company: 'NPD Tea Co',
-  date: '01/07/2026',
+  date: '01/07/2027',
   timeframe: 'ASAP (priority)',
   otherTimeframe: '',
   productTypes: ['Tea Bags and Loose Leaf'],
@@ -377,7 +377,7 @@ describe('sendNpdOrderAction', () => {
         replyTo: 'katherine@example.com',
         subject: 'New Teavision NPD form submission',
         text: expect.stringMatching(
-          /Date: 01\/07\/2026[\s\S]*Email: katherine@example\.com/,
+          /Date: 01\/07\/2027[\s\S]*Email: katherine@example\.com/,
         ),
       }),
     )
@@ -387,14 +387,14 @@ describe('sendNpdOrderAction', () => {
     const result = await sendNpdOrderAction(
       formData({
         ...VALID_NPD_ORDER_SUBMISSION,
-        date: '2026-07-01',
+        date: '2027-07-01',
       }),
     )
 
     expect(result.success).toBe(true)
     expect(resendSendMock).toHaveBeenCalledWith(
       expect.objectContaining({
-        text: expect.stringContaining('Date: 01/07/2026'),
+        text: expect.stringContaining('Date: 01/07/2027'),
       }),
     )
   })
@@ -404,6 +404,21 @@ describe('sendNpdOrderAction', () => {
       formData({
         ...VALID_NPD_ORDER_SUBMISSION,
         date: '31/04/2026',
+      }),
+    )
+
+    expect(result).toEqual({
+      success: false,
+      error: 'Please fill in all required fields.',
+    })
+    expect(resendSendMock).not.toHaveBeenCalled()
+  })
+
+  test('rejects past dates', async () => {
+    const result = await sendNpdOrderAction(
+      formData({
+        ...VALID_NPD_ORDER_SUBMISSION,
+        date: '01/01/2020',
       }),
     )
 

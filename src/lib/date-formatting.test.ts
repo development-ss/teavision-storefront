@@ -2,6 +2,7 @@ import { describe, expect, test } from 'vitest'
 
 import {
   formatAustralianDate,
+  isAustralianDateTodayOrFuture,
   normalizeAustralianDateInput,
 } from './date-formatting'
 
@@ -35,5 +36,12 @@ describe('normalizeAustralianDateInput', () => {
   test('rejects non-padded and differently ordered dates', () => {
     expect(normalizeAustralianDateInput('1/7/2026')).toBeNull()
     expect(normalizeAustralianDateInput('07/31/2026')).toBeNull()
+  })
+})
+
+describe('isAustralianDateTodayOrFuture', () => {
+  test('rejects dates before today and accepts a future date', () => {
+    expect(isAustralianDateTodayOrFuture('01/01/2020')).toBe(false)
+    expect(isAustralianDateTodayOrFuture('31/12/2099')).toBe(true)
   })
 })

@@ -84,3 +84,22 @@ export function normalizeAustralianDateInput(value: string): string | null {
 
   return composeAustralianDate(parts)
 }
+
+export function isAustralianDateTodayOrFuture(value: string): boolean {
+  const normalized = normalizeAustralianDateInput(value)
+  if (!normalized) return false
+
+  const [day, month, year] = normalized.split('/').map(Number)
+  const todayParts = australianDateFormatter.formatToParts(new Date())
+  const todayDay = Number(todayParts.find((part) => part.type === 'day')?.value)
+  const todayMonth = Number(
+    todayParts.find((part) => part.type === 'month')?.value,
+  )
+  const todayYear = Number(
+    todayParts.find((part) => part.type === 'year')?.value,
+  )
+
+  if (year !== todayYear) return year > todayYear
+  if (month !== todayMonth) return month > todayMonth
+  return day >= todayDay
+}
