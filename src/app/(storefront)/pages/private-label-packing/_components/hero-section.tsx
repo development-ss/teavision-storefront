@@ -22,8 +22,8 @@ export function HeroSection() {
             <Eyebrow>Australia&rsquo;s #1 Private Label Partner</Eyebrow>
             <h1 className="type-heading-01 text-ink mt-4 max-w-[22ch] text-balance">
               Launch world-class{' '}
-              <span className="text-brand">private label</span> teas &amp;
-              functional blends &mdash; fast.
+              <span className="text-brand">private label </span>
+              teas &amp; functional blends &mdash; fast.
             </h1>
             <p className="type-lede text-ink-soft mt-4 max-w-[52ch]">
               From concept to shelf: teas, herbs, spices, custom blends, extract
