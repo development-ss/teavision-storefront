@@ -16,6 +16,8 @@ vi.mock('next/navigation', () => ({
   notFound: () => {
     throw new Error('notFound')
   },
+  usePathname: () => '/products/test-product',
+  useRouter: () => ({ replace: vi.fn() }),
   useSearchParams: () => new URLSearchParams('variant=41503540936791'),
 }))
 

@@ -27,6 +27,7 @@ type ProductFormProps = {
   variants: ProductVariant[]
   options: ProductOption[]
   initialVariantId?: string
+  onVariantChange?: (variantId: string) => void
   addToCart?: AddToCart
   onCartChanged?: () => void
   /* Rendered between the bulk-savings block and the availability line so the
@@ -80,6 +81,7 @@ export function ProductForm({
   variants,
   options,
   initialVariantId,
+  onVariantChange,
   addToCart,
   onCartChanged,
   descriptionSlot,
@@ -168,6 +170,7 @@ export function ProductForm({
     const nextVariant = variants.find((variant) => variant.id === nextVariantId)
 
     setSelectedVariantId(nextVariantId)
+    onVariantChange?.(nextVariantId)
     setQuantity(getVariantMinimumQuantity(nextVariant))
     setSelectedBulkTierQuantity(null)
     resetFeedback()
