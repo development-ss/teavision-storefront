@@ -57,10 +57,21 @@ function selectCollections(
     availableCollections.map((collection) => [collection.handle, collection]),
   )
 
-  return COLLECTION_HANDLES.flatMap((handle) => {
+  const curatedCollections = COLLECTION_HANDLES.flatMap((handle) => {
     const collection = collectionsByHandle.get(handle)
     return collection ? [collection] : []
   })
+
+  if (curatedCollections.length > 0 || availableCollections.length === 0) {
+    return curatedCollections
+  }
+
+  // Keep the collections index useful when a catalogue migration renames the
+  // curated handles. The collection detail route still validates each live
+  // Shopify handle, so this fallback cannot create dead links.
+  return availableCollections.filter(
+    (collection) => collection.handle !== 'all',
+  )
 }
 
 export default async function Page() {

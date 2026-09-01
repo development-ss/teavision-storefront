@@ -84,6 +84,18 @@ describe('Collections index page', () => {
     expect(html).not.toContain('Aniseed Tea')
     expect(html).not.toContain('Black Peppercorn')
   })
+
+  it('falls back to live collection summaries when curated handles are absent', async () => {
+    vi.mocked(getCollectionSummaries).mockResolvedValue([
+      collectionSummary('all', 'All products'),
+      collectionSummary('new-tea-range', 'New Tea Range'),
+    ])
+
+    const html = renderToStaticMarkup(await Page())
+
+    expect(html).toContain('href="/collections/new-tea-range"')
+    expect(html).not.toContain('href="/collections/all"')
+  })
 })
 
 function collectionSummary(handle: string, title: string): CollectionSummary {
