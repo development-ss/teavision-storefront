@@ -418,13 +418,13 @@ export function CartView({
               className="type-body bg-ink text-paper mt-4 rounded-md px-4 py-3 text-center font-medium"
               role="status"
             >
-              Congratulations! You have saved{' '}
+              Congratulations! You saved{' '}
               <Price
                 price={cartDisplayPricing.savings}
                 size="md"
                 className="text-paper"
               />{' '}
-              today.
+              by buying in bulk!
             </p>
           ) : null}
 

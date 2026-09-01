@@ -201,7 +201,7 @@ export const Discounted: Story = {
       canvas.getAllByLabelText('Now $1,382.10')[0],
     ).toBeInTheDocument()
     await expect(
-      canvas.getByText(/Congratulations! You have saved/),
+      canvas.getByText(/Congratulations! You saved/),
     ).toBeVisible()
     await expect(canvas.getByText('Total savings')).toBeVisible()
     await expect(canvas.getAllByText('$243.90')).toHaveLength(2)
@@ -245,7 +245,7 @@ export const NoNativePriceBreak: Story = {
     await expect(canvas.getAllByText('$203.25')[0]).toBeVisible()
     await expect(canvas.queryByText('$193.09')).not.toBeInTheDocument()
     await expect(
-      canvas.queryByText(/Congratulations! You have saved/),
+      canvas.queryByText(/Congratulations! You saved/),
     ).not.toBeInTheDocument()
   },
 }
@@ -306,7 +306,7 @@ export const NativePriceBreakDiscounted: Story = {
     await expect(canvas.getAllByLabelText('Was $624.92')[0]).toBeVisible()
     await expect(canvas.getAllByLabelText('Now $549.93')[0]).toBeVisible()
     await expect(
-      canvas.getByText(/Congratulations! You have saved/),
+      canvas.getByText(/Congratulations! You saved/),
     ).toBeVisible()
     await expect(canvas.getByText('Total savings')).toBeVisible()
   },
