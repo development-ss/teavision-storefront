@@ -10,6 +10,7 @@ import { IconButton } from '../icon-button'
 type QuantityStepperProps = {
   value: number
   onChange: (value: number) => void
+  onLimitReached?: (maximum: number) => void
   min?: number
   max?: number
   step?: number
@@ -48,6 +49,7 @@ function clampQuantity(
 export function QuantityStepper({
   value,
   onChange,
+  onLimitReached,
   min = 1,
   max,
   step = 1,
@@ -72,6 +74,7 @@ export function QuantityStepper({
 
   function updateQuantity(nextValue: number) {
     onChange(clampQuantity(nextValue, min, max, quantityStep))
+    if (max !== undefined && nextValue > max) onLimitReached?.(max)
   }
 
   function commitDraft() {

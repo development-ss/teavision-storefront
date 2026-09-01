@@ -89,6 +89,7 @@ export function ProductForm({
 }: ProductFormProps) {
   const quantityErrorId = useId()
   const quantityStatusId = useId()
+  const quantityLimitId = useId()
   const [selectedVariantId, setSelectedVariantId] = useState(() =>
     getInitialSelectedVariantId(variants, initialVariantId),
   )
@@ -258,14 +259,30 @@ export function ProductForm({
       </div>
 
       <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-stretch">
+        {maximumQuantity !== undefined ? (
+          <p
+            id={quantityLimitId}
+            className="type-caption text-ink-soft sm:hidden"
+          >
+            Maximum available: {maximumQuantity}
+          </p>
+        ) : null}
         <QuantityStepper
           value={effectiveQuantity}
           onChange={handleQuantityChange}
+          onLimitReached={() =>
+            reportError('Maximum quantity available reached.')
+          }
           min={minimumQuantity}
           max={maximumQuantity}
           step={quantityIncrement}
           disabled={!canAddToCart || isPending}
-          describedBy={error ? quantityErrorId : undefined}
+          describedBy={[
+            error ? quantityErrorId : null,
+            maximumQuantity !== undefined ? quantityLimitId : null,
+          ]
+            .filter((value): value is string => Boolean(value))
+            .join(' ')}
           shape="rectangle"
         />
 
@@ -288,6 +305,15 @@ export function ProductForm({
           </Button>
         </div>
       </div>
+
+      {maximumQuantity !== undefined ? (
+        <p
+          id={`${quantityLimitId}-desktop`}
+          className="type-caption text-ink-soft hidden sm:block"
+        >
+          Maximum available: {maximumQuantity}
+        </p>
+      ) : null}
 
       {error && (
         <p

@@ -39,6 +39,7 @@ export function CartLineActions({
   const [stepperState, setStepperState] = useState<CartLineFormState>(
     INITIAL_CART_LINE_FORM_STATE,
   )
+  const [limitMessage, setLimitMessage] = useState<string | null>(null)
 
   const [optimisticQuantity, setOptimisticQuantity] = useOptimistic(
     quantity,
@@ -56,6 +57,7 @@ export function CartLineActions({
     startUpdateTransition(async () => {
       setOptimisticQuantity(newQuantity)
       setStepperState(INITIAL_CART_LINE_FORM_STATE)
+      setLimitMessage(null)
       const data = new FormData()
       data.append('intent', 'update')
       data.append('lineId', lineId)
@@ -85,7 +87,30 @@ export function CartLineActions({
         step={quantityIncrement}
         busy={isUpdatePending}
         label={`Quantity of ${productTitle}`}
+        onLimitReached={() =>
+          setLimitMessage('Maximum quantity available reached.')
+        }
+        describedBy={
+          maximumQuantity !== undefined
+            ? `cart-quantity-limit-${lineId}`
+            : undefined
+        }
       />
+
+      {maximumQuantity !== undefined ? (
+        <p
+          id={`cart-quantity-limit-${lineId}`}
+          className="type-caption text-ink-soft mt-1"
+        >
+          Maximum available: {maximumQuantity}
+        </p>
+      ) : null}
+
+      {limitMessage ? (
+        <p className="type-caption text-danger" role="alert">
+          {limitMessage}
+        </p>
+      ) : null}
 
       {stepperState.message ? (
         <p className="type-caption text-danger" role="alert">
