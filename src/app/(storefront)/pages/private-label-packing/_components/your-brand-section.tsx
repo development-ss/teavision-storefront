@@ -37,11 +37,7 @@ export function YourBrandSection() {
               ))}
             </ul>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Button
-                href="mailto:info@teavision.com.au?subject=Private%20Label%20Enquiry"
-                variant="brand"
-                size="lg"
-              >
+              <Button href="/pages/contact" variant="brand" size="lg">
                 Start Private Label
               </Button>
               <Button href="#need-help" variant="secondary" size="lg">

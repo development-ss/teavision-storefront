@@ -31,11 +31,7 @@ export function HeroSection() {
               R&amp;D support, packaging and logistics &mdash; sorted.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Button
-                href="mailto:info@teavision.com.au?subject=Private%20Label%20Enquiry"
-                variant="brand"
-                size="lg"
-              >
+              <Button href="/pages/contact" variant="brand" size="lg">
                 Private Label Now
               </Button>
               <Button href="#need-help" variant="secondary" size="lg">

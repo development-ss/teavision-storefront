@@ -52,6 +52,6 @@ export const AWARD_EXCELLENCE = {
 export const CTA = {
   title: 'Partner with a Certified Leader',
   copy: 'Experience the difference that comprehensive certification and award-winning quality makes. Our team is ready to discuss your private label tea requirements.',
-  href: 'mailto:info@teavision.com.au',
+  href: '/pages/contact',
   action: 'Request Certifications',
 }
