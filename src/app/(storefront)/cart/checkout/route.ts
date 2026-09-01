@@ -1,6 +1,5 @@
 import { prepareCheckoutHandoff } from '@/lib/cart/actions'
 import { logEvent } from '@/lib/observability/logger'
-import { getCustomerAccountSession } from '@/lib/shopify/customer-account/session'
 
 function redirectToCart(request: Request, checkout: string): Response {
   const url = new URL('/cart', request.url)
@@ -14,13 +13,6 @@ export async function POST(request: Request): Promise<Response> {
   const agreedToTerms = formData.get('terms') === 'accepted'
   const noteValue = formData.get('note')
   const note = typeof noteValue === 'string' ? noteValue.trim() : ''
-
-  if (!(await getCustomerAccountSession())) {
-    const loginUrl = new URL('/account/login', request.url)
-    loginUrl.searchParams.set('returnTo', '/cart')
-    return Response.redirect(loginUrl)
-  }
-
   const result = await prepareCheckoutHandoff(agreedToTerms, note)
 
   if (result.status === 'ready') {

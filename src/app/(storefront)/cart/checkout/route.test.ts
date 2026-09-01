@@ -3,7 +3,6 @@ import { beforeEach, describe, expect, test, vi } from 'vitest'
 
 import { logEvent } from '@/lib/observability/logger'
 import { prepareCheckoutHandoff } from '@/lib/cart/actions'
-import { getCustomerAccountSession } from '@/lib/shopify/customer-account/session'
 
 import { POST } from './route'
 
@@ -15,22 +14,10 @@ vi.mock('@/lib/observability/logger', () => ({
   logEvent: vi.fn(),
 }))
 
-vi.mock('@/lib/shopify/customer-account/session', () => ({
-  getCustomerAccountSession: vi.fn(async () => ({
-    accessToken: 'token',
-    refreshToken: 'refresh',
-    idToken: 'id',
-    expiresAt: Date.now() + 60_000,
-    customerId: 'customer-1',
-  })),
-}))
-
 const prepareCheckoutHandoffMock = prepareCheckoutHandoff as unknown as Mock<
   typeof prepareCheckoutHandoff
 >
 const logEventMock = logEvent as unknown as Mock<typeof logEvent>
-const getCustomerAccountSessionMock =
-  getCustomerAccountSession as unknown as Mock<typeof getCustomerAccountSession>
 
 function makeCheckoutRequest(terms = 'accepted', note?: string): Request {
   const formData = new FormData()
@@ -46,13 +33,6 @@ function makeCheckoutRequest(terms = 'accepted', note?: string): Request {
 describe('cart checkout route', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    getCustomerAccountSessionMock.mockResolvedValue({
-      accessToken: 'token',
-      refreshToken: 'refresh',
-      idToken: 'id',
-      expiresAt: Date.now() + 60_000,
-      customerId: 'customer-1',
-    })
   })
 
   test('redirects missing carts back to cart recovery', async () => {
@@ -63,17 +43,6 @@ describe('cart checkout route', () => {
     expect(response.headers.get('location')).toBe(
       'https://teavision.test/cart?checkout=missing-cart',
     )
-  })
-
-  test('redirects guests to sign in before checkout', async () => {
-    getCustomerAccountSessionMock.mockResolvedValue(null)
-
-    const response = await POST(makeCheckoutRequest())
-
-    expect(response.headers.get('location')).toBe(
-      'https://teavision.test/account/login?returnTo=%2Fcart',
-    )
-    expect(prepareCheckoutHandoffMock).not.toHaveBeenCalled()
   })
 
   test('requires submitted checkout terms', async () => {
