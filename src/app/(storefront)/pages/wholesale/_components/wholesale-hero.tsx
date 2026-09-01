@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Eyebrow } from '@/components/ui/eyebrow'
 import { Section } from '@/components/ui/section'
+import { WHOLESALE_ACCOUNT_PAGE_PATH } from '@/lib/contact/wholesale-account'
 
 import { WholesaleStats } from './wholesale-stats'
 
@@ -42,6 +43,13 @@ export function WholesaleHero() {
               retailers, and wellness brands across Australia.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
+              <Button
+                href={WHOLESALE_ACCOUNT_PAGE_PATH}
+                variant="inverse"
+                size="lg"
+              >
+                Apply for wholesale
+              </Button>
               <Button
                 href="/collections/all"
                 variant="inverseSecondary"

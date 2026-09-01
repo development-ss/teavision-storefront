@@ -2,6 +2,7 @@ import { Phone } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Section } from '@/components/ui/section'
+import { WHOLESALE_ACCOUNT_PAGE_PATH } from '@/lib/contact/wholesale-account'
 
 export function CtaSection() {
   return (
@@ -16,6 +17,13 @@ export function CtaSection() {
             offerings with global, high-quality tea and ingredients.
           </p>
           <div className="mt-2 flex flex-wrap justify-center gap-3">
+            <Button
+              href={WHOLESALE_ACCOUNT_PAGE_PATH}
+              variant="brand"
+              size="lg"
+            >
+              Request a wholesale account
+            </Button>
             <Button href="tel:+611300729617" variant="secondary" size="lg">
               <Phone className="size-4" aria-hidden="true" />
               Call 1300 729 617
