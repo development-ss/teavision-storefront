@@ -34,21 +34,27 @@ export function SearchResultsView({ result, state }: SearchResultsViewProps) {
   const panelFacets = createPanelFacets(result.facets, state)
   const activeFilters = createActiveFilters(result.facets, state)
   const selectedFilterCount = state.filters.length
+  const hasStandaloneStatus =
+    result.status === 'idle' ||
+    result.status === 'unavailable' ||
+    result.status === 'error' ||
+    (result.products.length === 0 && selectedFilterCount === 0)
 
   return (
-    <Section.Root tone="surface" spacing="compact">
+    <Section.Root
+      tone="surface"
+      spacing={hasStandaloneStatus ? 'none' : 'compact'}
+    >
       <Section.Container>
         {result.status === 'idle' ? (
-          <div className="max-w-2xl">
+          <div className="max-w-2xl pb-8 md:pb-12">
             <SearchAlert
-              actionHref="/search"
-              actionLabel="Search again"
               tone="empty"
               message="Enter a search term to find matching products."
             />
           </div>
         ) : result.status === 'unavailable' || result.status === 'error' ? (
-          <div className="max-w-2xl">
+          <div className="max-w-2xl pb-8 md:pb-12">
             <SearchAlert
               actionHref={retryHref}
               actionLabel="Retry search"
@@ -59,10 +65,8 @@ export function SearchResultsView({ result, state }: SearchResultsViewProps) {
             />
           </div>
         ) : result.products.length === 0 && selectedFilterCount === 0 ? (
-          <div className="max-w-2xl">
+          <div className="max-w-2xl pb-8 md:pb-12">
             <SearchAlert
-              actionHref="/search"
-              actionLabel="Search again"
               tone="empty"
               message="No products matched this search. Try a different term."
             />

@@ -22,22 +22,24 @@ export function SearchAlert({
     <div
       role={tone === 'error' ? 'alert' : 'status'}
       className={cn(
-        'bg-card border-hairline-2 mx-auto grid max-w-xl justify-items-center gap-4 rounded-lg border p-8 text-center',
+        'bg-card border-hairline-2 flex max-w-2xl flex-col gap-4 rounded-lg border p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5',
         tone === 'error' && 'border-danger bg-danger-tint',
       )}
     >
-      <Icon
-        className={cn(
-          'size-11',
-          tone === 'error' ? 'text-danger' : 'text-ink-faint/50',
-        )}
-        aria-hidden="true"
-      />
-      <div className="grid gap-2">
-        <h2 className="font-display text-ink text-2xl">
-          {tone === 'error' ? 'Search unavailable' : 'No matches'}
-        </h2>
-        <p className="type-body-sm text-ink-soft max-w-md">{message}</p>
+      <div className="flex min-w-0 items-start gap-3">
+        <Icon
+          className={cn(
+            'mt-0.5 size-6 shrink-0',
+            tone === 'error' ? 'text-danger' : 'text-ink-faint/50',
+          )}
+          aria-hidden="true"
+        />
+        <div className="grid min-w-0 gap-1">
+          <h2 className="type-heading-05 text-ink">
+            {tone === 'error' ? 'Search unavailable' : 'No matches'}
+          </h2>
+          <p className="type-body-sm text-ink-soft max-w-md">{message}</p>
+        </div>
       </div>
       {actionHref && actionLabel && (
         <Button href={actionHref} variant="ghost" size="sm">

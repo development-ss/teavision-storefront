@@ -254,6 +254,13 @@ export const Empty: Story = {
       query: 'dragonwell chai',
     },
   },
+  play: ({ canvasElement }) => {
+    expectStoryText(canvasElement, 'No matches')
+
+    if (canvasElement.textContent?.includes('Search again')) {
+      throw new Error('Empty search repeats the search action')
+    }
+  },
 }
 
 export const NoQuery: Story = {
