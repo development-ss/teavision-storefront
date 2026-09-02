@@ -203,6 +203,27 @@ function isBulkDiscountAllocation(
   return title.includes('bulk') || title.includes('quantity')
 }
 
+function getAppliedBulkDiscountPercent(line: CartLine): number | null {
+  const subtotalAmount = parseMoneyAmount(line.cost.subtotalAmount)
+  if (subtotalAmount <= 0) return null
+
+  let bulkDiscountAmount = 0
+
+  for (const discount of line.discountAllocations) {
+    if (
+      isBulkDiscountAllocation(discount) &&
+      discount.discountedAmount.currencyCode ===
+        line.cost.subtotalAmount.currencyCode
+    ) {
+      bulkDiscountAmount += parseMoneyAmount(discount.discountedAmount)
+    }
+  }
+
+  if (bulkDiscountAmount <= SAVINGS_EPSILON) return null
+
+  return (bulkDiscountAmount / subtotalAmount) * 100
+}
+
 export function CartView({
   accountEmail = null,
   accountContextState = null,
@@ -254,7 +275,7 @@ export function CartView({
 
   return (
     <>
-      <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_22rem] xl:items-start xl:gap-10">
+      <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_26rem] xl:items-start xl:gap-10">
         <div className="min-w-0">
           {/* Desktop table header */}
           <div className="text-ink-faint border-hairline hidden border-b pb-3 xl:grid xl:grid-cols-[6rem_minmax(0,1fr)_7rem_10rem_7rem] xl:items-center xl:gap-x-6">
@@ -288,6 +309,8 @@ export function CartView({
                 line,
                 volumeDiscountTiersByHandle[product.handle] ?? [],
               )
+              const appliedBulkDiscountPercent =
+                getAppliedBulkDiscountPercent(line)
 
               return (
                 <li
@@ -385,13 +408,23 @@ export function CartView({
                           line.merchandise,
                         )}
                       />
-                      <Price
-                        price={lineDisplayPricing.totalPrice}
-                        compareAtPrice={lineDisplayPricing.totalCompareAtPrice}
-                        layout="stacked"
-                        size="sm"
-                        className="shrink-0 items-end"
-                      />
+                      <div className="flex shrink-0 flex-col items-end gap-2">
+                        <Price
+                          price={lineDisplayPricing.totalPrice}
+                          compareAtPrice={
+                            lineDisplayPricing.totalCompareAtPrice
+                          }
+                          layout="stacked"
+                          size="sm"
+                          className="items-end"
+                        />
+                        {appliedBulkDiscountPercent ? (
+                          <span className="type-caption text-ink-faint bg-paper-2 rounded-xs px-2.5 py-1 leading-none whitespace-nowrap">
+                            {formatPercent(appliedBulkDiscountPercent)}%
+                            discount applied
+                          </span>
+                        ) : null}
+                      </div>
                     </div>
                     {/* Remove: quiet text link under the line info per design .cart__remove */}
                     <CartLineRemove
@@ -437,6 +470,12 @@ export function CartView({
                       size="sm"
                       className="items-end font-bold"
                     />
+                    {appliedBulkDiscountPercent ? (
+                      <span className="type-caption text-ink-faint bg-paper-2 mt-2 inline-flex rounded-xs px-2.5 py-1 leading-none whitespace-nowrap">
+                        {formatPercent(appliedBulkDiscountPercent)}% discount
+                        applied
+                      </span>
+                    ) : null}
                   </div>
                 </li>
               )

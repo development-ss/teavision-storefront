@@ -79,6 +79,10 @@ describe('CartView', () => {
     )
     expect(html).toContain('>Total savings</span>')
     expect(getTextContent(html).match(/\$243\.90/g)).toHaveLength(2)
+    expect(getTextContent(html).match(/15% discount applied/g)).toHaveLength(2)
+    expect(getTextContent(html)).toContain(
+      'Ethically &amp; Sustainably Sourced',
+    )
 
     expect(html).not.toContain('Bulk discount')
   })
@@ -268,6 +272,7 @@ describe('CartView', () => {
     )
 
     expect(html).toContain('Welcome discount')
+    expect(html).not.toContain('discount applied')
     expect(html).toContain('aria-label="Was $100.00"')
     expect(html).toContain('aria-label="Now $90.00"')
   })

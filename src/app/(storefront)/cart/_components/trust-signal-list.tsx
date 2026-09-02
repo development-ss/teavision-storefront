@@ -8,7 +8,7 @@ const TRUST_SIGNALS = [
   '1,000+ businesses served',
   'ACO Organic certified',
   'HACCP certified',
-  'Sourced from 15+ countries',
+  'Ethically & Sustainably Sourced',
 ]
 
 export function TrustSignalList({ layout }: TrustSignalListProps) {

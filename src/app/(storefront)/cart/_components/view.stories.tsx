@@ -23,7 +23,7 @@ const meta: Meta<typeof CartView> = {
   decorators: [
     (Story, context) =>
       context.name === 'Discounted' ? (
-        <div className="bg-paper fixed top-0 left-0 w-216 pt-12">
+        <div className="bg-paper px-gutter min-h-screen py-12">
           <Story />
         </div>
       ) : (
@@ -211,6 +211,7 @@ export const Discounted: Story = {
 
     await expect(canvas.queryByText('Bulk discount')).not.toBeInTheDocument()
     await expect(canvas.queryByText(/Buy .* more/)).not.toBeInTheDocument()
+    await expect(canvas.getAllByText('15% discount applied')).toHaveLength(2)
     await expect(
       canvas.getAllByLabelText('Was $1,626.00')[0],
     ).toBeInTheDocument()
