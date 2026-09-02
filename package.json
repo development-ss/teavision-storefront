@@ -39,6 +39,7 @@
     "@portabletext/react": "^6.2.0",
     "@sanity/image-url": "^2.1.1",
     "@sentry/nextjs": "^10.59.0",
+    "@vercel/speed-insights": "^2.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "embla-carousel-react": "^8.6.0",
