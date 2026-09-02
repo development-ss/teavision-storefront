@@ -2,7 +2,6 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 
-import { Badge } from '@/components/ui/badge'
 import { Eyebrow } from '@/components/ui/eyebrow'
 import { ToggleButton } from '@/components/ui/toggle-button'
 
@@ -95,25 +94,26 @@ export function ShopMegaPanel({
 
           {/* Feature card (right) */}
           {activeShop.imageAlt && activeShop.imageSrc && (
-            <div className="relative aspect-4/3 overflow-hidden rounded-lg">
+            <div className="relative self-start overflow-hidden rounded-lg">
               <Image
+                key={activeShop.imageSrc}
                 src={activeShop.imageSrc}
                 alt={activeShop.imageAlt}
-                fill
-                className="object-cover"
+                width={1024}
+                height={1024}
+                className="h-auto w-full"
                 sizes="(min-width: 1480px) 370px, 25vw"
+                unoptimized
               />
-              {/* Bottom gradient scrim */}
               <div
-                className="from-ink/70 absolute inset-0 bg-linear-to-t to-transparent"
+                className="from-ink/65 pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-linear-to-t to-transparent"
                 aria-hidden="true"
               />
-              {/* Content overlay */}
-              <div className="absolute right-0 bottom-0 left-0 flex flex-col gap-2 p-5">
-                <Badge variant="onDark" label="Featured" />
-                <p className="font-display text-paper text-[1.1rem] leading-[1.1]">
+              <div className="pointer-events-none absolute inset-x-0 bottom-5 flex flex-col items-center gap-2.5">
+                <p className="font-display text-paper text-center text-xl tracking-[0.08em] uppercase">
                   {activeShop.name}
                 </p>
+                <span className="bg-paper h-px w-10" aria-hidden="true" />
               </div>
             </div>
           )}

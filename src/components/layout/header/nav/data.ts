@@ -20,10 +20,10 @@ export type ShopSection = {
 }
 
 const SHOP_IMAGE_SRC = {
-  tea: '/images/navigation/shop-tea.jpg',
-  'tea-bags': '/images/navigation/shop-tea-bags.jpg',
-  'herbs-spices': '/images/navigation/shop-herbs-spices.jpg',
-  'superfood-powders': '/images/navigation/shop-superfood-powders.jpg',
+  tea: '/images/navigation/shop-tea-render.webp',
+  'tea-bags': '/images/navigation/shop-tea-bags-render.webp',
+  'herbs-spices': '/images/navigation/shop-herbs-spices-render.webp',
+  'superfood-powders': '/images/navigation/shop-superfood-powders-render.webp',
 } as const
 
 export const SHOP_SECTIONS = [
