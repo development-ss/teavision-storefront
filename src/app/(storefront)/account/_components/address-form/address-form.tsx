@@ -181,7 +181,7 @@ export function AddressForm({
           </div>
         </div>
 
-        <div className="grid gap-5 sm:grid-cols-3">
+        <div className="grid items-start gap-5 sm:grid-cols-3">
           <div className="grid gap-2">
             <FormLabel htmlFor="city" required>
               City
@@ -213,9 +213,7 @@ export function AddressForm({
               placeholder="e.g. ACT"
               aria-invalid={provinceError ? true : undefined}
               aria-describedby={
-                provinceError
-                  ? 'address-province-error'
-                  : 'address-province-help'
+                provinceError ? 'address-province-error' : undefined
               }
             />
             {provinceError ? (
@@ -225,14 +223,7 @@ export function AddressForm({
               >
                 {provinceError}
               </p>
-            ) : (
-              <p
-                id="address-province-help"
-                className="type-body-sm text-ink-faint"
-              >
-                Use the region code accepted by the selected country.
-              </p>
-            )}
+            ) : null}
           </div>
 
           <div className="grid gap-2">
