@@ -16,9 +16,15 @@ export type ShopSection = {
   ctaHref: string
   asideDescription?: string
   imageAlt?: string
+  imageSrc?: string
 }
 
-export const SHOP_IMAGE_SRC = '/images/navigation/mega-menu-tea-leaves.png'
+const SHOP_IMAGE_SRC = {
+  tea: '/images/navigation/shop-tea.jpg',
+  'tea-bags': '/images/navigation/shop-tea-bags.jpg',
+  'herbs-spices': '/images/navigation/shop-herbs-spices.jpg',
+  'superfood-powders': '/images/navigation/shop-superfood-powders.jpg',
+} as const
 
 export const SHOP_SECTIONS = [
   {
@@ -28,6 +34,7 @@ export const SHOP_SECTIONS = [
       'Explore our collection of black tea, green tea, matcha, and specialty blends, available in both bulk and wholesale packs.',
     ctaHref: '/collections/wholesale-bulk-tea',
     imageAlt: 'Tea',
+    imageSrc: SHOP_IMAGE_SRC.tea,
     asideDescription:
       'Explore bulk tea, cafe-ready formats, specialty blends, and wholesale support from an Australian owned team.',
     links: [
@@ -70,6 +77,7 @@ export const SHOP_SECTIONS = [
       'From bulk tea bags to individually wrapped wholesale tea bags, we supply solutions for cafes, restaurants, and retailers.',
     ctaHref: '/collections/bulk-tea-bags',
     imageAlt: 'Tea Bags',
+    imageSrc: SHOP_IMAGE_SRC['tea-bags'],
     asideDescription:
       'Explore bulk and private-label tea bag options for cafes, hotels, restaurants, and retailers.',
     links: [
@@ -91,6 +99,7 @@ export const SHOP_SECTIONS = [
       'Source bulk herbs and spices Australia-wide with confidence. We partner with ethical farmers to deliver wholesale herbs, botanicals, and spices that meet the highest standards.',
     ctaHref: '/collections/herbs-and-spices',
     imageAlt: 'Herbs & Spices',
+    imageSrc: SHOP_IMAGE_SRC['herbs-spices'],
     asideDescription:
       'Browse wholesale herbs and spices with practical support for quality, supply, and repeat ordering.',
     links: [
@@ -101,6 +110,8 @@ export const SHOP_SECTIONS = [
     key: 'superfood-powders',
     name: 'Superfood Powders',
     ctaHref: '/collections/superfood-extract-powders-proteins-supplements',
+    imageAlt: 'Superfood Powders',
+    imageSrc: SHOP_IMAGE_SRC['superfood-powders'],
     links: [
       {
         href: '/collections/superfood-extract-powders-proteins-supplements',

@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { Eyebrow } from '@/components/ui/eyebrow'
 import { ToggleButton } from '@/components/ui/toggle-button'
 
-import { SHOP_IMAGE_SRC, SHOP_SECTIONS } from '../data'
+import { SHOP_SECTIONS } from '../data'
 import { PANEL_LINK_CLASS } from '../styles'
 import type { ShopMenuProps } from './types'
 
@@ -94,10 +94,10 @@ export function ShopMegaPanel({
           </div>
 
           {/* Feature card (right) */}
-          {activeShop.imageAlt && (
+          {activeShop.imageAlt && activeShop.imageSrc && (
             <div className="relative aspect-4/3 overflow-hidden rounded-lg">
               <Image
-                src={SHOP_IMAGE_SRC}
+                src={activeShop.imageSrc}
                 alt={activeShop.imageAlt}
                 fill
                 className="object-cover"
