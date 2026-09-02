@@ -55,7 +55,7 @@ export function DeleteAddressDialog({
 
   return (
     <>
-      <Button variant="quiet" size="quiet" onClick={() => setOpen(true)}>
+      <Button variant="danger" size="sm" onClick={() => setOpen(true)}>
         Delete
       </Button>
       <Dialog
@@ -90,7 +90,7 @@ export function DeleteAddressDialog({
             </Button>
             <Button
               type="submit"
-              variant="brand"
+              variant="danger"
               disabled={pending}
               isLoading={pending}
             >

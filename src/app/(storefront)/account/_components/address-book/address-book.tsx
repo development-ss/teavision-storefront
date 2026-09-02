@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import type { CustomerAccountAddress } from '@/lib/shopify/customer-account/types'
 import type { CustomerAccountFormState } from '@/lib/shopify/customer-account/types'
+import { cn } from '@/lib/utils'
 
 import {
   formatAddressLines,
@@ -80,6 +81,10 @@ export function AddressBook({
         <div>
           <p className="type-mono-meta text-gold-deep">Addresses</p>
           <h1 className="type-heading-01 text-ink">Saved addresses</h1>
+          <p className="type-body-sm text-ink-soft mt-1">
+            {sortedAddresses.length}{' '}
+            {sortedAddresses.length === 1 ? 'saved address' : 'saved addresses'}
+          </p>
         </div>
         <Button href="/account/addresses/new" variant="brand">
           Add address
@@ -96,7 +101,12 @@ export function AddressBook({
         </p>
       ) : null}
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <ul
+        className={cn(
+          'grid gap-4',
+          sortedAddresses.length > 1 ? 'lg:grid-cols-2' : 'max-w-3xl',
+        )}
+      >
         {sortedAddresses.map((address) => {
           const isDefault = address.id === defaultAddressId
           const addressLabel = getAddressDisplayName(address)
@@ -104,61 +114,67 @@ export function AddressBook({
           return (
             <Card
               key={address.id}
-              as="article"
-              padding="lg"
+              as="li"
+              padding="none"
               radius="lg"
-              tone={isDefault ? 'sunken' : 'surface'}
+              tone="surface"
+              overflow="hidden"
+              className={cn(
+                'flex min-h-full flex-col',
+                isDefault && 'border-brand/35',
+              )}
             >
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <h2 className="type-heading-05 text-ink wrap-break-word">
+              <div className="flex-1 p-5 sm:p-6">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <h2 className="type-heading-04 text-ink min-w-0 wrap-break-word">
                     {addressLabel}
                   </h2>
                   {isDefault ? (
-                    <Badge
-                      variant="gold"
-                      label="Default address"
-                      className="mt-2"
-                    />
+                    <Badge variant="gold" label="Default address" />
                   ) : null}
+                </div>
+
+                <div className="mt-5 grid gap-2">
+                  <p className="type-mono-meta text-ink-faint">Address</p>
+                  <address className="type-body text-ink-soft not-italic">
+                    {formatAddressLines(address).map((line, index) => (
+                      <span key={`${line}-${index}`} className="block">
+                        {line}
+                      </span>
+                    ))}
+                  </address>
                 </div>
               </div>
 
-              <address className="type-body-sm text-ink-soft mt-4 not-italic">
-                {formatAddressLines(address).map((line, index) => (
-                  <span key={`${line}-${index}`} className="block">
-                    {line}
-                  </span>
-                ))}
-              </address>
-
-              <div className="border-hairline mt-5 flex flex-wrap items-center gap-3 border-t pt-4">
-                <Button
-                  href={`/account/addresses/${encodeURIComponent(address.id)}/edit`}
-                  variant="secondary"
-                  size="sm"
-                >
-                  Edit
-                </Button>
-
-                {isDefault ? (
-                  <Button variant="secondary" size="sm" disabled>
-                    Default address
+              <div className="border-hairline bg-paper-2 flex flex-col gap-3 border-t p-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+                <div className="flex flex-wrap items-center gap-3">
+                  <Button
+                    href={`/account/addresses/${encodeURIComponent(address.id)}/edit`}
+                    variant="secondary"
+                    size="sm"
+                  >
+                    Edit
                   </Button>
-                ) : (
-                  <form action={formAction}>
-                    <input type="hidden" name="addressId" value={address.id} />
-                    <Button
-                      type="submit"
-                      variant="secondary"
-                      size="sm"
-                      disabled={pending}
-                      isLoading={pending}
-                    >
-                      Set default
-                    </Button>
-                  </form>
-                )}
+
+                  {!isDefault ? (
+                    <form action={formAction}>
+                      <input
+                        type="hidden"
+                        name="addressId"
+                        value={address.id}
+                      />
+                      <Button
+                        type="submit"
+                        variant="secondary"
+                        size="sm"
+                        disabled={pending}
+                        isLoading={pending}
+                      >
+                        Set default
+                      </Button>
+                    </form>
+                  ) : null}
+                </div>
 
                 <DeleteAddressDialog
                   action={deleteAddressAction}
@@ -169,7 +185,7 @@ export function AddressBook({
             </Card>
           )
         })}
-      </div>
+      </ul>
     </div>
   )
 }

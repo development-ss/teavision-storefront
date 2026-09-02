@@ -61,6 +61,16 @@ export const DefaultFirst: Story = {
   },
 }
 
+export const SingleAddress: Story = {
+  name: 'single-address',
+  args: {
+    addresses: [defaultAddress],
+    defaultAddressId: defaultAddress.id,
+    deleteAddressAction: successAction,
+    setDefaultAction: successAction,
+  },
+}
+
 export const NoAddresses: Story = {
   name: 'no-addresses',
   args: {

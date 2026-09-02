@@ -14,6 +14,7 @@ const meta: Meta<typeof Button> = {
         'brand',
         'primary',
         'secondary',
+        'danger',
         'inverse',
         'inverseSecondary',
         'ghost',
@@ -52,6 +53,10 @@ export const Primary: Story = {
 
 export const Secondary: Story = {
   args: { children: 'Request Sample', variant: 'secondary' },
+}
+
+export const Danger: Story = {
+  args: { children: 'Delete address', variant: 'danger' },
 }
 
 export const Inverse: Story = {
