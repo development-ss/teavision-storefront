@@ -146,35 +146,29 @@ export function AddressBook({
                 </div>
               </div>
 
-              <div className="border-hairline bg-paper-2 flex flex-col gap-3 border-t p-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-                <div className="flex flex-wrap items-center gap-3">
-                  <Button
-                    href={`/account/addresses/${encodeURIComponent(address.id)}/edit`}
-                    variant="secondary"
-                    size="sm"
-                  >
-                    Edit
-                  </Button>
+              <div className="border-hairline bg-paper-2 flex flex-wrap items-center gap-3 border-t p-4 sm:px-6">
+                <Button
+                  href={`/account/addresses/${encodeURIComponent(address.id)}/edit`}
+                  variant="secondary"
+                  size="sm"
+                >
+                  Edit
+                </Button>
 
-                  {!isDefault ? (
-                    <form action={formAction}>
-                      <input
-                        type="hidden"
-                        name="addressId"
-                        value={address.id}
-                      />
-                      <Button
-                        type="submit"
-                        variant="secondary"
-                        size="sm"
-                        disabled={pending}
-                        isLoading={pending}
-                      >
-                        Set default
-                      </Button>
-                    </form>
-                  ) : null}
-                </div>
+                {!isDefault ? (
+                  <form action={formAction}>
+                    <input type="hidden" name="addressId" value={address.id} />
+                    <Button
+                      type="submit"
+                      variant="secondary"
+                      size="sm"
+                      disabled={pending}
+                      isLoading={pending}
+                    >
+                      Set default
+                    </Button>
+                  </form>
+                ) : null}
 
                 <DeleteAddressDialog
                   action={deleteAddressAction}
