@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Caveat, Hanken_Grotesk, Space_Mono, Spectral } from 'next/font/google'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 
 import { withNoindexRobots } from '@/lib/seo/noindex'
 import { SITE_URL } from '@/lib/seo/site-url'
@@ -73,6 +74,7 @@ export default function RootLayout({
         )}
       >
         {children}
+        <SpeedInsights />
       </body>
     </html>
   )
