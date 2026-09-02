@@ -444,11 +444,20 @@ function reshapeOrder(order: RawCustomerAccountOrder): CustomerAccountOrder {
   }
 }
 
+const customerAccountFormFieldByApiField: Record<string, string> = {
+  phoneNumber: 'phone',
+  territoryCode: 'countryCodeV2',
+  zoneCode: 'provinceCode',
+}
+
 function fieldKeyFromUserError(error: CustomerAccountUserError): string | null {
   const field = error.field?.filter(Boolean)
   if (!field?.length) return null
 
-  return field[field.length - 1] ?? null
+  const apiField = field[field.length - 1]
+  if (!apiField) return null
+
+  return customerAccountFormFieldByApiField[apiField] ?? apiField
 }
 
 function toCustomerAddressApiInput(

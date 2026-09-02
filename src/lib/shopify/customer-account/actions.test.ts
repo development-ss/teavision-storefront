@@ -199,7 +199,7 @@ describe('Customer Account Server Actions', () => {
         firstName: 'Mira',
         lastName: 'Patel',
         phone: '+61 411 111 111',
-        provinceCode: 'QLD',
+        provinceCode: 'qld',
         zip: '4000',
       }),
     )
@@ -230,7 +230,9 @@ describe('Customer Account Server Actions', () => {
   test('address user errors become field-level action state', async () => {
     vi.mocked(updateCustomerAddress).mockResolvedValue({
       data: null,
-      userErrors: [{ field: ['address1'], message: 'Enter an address.' }],
+      userErrors: [
+        { field: ['address', 'zoneCode'], message: 'Zone code must exist' },
+      ],
     })
 
     const state = await updateAddressAction(
@@ -247,7 +249,7 @@ describe('Customer Account Server Actions', () => {
     )
 
     expect(state).toEqual({
-      fieldErrors: { address1: 'Enter an address.' },
+      fieldErrors: { provinceCode: 'Zone code must exist' },
       message: null,
       status: 'error',
     })

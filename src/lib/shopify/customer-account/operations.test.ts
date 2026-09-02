@@ -130,13 +130,20 @@ describe('Customer Account read operations', () => {
     expect(
       normalizeCustomerAccountUserErrors([
         { field: ['address1'], message: 'Enter an address.' },
-        { field: ['input', 'phone'], message: 'Enter a valid phone number.' },
+        {
+          field: ['address', 'phoneNumber'],
+          message: 'Enter a valid phone number.',
+        },
+        { field: ['address', 'territoryCode'], message: 'Choose a country.' },
+        { field: ['address', 'zoneCode'], message: 'Zone code must exist' },
         { field: null, message: 'We could not save this address.' },
       ]),
     ).toEqual({
       fieldErrors: {
         address1: 'Enter an address.',
+        countryCodeV2: 'Choose a country.',
         phone: 'Enter a valid phone number.',
+        provinceCode: 'Zone code must exist',
       },
       formError: 'We could not save this address.',
     })

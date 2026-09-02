@@ -87,7 +87,8 @@ function getAddressInput(formData: FormData): CustomerAccountAddressInput {
     address1: getOptionalFormString(formData, 'address1'),
     address2: getOptionalFormString(formData, 'address2'),
     city: getOptionalFormString(formData, 'city'),
-    provinceCode: getOptionalFormString(formData, 'provinceCode'),
+    provinceCode:
+      getOptionalFormString(formData, 'provinceCode')?.toUpperCase() ?? null,
     zip: getOptionalFormString(formData, 'zip'),
     countryCodeV2: getOptionalFormString(formData, 'countryCodeV2') ?? 'AU',
     phone: getOptionalFormString(formData, 'phone'),

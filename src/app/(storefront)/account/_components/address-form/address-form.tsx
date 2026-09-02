@@ -203,15 +203,19 @@ export function AddressForm({
           </div>
 
           <div className="grid gap-2">
-            <FormLabel htmlFor="provinceCode">State / province</FormLabel>
+            <FormLabel htmlFor="provinceCode">State / province code</FormLabel>
             <TextInput
               id="provinceCode"
               name="provinceCode"
               autoComplete="address-level1"
+              autoCapitalize="characters"
               defaultValue={address?.provinceCode ?? ''}
+              placeholder="e.g. ACT"
               aria-invalid={provinceError ? true : undefined}
               aria-describedby={
-                provinceError ? 'address-province-error' : undefined
+                provinceError
+                  ? 'address-province-error'
+                  : 'address-province-help'
               }
             />
             {provinceError ? (
@@ -221,7 +225,14 @@ export function AddressForm({
               >
                 {provinceError}
               </p>
-            ) : null}
+            ) : (
+              <p
+                id="address-province-help"
+                className="type-body-sm text-ink-faint"
+              >
+                Use the region code accepted by the selected country.
+              </p>
+            )}
           </div>
 
           <div className="grid gap-2">
