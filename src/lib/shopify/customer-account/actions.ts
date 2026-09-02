@@ -141,6 +141,7 @@ function getAddressValidationErrors(
     lastName: input.lastName,
     address1: input.address1,
     city: input.city,
+    provinceCode: input.provinceCode,
     zip: input.zip,
     countryCodeV2: input.countryCodeV2,
   })

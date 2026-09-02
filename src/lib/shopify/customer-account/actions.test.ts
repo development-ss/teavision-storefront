@@ -244,6 +244,7 @@ describe('Customer Account Server Actions', () => {
         countryCodeV2: 'AU',
         firstName: 'Mira',
         lastName: 'Patel',
+        provinceCode: 'XX',
         zip: '4000',
       }),
     )
@@ -265,6 +266,7 @@ describe('Customer Account Server Actions', () => {
         countryCodeV2: 'AU',
         firstName: 'Mira',
         lastName: 'Patel',
+        provinceCode: 'qld',
         zip: '4000',
       }),
     )
@@ -280,7 +282,7 @@ describe('Customer Account Server Actions', () => {
         firstName: 'Mira',
         lastName: 'Patel',
         phone: null,
-        provinceCode: null,
+        provinceCode: 'QLD',
         zip: '4000',
       },
     )
@@ -303,6 +305,7 @@ describe('Customer Account Server Actions', () => {
       fieldErrors: {
         lastName: 'This field is required.',
         address1: 'This field is required.',
+        provinceCode: 'This field is required.',
         zip: 'This field is required.',
       },
       message: null,

@@ -203,7 +203,9 @@ export function AddressForm({
           </div>
 
           <div className="grid gap-2">
-            <FormLabel htmlFor="provinceCode">State / province code</FormLabel>
+            <FormLabel htmlFor="provinceCode" required>
+              State / province code
+            </FormLabel>
             <TextInput
               id="provinceCode"
               name="provinceCode"
@@ -211,6 +213,7 @@ export function AddressForm({
               autoCapitalize="characters"
               defaultValue={address?.provinceCode ?? ''}
               placeholder="e.g. ACT"
+              required
               aria-invalid={provinceError ? true : undefined}
               aria-describedby={
                 provinceError ? 'address-province-error' : undefined
