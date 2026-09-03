@@ -431,6 +431,16 @@ type CollectionCursorIndexEntry = {
   tags: string[]
 }
 
+function getMatchingEntryIndexes(
+  entries: CollectionCursorIndexEntry[],
+  matchTag: string,
+): number[] {
+  return entries.reduce<number[]>((indexes, entry, index) => {
+    if (entry.tags.includes(matchTag)) indexes.push(index)
+    return indexes
+  }, [])
+}
+
 /**
  * Fetch cursor index for a collection (cursor + tags per edge, no other
  * product fields). Chunks at SHOPIFY_PAGE_SIZE (250) to handle collections
@@ -489,8 +499,9 @@ async function fetchCollectionCursorIndex(
  * for page N (i.e. the cursor at position `(N-1) * pageSize - 1`).
  *
  * When `matchTag` is given, page math runs over the products carrying that
- * tag: `totalPages` counts only raw pages with at least one match, and
- * `displayPageToRawPage` maps each display page to its raw index page.
+ * tag: `totalPages` is based on matching products (not raw collection pages),
+ * and `displayPageToRawPage` maps each display page to the raw page containing
+ * its first matching product.
  * Needed because Shopify ignores `{ tag }` filters without tag facets, so
  * the raw index spans the whole collection while the view shows a subset.
  *
@@ -514,21 +525,24 @@ export async function getCollectionPageIndex(
   )
 
   if (matchTag) {
-    const rawPages: number[] = []
-    let totalCount = 0
-
-    entries.forEach((entry, index) => {
-      if (!entry.tags.includes(matchTag)) return
-      totalCount += 1
-      const rawPage = Math.floor(index / pageSize) + 1
-      if (rawPages.at(-1) !== rawPage) rawPages.push(rawPage)
-    })
+    const matchingIndexes = getMatchingEntryIndexes(entries, matchTag)
+    const totalCount = matchingIndexes.length
+    const totalPages = totalCount === 0 ? 1 : Math.ceil(totalCount / pageSize)
+    const displayPageToRawPage = matchingIndexes.length
+      ? Array.from(
+          { length: totalPages },
+          (_, pageIndex) =>
+            Math.floor(matchingIndexes[pageIndex * pageSize] / pageSize) + 1,
+        )
+      : []
 
     return {
       totalCount,
-      totalPages: Math.max(rawPages.length, 1),
+      totalPages,
       afterCursor: null,
-      displayPageToRawPage: rawPages.length > 0 ? rawPages : [1],
+      displayPageToRawPage: displayPageToRawPage.length
+        ? displayPageToRawPage
+        : [1],
     }
   }
 
@@ -608,7 +622,65 @@ export async function getCollectionProductsPage(
   sortKey = ProductCollectionSortKeys.CollectionDefault,
   reverse = false,
   filters: ProductFilter[] = [],
+  matchTag: string | null = null,
 ): Promise<CollectionProductsResult> {
+  if (matchTag) {
+    const entries = await fetchCollectionCursorIndex(
+      handle,
+      sortKey,
+      reverse,
+      filters,
+    )
+    const matchingIndexes = getMatchingEntryIndexes(entries, matchTag)
+    const displayStart = (page - 1) * first
+    const displayEnd = Math.min(displayStart + first, matchingIndexes.length)
+
+    if (displayStart >= matchingIndexes.length) {
+      return {
+        products: [],
+        filters: [],
+        pageInfo: { hasNextPage: false, endCursor: null },
+      }
+    }
+
+    const firstMatchingIndex = matchingIndexes[displayStart]
+    const lastMatchingIndex = matchingIndexes[displayEnd - 1]
+    const firstRawPage = Math.floor(firstMatchingIndex / first) + 1
+    const lastRawPage = Math.floor(lastMatchingIndex / first) + 1
+    const rawPages = Array.from(
+      { length: lastRawPage - firstRawPage + 1 },
+      (_, index) => firstRawPage + index,
+    )
+    const rawResults = await Promise.all(
+      rawPages.map((rawPage) =>
+        getCollectionProductsWithFilters(
+          handle,
+          first,
+          sortKey,
+          reverse,
+          filters,
+          resolveAfterCursor(entries, rawPage, first),
+        ),
+      ),
+    )
+    const matchingProducts = rawResults
+      .flatMap((result) => result.products)
+      .filter((product) => product.tags.includes(matchTag))
+    const firstRawPageStartIndex = (firstRawPage - 1) * first
+    const matchingOffset = matchingIndexes
+      .slice(0, displayStart)
+      .filter((index) => index >= firstRawPageStartIndex).length
+
+    return {
+      products: matchingProducts.slice(matchingOffset, matchingOffset + first),
+      filters: rawResults[0]?.filters ?? [],
+      pageInfo: {
+        hasNextPage: displayEnd < matchingIndexes.length,
+        endCursor: rawResults.at(-1)?.pageInfo.endCursor ?? null,
+      },
+    }
+  }
+
   // Resolve cursor for page N via the index (id-only, no product fields)
   const after =
     page <= 1

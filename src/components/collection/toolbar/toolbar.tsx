@@ -1,12 +1,13 @@
 import type { ReactNode } from 'react'
 import { Suspense } from 'react'
-import { SlidersHorizontal, X } from 'lucide-react'
+import { SlidersHorizontal } from 'lucide-react'
 
 import type { CollectionProductFilter } from '@/lib/shopify/types'
 import { getSelectedCollectionFilterLabels } from '@/lib/shopify/filters'
 import { cn } from '@/lib/utils'
 
 import { FilterPanel } from '../filter-panel'
+import { FilterChips } from '../filter-chips'
 import { SortSelect } from '../sort-select'
 
 type ToolbarProps = {
@@ -14,6 +15,7 @@ type ToolbarProps = {
   productCount: number
   filters: CollectionProductFilter[]
   selectedFilters: string[]
+  collectionPath?: string
   clearHref?: string
   className?: string
   search?: ReactNode
@@ -24,6 +26,7 @@ export function Toolbar({
   productCount,
   filters,
   selectedFilters,
+  collectionPath,
   clearHref,
   className,
   search,
@@ -59,19 +62,13 @@ export function Toolbar({
         </div>
       </div>
 
-      {selectedFilterLabels.length > 0 && (
-        <div className="mt-4 flex flex-wrap gap-2">
-          {selectedFilterLabels.map((filter) => (
-            <span
-              key={filter.input}
-              className="bg-brand-tint text-brand inline-flex items-center gap-1.5 rounded-full px-3 py-1.75 text-xs font-semibold"
-            >
-              {filter.label}
-              <X className="size-3" aria-hidden="true" />
-            </span>
-          ))}
-        </div>
-      )}
+      <Suspense fallback={null}>
+        <FilterChips
+          collectionPath={collectionPath}
+          selectedFilterLabels={selectedFilterLabels}
+          selectedFilters={selectedFilters}
+        />
+      </Suspense>
 
       <details className="bg-paper border-hairline mt-4 rounded-lg border lg:hidden">
         <summary className="type-label text-ink focus-visible:ring-ring flex min-h-12 cursor-pointer list-none items-center justify-between gap-4 rounded-lg px-4 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none">

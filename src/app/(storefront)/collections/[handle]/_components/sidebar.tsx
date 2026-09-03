@@ -8,13 +8,16 @@ import type {
 } from '@/lib/shopify/types'
 import { cn } from '@/lib/utils'
 
-import { getPath } from '../_lib/page-helpers'
+import { getHref } from '../_lib/page-helpers'
 
 type SidebarProps = {
   activeSelectedFilters: string[]
   clearFiltersHref: string
   handle: string
+  query?: string
   productsLength: number
+  selectedFilters: string[]
+  sort: string
   sidebarCollections: CollectionSummary[]
   visibleFilters: CollectionProductFilter[]
 }
@@ -23,7 +26,10 @@ export function Sidebar({
   activeSelectedFilters,
   clearFiltersHref,
   handle,
+  query,
   productsLength,
+  selectedFilters,
+  sort,
   sidebarCollections,
   visibleFilters,
 }: SidebarProps) {
@@ -54,7 +60,12 @@ export function Sidebar({
                   return (
                     <li key={sidebarCollection.id}>
                       <Link
-                        href={getPath(sidebarCollection.handle)}
+                        href={getHref(
+                          sidebarCollection.handle,
+                          sort,
+                          selectedFilters,
+                          query,
+                        )}
                         aria-current={isActive ? 'page' : undefined}
                         className={cn(
                           'type-body-sm focus-visible:ring-ring flex min-h-10 items-center rounded px-2 transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none',

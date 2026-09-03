@@ -146,19 +146,19 @@ export async function Results({
     redirect(lastPageHref)
   }
 
-  // Fetch the actual products for this page. With a category active, display
-  // page N maps to the raw index page that holds its matching products.
-  const rawPage = pageIndex.displayPageToRawPage?.[page - 1] ?? page
+  // Fetch the actual products for this page. With a category active, the
+  // operation merges matching products across raw pages into display pages.
   const collectionProductsResult =
     page === 1 && !selectedCategoryTag
       ? initialProductsResult
       : await getCollectionProductsPage(
           handle,
-          rawPage,
+          page,
           COLLECTION_PRODUCT_PAGE_SIZE,
           sortKey,
           reverse,
           activeProductFilters,
+          selectedCategoryTag,
         )
 
   const products = filterProductsByCategoryTags(
@@ -210,7 +210,7 @@ export async function Results({
       )
     : productsWithRatings
 
-  const clearFiltersHref = getHref(handle, sort)
+  const clearFiltersHref = getHref(handle, sort, [], query)
   const categoryFilter = buildCategoryFilter({
     products: initialProductsResult.products,
     sourceFilter: initialProductsResult.filters.find(isCategoryFilter),
@@ -218,6 +218,7 @@ export async function Results({
     selectedCategoryTag,
     sort,
     selectedFilters,
+    query,
     indexTagCounts,
   })
 
@@ -286,6 +287,7 @@ export async function Results({
             }
             filters={visibleFilters}
             selectedFilters={activeSelectedFilters}
+            collectionPath={getPath(handle)}
             clearHref={clearFiltersHref}
             className="mb-8"
             search={
@@ -319,7 +321,10 @@ export async function Results({
               activeSelectedFilters={activeSelectedFilters}
               clearFiltersHref={clearFiltersHref}
               handle={handle}
+              query={query}
               productsLength={displayedProducts.length}
+              selectedFilters={selectedFilters}
+              sort={sort}
               sidebarCollections={sidebarCollections}
               visibleFilters={visibleFilters}
             />

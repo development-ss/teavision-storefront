@@ -127,10 +127,9 @@ export type CollectionPageIndex = {
   /** The resolved `after` cursor for the requested page (null = start from beginning) */
   afterCursor: string | null
   /**
-   * Raw cursor-index page backing each 1-based display page when a tag match
-   * constrains the view (Shopify ignores tag filters unless the store enables
-   * tag facets, so matching is client-side). Null when display pages equal
-   * raw pages.
+   * Raw cursor-index page containing the first matching product for each
+   * 1-based display page when a tag match constrains the view. Null when
+   * display pages equal raw pages.
    */
   displayPageToRawPage: number[] | null
 }

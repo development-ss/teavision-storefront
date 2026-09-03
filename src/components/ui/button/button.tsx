@@ -34,6 +34,8 @@ const buttonVariants = cva(
         inverseSecondary:
           'border-[1.5px] border-paper/35 bg-transparent text-paper hover:border-ink hover:bg-ink',
         ghost: 'text-brand hover:bg-brand-tint hover:text-brand-deep',
+        filterChip:
+          'bg-brand-tint text-brand hover:bg-paper-2 hover:[&_svg]:translate-x-0',
         quiet: 'bg-transparent text-ink-faint hover:text-gold-deep',
         // Faux-input look for search/filter triggers — field chrome, placeholder-
         // weight text, and no icon hover-slide.
@@ -52,6 +54,7 @@ const buttonVariants = cva(
           'min-h-11 px-0 font-mono text-[10.5px] font-normal tracking-widest uppercase',
         footerLink:
           'min-h-0 px-0 font-mono text-[11px] font-normal tracking-[0.06em] normal-case',
+        filterChip: 'min-h-10 px-3 py-1.75 text-xs font-semibold',
         // Input-height sizing for the field variant — body-scale text, not label caps
         field: 'h-11 min-h-11 px-4 text-sm font-normal tracking-normal',
       },

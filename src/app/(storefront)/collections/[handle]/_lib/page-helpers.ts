@@ -505,10 +505,12 @@ function withQuery(
   sort: string,
   selectedFilters: string[] = [],
   page?: number | null,
+  query?: string,
 ): string {
   const params = new URLSearchParams()
   if (sort !== 'featured') params.set('sort', sort)
   selectedFilters.forEach((filter) => params.append('filter', filter))
+  if (query) params.set('q', query)
   // Omit page=1 from URLs (clean base URL == page 1)
   if (page && page > 1) params.set('page', String(page))
   const queryString = params.toString()
@@ -520,9 +522,10 @@ export function getHref(
   handle: string,
   sort: string,
   selectedFilters: string[] = [],
+  query?: string,
 ): string {
   // Sort/filter hrefs always drop the page param (D-25)
-  return withQuery(getPath(handle), sort, selectedFilters)
+  return withQuery(getPath(handle), sort, selectedFilters, undefined, query)
 }
 
 function getCategoryHref(
@@ -530,12 +533,15 @@ function getCategoryHref(
   tag: string,
   sort: string,
   selectedFilters: string[],
+  query?: string,
 ): string {
   // Sort/filter/category hrefs always drop the page param (D-25)
   return withQuery(
     `${getPath(handle)}/${toCategoryPathSegment(tag)}`,
     sort,
     selectedFilters,
+    undefined,
+    query,
   )
 }
 
@@ -545,12 +551,14 @@ export function getPaginationHref({
   page,
   selectedFilters,
   sort,
+  query,
 }: {
   category: string | undefined
   handle: string
   page: number
   selectedFilters: string[]
   sort: string
+  query?: string
 }): string {
   // category is a raw route param and these hrefs become redirect targets —
   // normalize to the safe [a-z0-9_-] segment charset like getCategoryHref does
@@ -558,7 +566,7 @@ export function getPaginationHref({
     ? `${getPath(handle)}/${toCategoryPathSegment(normalizeCategoryPathSegment(category))}`
     : getPath(handle)
 
-  return withQuery(path, sort, selectedFilters, page)
+  return withQuery(path, sort, selectedFilters, page, query)
 }
 
 function compareSidebarCollections(
@@ -653,6 +661,7 @@ export function buildCategoryFilter({
   selectedCategoryTag,
   sort,
   selectedFilters,
+  query,
   indexTagCounts,
 }: {
   products: CollectionProductSummary[]
@@ -661,6 +670,7 @@ export function buildCategoryFilter({
   selectedCategoryTag: string | null
   sort: string
   selectedFilters: string[]
+  query?: string
   /** Full-collection tag counts from the cursor index — see getCollectionTagCounts */
   indexTagCounts?: Record<string, number>
 }): CollectionProductFilter | null {
@@ -720,8 +730,8 @@ export function buildCategoryFilter({
       input: getCategoryFilterInput(tag),
       href:
         tag === selectedCategoryTag
-          ? getHref(handle, sort, selectedFilters)
-          : getCategoryHref(handle, tag, sort, selectedFilters),
+          ? getHref(handle, sort, selectedFilters, query)
+          : getCategoryHref(handle, tag, sort, selectedFilters, query),
     }))
     .sort((first, second) => first.label.localeCompare(second.label))
 
