@@ -5,4 +5,5 @@ export type ShopMenuProps = {
   onActiveShopChange: (key: ShopKey) => void
   onClose: () => void
   open: boolean
+  pathname: string
 }

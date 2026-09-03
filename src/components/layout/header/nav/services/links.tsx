@@ -1,9 +1,15 @@
 import Link from 'next/link'
 
-import { SERVICES_LINKS } from '../data'
+import { isNavLinkActive, SERVICES_LINKS } from '../data'
 import { PANEL_LINK_CLASS } from '../styles'
 
-export function ServicesLinks({ onClose }: { onClose: () => void }) {
+export function ServicesLinks({
+  onClose,
+  pathname,
+}: {
+  onClose: () => void
+  pathname: string
+}) {
   return (
     <div>
       <p className="text-ink-faint mb-3 font-mono text-[10.5px] tracking-[0.14em] uppercase">
@@ -14,6 +20,9 @@ export function ServicesLinks({ onClose }: { onClose: () => void }) {
           <li key={link.href}>
             <Link
               href={link.href}
+              aria-current={
+                isNavLinkActive(pathname, link.href) ? 'page' : undefined
+              }
               className={PANEL_LINK_CLASS}
               onClick={onClose}
             >

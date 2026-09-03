@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { ChevronDown, ChevronRight, Phone } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
@@ -8,7 +9,16 @@ import { Button } from '@/components/ui/button'
 import { DisclosureButton } from '@/components/ui/disclosure-button'
 import { cn } from '@/lib/utils'
 
-import { DIRECT_LINKS, SHOP_SECTIONS, type MenuKey, type ShopKey } from './data'
+import {
+  DIRECT_LINKS,
+  SHOP_SECTIONS,
+  getShopKeyForPath,
+  isNavLinkActive,
+  isServicesPath,
+  isShopPath,
+  type MenuKey,
+  type ShopKey,
+} from './data'
 import { MobileServicesPanel } from './services/mobile-panel'
 import { MobileShopPanel } from './shop/mobile-panel'
 
@@ -18,8 +28,12 @@ type MobileMegaNavProps = {
 }
 
 export function MobileMegaNav({ open, onClose }: MobileMegaNavProps) {
+  const pathname = usePathname()
   const [openMenu, setOpenMenu] = useState<MenuKey | null>(null)
-  const [activeShopKey, setActiveShopKey] = useState<ShopKey>('tea')
+  const currentShopKey = getShopKeyForPath(pathname)
+  const [activeShopKey, setActiveShopKey] = useState<ShopKey>(
+    () => currentShopKey ?? 'tea',
+  )
   const activeShop =
     SHOP_SECTIONS.find((section) => section.key === activeShopKey) ??
     SHOP_SECTIONS[0]!
@@ -67,11 +81,15 @@ export function MobileMegaNav({ open, onClose }: MobileMegaNavProps) {
         <div className="border-hairline border-b">
           <DisclosureButton
             aria-controls="mobile-shop-mega"
+            aria-current={isShopPath(pathname) ? 'page' : undefined}
             aria-expanded={openMenu === 'shop'}
-            onClick={() =>
+            onClick={() => {
+              if (openMenu !== 'shop' && currentShopKey) {
+                setActiveShopKey(currentShopKey)
+              }
               setOpenMenu((current) => (current === 'shop' ? null : 'shop'))
-            }
-            className="px-gutter font-display text-ink flex min-h-0 w-full items-center justify-between rounded-none py-5 text-2xl"
+            }}
+            className="px-gutter font-display text-ink aria-[current=page]:text-brand flex min-h-0 w-full items-center justify-between rounded-none py-5 text-2xl aria-[current=page]:underline aria-[current=page]:underline-offset-4"
           >
             Shop
             <ChevronDown
@@ -88,6 +106,7 @@ export function MobileMegaNav({ open, onClose }: MobileMegaNavProps) {
             onActiveShopChange={setActiveShopKey}
             onClose={closeAll}
             open={openMenu === 'shop'}
+            pathname={pathname}
           />
         </div>
 
@@ -95,13 +114,14 @@ export function MobileMegaNav({ open, onClose }: MobileMegaNavProps) {
         <div className="border-hairline border-b">
           <DisclosureButton
             aria-controls="mobile-services-mega"
+            aria-current={isServicesPath(pathname) ? 'page' : undefined}
             aria-expanded={openMenu === 'services'}
             onClick={() =>
               setOpenMenu((current) =>
                 current === 'services' ? null : 'services',
               )
             }
-            className="px-gutter font-display text-ink flex min-h-0 w-full items-center justify-between rounded-none py-5 text-2xl"
+            className="px-gutter font-display text-ink aria-[current=page]:text-brand flex min-h-0 w-full items-center justify-between rounded-none py-5 text-2xl aria-[current=page]:underline aria-[current=page]:underline-offset-4"
           >
             Services
             <ChevronDown
@@ -116,6 +136,7 @@ export function MobileMegaNav({ open, onClose }: MobileMegaNavProps) {
           <MobileServicesPanel
             onClose={closeAll}
             open={openMenu === 'services'}
+            pathname={pathname}
           />
         </div>
 
@@ -124,8 +145,11 @@ export function MobileMegaNav({ open, onClose }: MobileMegaNavProps) {
           <div key={link.href} className="border-hairline border-b">
             <Link
               href={link.href}
+              aria-current={
+                isNavLinkActive(pathname, link.href) ? 'page' : undefined
+              }
               onClick={closeAll}
-              className="px-gutter font-display text-ink hover:text-brand flex w-full items-center justify-between py-5 text-2xl transition-colors"
+              className="px-gutter font-display text-ink hover:text-brand aria-[current=page]:text-brand flex w-full items-center justify-between py-5 text-2xl transition-colors aria-[current=page]:underline aria-[current=page]:underline-offset-4"
             >
               {link.label}
               <ChevronRight

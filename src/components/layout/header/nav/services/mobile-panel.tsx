@@ -2,7 +2,11 @@ import { CatalogueLinks } from '../catalogue-links'
 import { ServicesLinks } from './links'
 import type { ServicesMenuProps } from './types'
 
-export function MobileServicesPanel({ onClose, open }: ServicesMenuProps) {
+export function MobileServicesPanel({
+  onClose,
+  open,
+  pathname,
+}: ServicesMenuProps) {
   return (
     <div
       id="mobile-services-mega"
@@ -10,8 +14,8 @@ export function MobileServicesPanel({ onClose, open }: ServicesMenuProps) {
       hidden={!open}
     >
       <div className="max-w-wide px-gutter mx-auto grid gap-5 py-4 md:grid-cols-2">
-        <ServicesLinks onClose={onClose} />
-        <CatalogueLinks onClose={onClose} />
+        <ServicesLinks onClose={onClose} pathname={pathname} />
+        <CatalogueLinks onClose={onClose} pathname={pathname} />
       </div>
     </div>
   )

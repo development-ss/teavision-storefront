@@ -7,7 +7,11 @@ import { CatalogueLinks } from '../catalogue-links'
 import { ServicesLinks } from './links'
 import type { ServicesMenuProps } from './types'
 
-export function ServicesMegaPanel({ onClose, open }: ServicesMenuProps) {
+export function ServicesMegaPanel({
+  onClose,
+  open,
+  pathname,
+}: ServicesMenuProps) {
   return (
     <div
       id="services-menu"
@@ -28,8 +32,11 @@ export function ServicesMegaPanel({ onClose, open }: ServicesMenuProps) {
             </p>
             <Link
               href="/pages/wholesale"
+              aria-current={
+                pathname === '/pages/wholesale' ? 'page' : undefined
+              }
               onClick={onClose}
-              className="focus-visible:ring-ring type-label border-hairline text-ink hover:border-brand hover:text-brand mt-2 inline-flex items-center gap-2 self-start border-b-[1.5px] pb-1 transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+              className="focus-visible:ring-ring type-label border-hairline text-ink hover:border-brand hover:text-brand aria-[current=page]:border-brand aria-[current=page]:text-brand mt-2 inline-flex items-center gap-2 self-start border-b-[1.5px] pb-1 transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
             >
               All services
               <ArrowRight
@@ -42,8 +49,8 @@ export function ServicesMegaPanel({ onClose, open }: ServicesMenuProps) {
 
           {/* Link columns */}
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            <ServicesLinks onClose={onClose} />
-            <CatalogueLinks onClose={onClose} />
+            <ServicesLinks onClose={onClose} pathname={pathname} />
+            <CatalogueLinks onClose={onClose} pathname={pathname} />
           </div>
         </div>
       </div>

@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { ChevronDown } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal, preload } from 'react-dom'
@@ -8,7 +9,16 @@ import { createPortal, preload } from 'react-dom'
 import { DisclosureButton } from '@/components/ui/disclosure-button'
 import { cn } from '@/lib/utils'
 
-import { DIRECT_LINKS, SHOP_SECTIONS, type MenuKey, type ShopKey } from './data'
+import {
+  DIRECT_LINKS,
+  SHOP_SECTIONS,
+  getShopKeyForPath,
+  isNavLinkActive,
+  isServicesPath,
+  isShopPath,
+  type MenuKey,
+  type ShopKey,
+} from './data'
 import { DESKTOP_MENU_ITEM_CLASS, NAV_TRIGGER_CLASS } from './styles'
 import { ServicesMegaPanel } from './services/panel'
 import { ShopMegaPanel } from './shop/panel'
@@ -28,12 +38,16 @@ function preloadShopImages() {
 }
 
 export function MegaNav() {
+  const pathname = usePathname()
   const navRef = useRef<HTMLDivElement | null>(null)
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const hoverOpenedMenuRef = useRef<MenuKey | null>(null)
   const clickConfirmedMenuRef = useRef<MenuKey | null>(null)
   const [openMenu, setOpenMenu] = useState<MenuKey | null>(null)
-  const [activeShopKey, setActiveShopKey] = useState<ShopKey>('tea')
+  const currentShopKey = getShopKeyForPath(pathname)
+  const [activeShopKey, setActiveShopKey] = useState<ShopKey>(
+    () => currentShopKey ?? 'tea',
+  )
   const activeShop =
     SHOP_SECTIONS.find((section) => section.key === activeShopKey) ??
     SHOP_SECTIONS[0]!
@@ -58,18 +72,24 @@ export function MegaNav() {
   const openMenuFromHover = useCallback(
     (key: MenuKey) => {
       clearCloseTimer()
+      if (key === 'shop' && currentShopKey) {
+        setActiveShopKey(currentShopKey)
+      }
       if (clickConfirmedMenuRef.current !== key) {
         clickConfirmedMenuRef.current = null
       }
       hoverOpenedMenuRef.current = key
       setOpenMenu(key)
     },
-    [clearCloseTimer],
+    [clearCloseTimer, currentShopKey],
   )
 
   const toggleMenu = useCallback(
     (key: MenuKey) => {
       clearCloseTimer()
+      if (key === 'shop' && currentShopKey) {
+        setActiveShopKey(currentShopKey)
+      }
       setOpenMenu((current) => {
         const wasOpenedByHover = hoverOpenedMenuRef.current === key
         const wasConfirmedByClick = clickConfirmedMenuRef.current === key
@@ -84,7 +104,7 @@ export function MegaNav() {
         return current === key ? null : key
       })
     },
-    [clearCloseTimer],
+    [clearCloseTimer, currentShopKey],
   )
 
   /** Schedule the close after the grace period. Cancelled by openMenuFromHover or keepOpen. */
@@ -125,6 +145,7 @@ export function MegaNav() {
           >
             <DisclosureButton
               aria-controls="shop-mega"
+              aria-current={isShopPath(pathname) ? 'page' : undefined}
               aria-expanded={openMenu === 'shop'}
               onClick={() => toggleMenu('shop')}
               className={NAV_TRIGGER_CLASS}
@@ -153,6 +174,7 @@ export function MegaNav() {
           >
             <DisclosureButton
               aria-controls="services-menu"
+              aria-current={isServicesPath(pathname) ? 'page' : undefined}
               aria-expanded={openMenu === 'services'}
               onClick={() => toggleMenu('services')}
               className={NAV_TRIGGER_CLASS}
@@ -176,7 +198,13 @@ export function MegaNav() {
 
           {DIRECT_LINKS.map((link) => (
             <li key={link.href} className={DESKTOP_MENU_ITEM_CLASS}>
-              <Link href={link.href} className={NAV_TRIGGER_CLASS}>
+              <Link
+                href={link.href}
+                aria-current={
+                  isNavLinkActive(pathname, link.href) ? 'page' : undefined
+                }
+                className={NAV_TRIGGER_CLASS}
+              >
                 {link.label}
               </Link>
             </li>
@@ -191,10 +219,12 @@ export function MegaNav() {
           onActiveShopChange={setActiveShopKey}
           onClose={closeMenus}
           open={openMenu === 'shop'}
+          pathname={pathname}
         />
         <ServicesMegaPanel
           onClose={closeMenus}
           open={openMenu === 'services'}
+          pathname={pathname}
         />
       </div>
 

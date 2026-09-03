@@ -172,7 +172,9 @@ export function Header() {
         {/* Nav row — relative: mega panels anchor to its bottom via absolute top-full. */}
         <div className="bg-paper/80 border-hairline relative hidden border-b backdrop-blur-md lg:block">
           <div className="max-w-wide px-gutter mx-auto flex h-12 items-stretch">
-            <MegaNav />
+            <Suspense fallback={null}>
+              <MegaNav />
+            </Suspense>
           </div>
         </div>
 

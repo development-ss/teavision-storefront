@@ -6,6 +6,7 @@ import { Eyebrow } from '@/components/ui/eyebrow'
 import { ToggleButton } from '@/components/ui/toggle-button'
 
 import { SHOP_SECTIONS } from '../data'
+import { isNavLinkActive } from '../data'
 import { PANEL_LINK_CLASS } from '../styles'
 import type { ShopMenuProps } from './types'
 
@@ -14,6 +15,7 @@ export function ShopMegaPanel({
   onActiveShopChange,
   onClose,
   open,
+  pathname,
 }: ShopMenuProps) {
   return (
     <div
@@ -36,8 +38,13 @@ export function ShopMegaPanel({
             )}
             <Link
               href={activeShop.ctaHref}
+              aria-current={
+                isNavLinkActive(pathname, activeShop.ctaHref)
+                  ? 'page'
+                  : undefined
+              }
               onClick={onClose}
-              className="focus-visible:ring-ring type-label border-hairline text-ink hover:border-brand hover:text-brand mt-2 inline-flex items-center gap-2 self-start border-b-[1.5px] pb-1 transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+              className="focus-visible:ring-ring type-label border-hairline text-ink hover:border-brand hover:text-brand aria-[current=page]:border-brand aria-[current=page]:text-brand mt-2 inline-flex items-center gap-2 self-start border-b-[1.5px] pb-1 transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
             >
               View all {activeShop.name}
               <ArrowRight
@@ -81,6 +88,11 @@ export function ShopMegaPanel({
                   <li key={`${activeShop.key}-${link.href}-${link.label}`}>
                     <Link
                       href={link.href}
+                      aria-current={
+                        isNavLinkActive(pathname, link.href)
+                          ? 'page'
+                          : undefined
+                      }
                       className={PANEL_LINK_CLASS}
                       onClick={onClose}
                     >

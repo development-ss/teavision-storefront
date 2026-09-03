@@ -3,7 +3,7 @@ import { ArrowRight } from 'lucide-react'
 
 import { ToggleButton } from '@/components/ui/toggle-button'
 
-import { SHOP_SECTIONS } from '../data'
+import { isNavLinkActive, SHOP_SECTIONS } from '../data'
 import { PANEL_LINK_CLASS } from '../styles'
 import type { ShopMenuProps } from './types'
 
@@ -12,6 +12,7 @@ export function MobileShopPanel({
   onActiveShopChange,
   onClose,
   open,
+  pathname,
 }: ShopMenuProps) {
   return (
     <div
@@ -56,6 +57,9 @@ export function MobileShopPanel({
               <li key={`mobile-${activeShop.key}-${link.href}-${link.label}`}>
                 <Link
                   href={link.href}
+                  aria-current={
+                    isNavLinkActive(pathname, link.href) ? 'page' : undefined
+                  }
                   className={PANEL_LINK_CLASS}
                   onClick={onClose}
                 >
@@ -68,6 +72,9 @@ export function MobileShopPanel({
           {/* View-all uses ArrowRight (distinct from ChevronRight drill-in indicators) */}
           <Link
             href={activeShop.ctaHref}
+            aria-current={
+              isNavLinkActive(pathname, activeShop.ctaHref) ? 'page' : undefined
+            }
             className="focus-visible:ring-ring type-label text-brand hover:text-brand-deep inline-flex min-h-11 items-center gap-1.5 rounded-sm underline underline-offset-2 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
             onClick={onClose}
           >

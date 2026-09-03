@@ -218,6 +218,7 @@ export const DesktopShopOpen: Story = {
         onActiveShopChange={ignoreShopKey}
         onClose={noop}
         open
+        pathname="/collections/herbs-and-spices"
       />
     </StoryPanelFrame>
   ),
@@ -226,7 +227,11 @@ export const DesktopShopOpen: Story = {
 export const DesktopServicesOpen: Story = {
   render: () => (
     <StoryPanelFrame>
-      <ServicesMegaPanel onClose={noop} open />
+      <ServicesMegaPanel
+        onClose={noop}
+        open
+        pathname="/pages/private-label-packing"
+      />
     </StoryPanelFrame>
   ),
 }
@@ -238,6 +243,7 @@ export const MobileShopOpen: Story = {
       onActiveShopChange={ignoreShopKey}
       onClose={noop}
       open
+      pathname="/collections/herbs-and-spices"
     />
   ),
   parameters: {
@@ -248,7 +254,13 @@ export const MobileShopOpen: Story = {
 }
 
 export const MobileServicesOpen: Story = {
-  render: () => <MobileServicesPanel onClose={noop} open />,
+  render: () => (
+    <MobileServicesPanel
+      onClose={noop}
+      open
+      pathname="/pages/private-label-packing"
+    />
+  ),
   parameters: {
     viewport: {
       defaultViewport: 'mobile1',
