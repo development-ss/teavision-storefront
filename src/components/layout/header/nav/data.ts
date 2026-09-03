@@ -165,3 +165,29 @@ export const DIRECT_LINKS = [
   { href: '/pages/our-story', label: 'Our Story' },
   { href: '/pages/contact', label: 'Contact' },
 ] satisfies NavLink[]
+
+export function isNavLinkActive(pathname: string, href: string): boolean {
+  return pathname === href || pathname.startsWith(`${href}/`)
+}
+
+export function isShopPath(pathname: string): boolean {
+  return (
+    isNavLinkActive(pathname, '/collections') ||
+    isNavLinkActive(pathname, '/products')
+  )
+}
+
+export function getShopKeyForPath(pathname: string): ShopKey | undefined {
+  return SHOP_SECTIONS.find(
+    (section) =>
+      isNavLinkActive(pathname, section.ctaHref) ||
+      section.links.some((link) => isNavLinkActive(pathname, link.href)),
+  )?.key
+}
+
+export function isServicesPath(pathname: string): boolean {
+  return (
+    isNavLinkActive(pathname, '/pages/wholesale') ||
+    SERVICES_LINKS.some((link) => isNavLinkActive(pathname, link.href))
+  )
+}
