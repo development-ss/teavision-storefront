@@ -317,7 +317,7 @@ export const NativePriceBreakDiscounted: Story = {
     const canvas = within(canvasElement)
 
     await expect(
-      canvas.getByText('Buy 6 more and get 15% on each product'),
+      canvas.getByText('Buy 6 more and get 15% discount'),
     ).toBeVisible()
     await expect(canvas.getAllByLabelText('Was $624.92')[0]).toBeVisible()
     await expect(canvas.getAllByLabelText('Now $549.93')[0]).toBeVisible()

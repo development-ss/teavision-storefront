@@ -363,8 +363,7 @@ export function CartView({
                     {nextBulkDiscountPrompt ? (
                       <p className="type-body-sm text-gold-deep mt-2 wrap-break-word">
                         Buy {nextBulkDiscountPrompt.quantityNeeded} more and get{' '}
-                        {formatPercent(nextBulkDiscountPrompt.discountPercent)}%
-                        on each product
+                        {formatPercent(nextBulkDiscountPrompt.discountPercent)}% discount
                       </p>
                     ) : null}
                     {showDiscountAllocations ? (

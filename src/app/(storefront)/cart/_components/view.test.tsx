@@ -129,7 +129,7 @@ describe('CartView', () => {
       />,
     )
 
-    expect(html).toContain('Buy 6 more and get 15% on each product')
+    expect(html).toContain('Buy 6 more and get 15% discount')
     const productHeadingClass =
       html.match(
         /<h3 class="([^"]+)"><a[^>]*>Organic Raw Sticky Chai<\/a><\/h3>/,
@@ -196,7 +196,7 @@ describe('CartView', () => {
       />,
     )
 
-    expect(html).toContain('Buy 5 more and get 10% on each product')
+    expect(html).toContain('Buy 5 more and get 10% discount')
   })
 
   it('does not present a discount when Shopify returns no price break', () => {
