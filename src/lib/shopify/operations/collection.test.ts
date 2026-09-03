@@ -57,7 +57,10 @@ function makeCursorPayload({
   }
 }
 
-function makeProductsPayload(productHandles: string[]) {
+function makeProductsPayload(
+  productHandles: string[],
+  tagsByHandle: Record<string, string[]> = {},
+) {
   return {
     collection: {
       products: {
@@ -73,7 +76,7 @@ function makeProductsPayload(productHandles: string[]) {
             title: `Test Product ${index + 1}`,
             availableForSale: true,
             productType: 'Tea',
-            tags: [],
+            tags: tagsByHandle[handle] ?? [],
             featuredImage: null,
             priceRange: {
               minVariantPrice: {
@@ -172,7 +175,7 @@ describe('Shopify collection pagination operations', () => {
     })
   })
 
-  test('getCollectionPageIndex maps category display pages to the raw index pages containing matches', async () => {
+  test('getCollectionPageIndex paginates category matches, not raw collection pages', async () => {
     const cursors = Array.from(
       { length: 72 },
       (_, index) => `cursor-${index + 1}`,
@@ -201,8 +204,106 @@ describe('Shopify collection pagination operations', () => {
       ),
     ).resolves.toMatchObject({
       totalCount: 2,
-      totalPages: 2,
-      displayPageToRawPage: [1, 3],
+      totalPages: 1,
+      displayPageToRawPage: [1],
+    })
+  })
+
+  test('getCollectionProductsPage merges sparse category matches into one display page', async () => {
+    const cursors = Array.from(
+      { length: 48 },
+      (_, index) => `cursor-${index + 1}`,
+    )
+    const firstRawPageHandles = Array.from({ length: 24 }, (_, index) =>
+      index === 9 ? 'match-one' : `first-${index}`,
+    )
+    const secondRawPageHandles = Array.from({ length: 24 }, (_, index) =>
+      index === 5 ? 'match-two' : `second-${index}`,
+    )
+    const categoryTag = 'categories_Kombucha'
+
+    shopifyFetchMock
+      .mockResolvedValueOnce(
+        makeCursorPayload({
+          cursors,
+          endCursor: 'cursor-48',
+          hasNextPage: false,
+          tagsByCursor: {
+            'cursor-10': [categoryTag],
+            'cursor-30': [categoryTag],
+          },
+        }),
+      )
+      .mockResolvedValueOnce(
+        makeProductsPayload(firstRawPageHandles, {
+          'match-one': [categoryTag],
+        }),
+      )
+      .mockResolvedValueOnce(
+        makeProductsPayload(secondRawPageHandles, {
+          'match-two': [categoryTag],
+        }),
+      )
+
+    await expect(
+      getCollectionProductsPage(
+        'all',
+        1,
+        COLLECTION_PRODUCT_PAGE_SIZE,
+        ProductCollectionSortKeys.CollectionDefault,
+        false,
+        [{ tag: categoryTag }],
+        categoryTag,
+      ),
+    ).resolves.toMatchObject({
+      products: [{ handle: 'match-one' }, { handle: 'match-two' }],
+      pageInfo: { hasNextPage: false },
+    })
+  })
+
+  test('getCollectionProductsPage offsets matches when a display page starts mid-raw-page', async () => {
+    const cursors = Array.from(
+      { length: 48 },
+      (_, index) => `cursor-${index + 1}`,
+    )
+    const categoryTag = 'categories_Kombucha'
+    const secondRawPageHandles = Array.from({ length: 24 }, (_, index) =>
+      index === 0 ? 'match-24' : `other-${index}`,
+    )
+
+    shopifyFetchMock
+      .mockResolvedValueOnce(
+        makeCursorPayload({
+          cursors,
+          endCursor: 'cursor-48',
+          hasNextPage: false,
+          tagsByCursor: Object.fromEntries(
+            cursors.slice(0, 25).map((cursor) => [cursor, [categoryTag]]),
+          ),
+        }),
+      )
+      .mockResolvedValueOnce(
+        makeProductsPayload(secondRawPageHandles, {
+          'match-24': [categoryTag],
+        }),
+      )
+
+    const result = await getCollectionProductsPage(
+      'all',
+      2,
+      COLLECTION_PRODUCT_PAGE_SIZE,
+      ProductCollectionSortKeys.CollectionDefault,
+      false,
+      [{ tag: categoryTag }],
+      categoryTag,
+    )
+    expect(shopifyFetchMock).toHaveBeenLastCalledWith({
+      query: GetCollectionProductsDocument,
+      variables: expect.objectContaining({ after: 'cursor-24' }),
+    })
+    expect(result).toMatchObject({
+      products: [{ handle: 'match-24' }],
+      pageInfo: { hasNextPage: false },
     })
   })
 

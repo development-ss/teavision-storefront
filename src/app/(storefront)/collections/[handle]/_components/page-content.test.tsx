@@ -430,8 +430,8 @@ describe('PageContent category page mapping', () => {
     )
   })
 
-  it('fetches the mapped raw page for category display pages', async () => {
-    // Matches live on raw pages 1 and 3 — display page 2 must fetch raw page 3.
+  it('fetches the requested category display page', async () => {
+    // Category display page 2 is resolved by the category-aware loader.
     shopifyMocks.getCollectionPageIndex.mockResolvedValue(
       pageIndexFixture({
         totalCount: 2,
@@ -455,11 +455,12 @@ describe('PageContent category page mapping', () => {
 
     expect(shopifyMocks.getCollectionProductsPage).toHaveBeenLastCalledWith(
       'dried-herbs',
-      3,
+      2,
       24,
       'COLLECTION_DEFAULT',
       false,
       [{ tag: 'categories_Australian Tea' }],
+      'categories_Australian Tea',
     )
   })
 
@@ -645,11 +646,18 @@ describe('Collection hero and page content rendering', () => {
 
     const element = await PageContent({
       params: Promise.resolve({ handle: 'bulk-tea-bags' }),
-      searchParams: Promise.resolve({}),
+      searchParams: Promise.resolve({
+        q: 'a',
+        sort: 'title-asc',
+        filter: JSON.stringify({ productType: 'Black tea' }),
+      }),
     })
     const html = renderToStaticMarkup(element)
 
     expect(html).toContain('aria-label="You might like collections"')
+    expect(html).toContain(
+      'href="/collections/related-tea?sort=title-asc&amp;filter=%7B%22productType%22%3A%22Black+tea%22%7D&amp;q=a"',
+    )
     expect(html).not.toContain('overflow-y-auto')
     expect(html).not.toContain('overscroll-contain')
     expect(html).not.toContain('lg:sticky')

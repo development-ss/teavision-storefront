@@ -263,6 +263,12 @@ describe('getHref (sort/filter hrefs drop page param)', () => {
     ])
     expect(href).not.toContain('page')
   })
+
+  it('preserves the collection search query when building a filtered href', () => {
+    const href = pageHelpers.getHref('all', 'featured', [], 'a')
+
+    expect(href).toBe('/collections/all?q=a')
+  })
 })
 
 describe('matchCategoryTag', () => {
@@ -285,6 +291,23 @@ describe('matchCategoryTag', () => {
 })
 
 describe('buildCategoryFilter index tag counts', () => {
+  it('preserves sort, filters, and query when building category hrefs', () => {
+    const filter = pageHelpers.buildCategoryFilter({
+      products: [],
+      sourceFilter: null,
+      handle: 'all',
+      selectedCategoryTag: null,
+      sort: 'title-asc',
+      selectedFilters: ['{"productType":"Black tea"}'],
+      query: 'a',
+      indexTagCounts: { 'categories_Black Tea': 2 },
+    })
+
+    expect(filter?.values[0]?.href).toBe(
+      '/collections/all/categories_black-tea?sort=title-asc&filter=%7B%22productType%22%3A%22Black+tea%22%7D&q=a',
+    )
+  })
+
   it('prefers full-index tag counts over first-page product counting', () => {
     const filter = pageHelpers.buildCategoryFilter({
       products: [],
@@ -293,6 +316,7 @@ describe('buildCategoryFilter index tag counts', () => {
       selectedCategoryTag: null,
       sort: 'featured',
       selectedFilters: [],
+      query: 'a',
       indexTagCounts: {
         'categories_All Herbs': 48,
         'categories_Australian Tea': 1,
@@ -301,8 +325,16 @@ describe('buildCategoryFilter index tag counts', () => {
     })
 
     expect(filter?.values).toEqual([
-      expect.objectContaining({ label: 'All Herbs', count: 48 }),
-      expect.objectContaining({ label: 'Australian Tea', count: 1 }),
+      expect.objectContaining({
+        href: '/collections/dried-herbs/categories_all-herbs?q=a',
+        label: 'All Herbs',
+        count: 48,
+      }),
+      expect.objectContaining({
+        href: '/collections/dried-herbs/categories_australian-tea?q=a',
+        label: 'Australian Tea',
+        count: 1,
+      }),
     ])
   })
 
