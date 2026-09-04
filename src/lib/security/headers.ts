@@ -12,7 +12,6 @@ type SecurityHeaderEnvKey =
   | 'NEXT_PUBLIC_META_PIXEL_ID'
   | 'NEXT_PUBLIC_KLAVIYO_PUBLIC_KEY'
   | 'NEXT_PUBLIC_SHOPIFY_PIXEL_ENABLED'
-  | 'NEXT_PUBLIC_ZOTABOX_EMBED_URL'
 
 type SecurityHeaderEnv = Record<string, string | undefined>
 
@@ -65,7 +64,6 @@ export function buildContentSecurityPolicy(
     env,
     'NEXT_PUBLIC_SHOPIFY_PIXEL_ENABLED',
   )
-  const zotaboxEnabled = hasEnvValue(env, 'NEXT_PUBLIC_ZOTABOX_EMBED_URL')
 
   if (ga4Enabled || gtmEnabled) {
     scriptSources.push('https://www.googletagmanager.com')
@@ -93,13 +91,6 @@ export function buildContentSecurityPolicy(
   if (shopifyPixelEnabled) {
     scriptSources.push('https://cdn.shopify.com')
     connectSources.push('https://monorail-edge.shopifysvc.com')
-  }
-
-  if (zotaboxEnabled) {
-    scriptSources.push('https://static.zotabox.com')
-    connectSources.push('https://*.zotabox.com')
-    imgSources.push('https://*.zotabox.com')
-    frameSources.push('https://*.zotabox.com')
   }
 
   return [
