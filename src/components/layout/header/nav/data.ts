@@ -8,6 +8,12 @@ export type NavLink = {
   label: string
 }
 
+export type ServiceLink = NavLink & {
+  imageSrc: string
+  imageAlt: string
+  imageLabel: string
+}
+
 export type ShopSection = {
   key: ShopKey
   name: string
@@ -122,16 +128,49 @@ export const SHOP_SECTIONS = [
 ] satisfies ShopSection[]
 
 export const SERVICES_LINKS = [
-  { href: '/pages/custom-tea-blends', label: 'Custom Tea Blending' },
-  { href: '/pages/private-label-packing', label: 'Private Label Solutions' },
-  { href: '/pages/tea-bag-manufacturer', label: 'Tea Bag Manufacture' },
+  {
+    href: '/pages/custom-tea-blends',
+    label: 'Custom Tea Blending',
+    imageSrc: '/images/navigation/service-custom-blending-render.webp',
+    imageAlt: 'Tea blender mixing loose tea among bowls of botanicals',
+    imageLabel: 'Custom Tea Blending',
+  },
+  {
+    href: '/pages/private-label-packing',
+    label: 'Private Label Solutions',
+    imageSrc: '/images/navigation/service-private-label-render.webp',
+    imageAlt: 'Loose tea being packed into an unbranded pouch on a scale',
+    imageLabel: 'Expert Packing & Private Label',
+  },
+  {
+    href: '/pages/tea-bag-manufacturer',
+    label: 'Tea Bag Manufacture',
+    imageSrc: '/images/navigation/service-tea-bag-manufacture-render.webp',
+    imageAlt: 'Pyramid tea bags on a stainless-steel manufacturing line',
+    imageLabel: 'Tea Bag Manufacturing',
+  },
   {
     href: '/pages/new-product-development-order-form',
     label: 'New Product Development Request',
+    imageSrc: '/images/navigation/service-product-development-render.webp',
+    imageAlt: 'Botanical samples and glassware on a tea development workbench',
+    imageLabel: 'New Product Development',
   },
-  { href: '/pages/bulk-wholesale-supply', label: 'Bulk Wholesale Supply' },
-  { href: '/pages/faq', label: 'FAQ' },
-] satisfies NavLink[]
+  {
+    href: '/pages/bulk-wholesale-supply',
+    label: 'Bulk Wholesale Supply',
+    imageSrc: '/images/navigation/service-bulk-wholesale-render.webp',
+    imageAlt: 'Pallets of bulk ingredient sacks and cartons in a warehouse',
+    imageLabel: 'Bulk Wholesale Supply',
+  },
+  {
+    href: '/pages/faq',
+    label: 'FAQ',
+    imageSrc: '/images/navigation/service-faq-render.webp',
+    imageAlt: 'Golden tea in a ceramic cup and saucer on a sunlit stone table',
+    imageLabel: 'FAQ',
+  },
+] satisfies ServiceLink[]
 
 export const CATALOGUE_LINKS = [
   {
