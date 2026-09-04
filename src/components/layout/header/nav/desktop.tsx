@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils'
 
 import {
   DIRECT_LINKS,
+  SERVICES_LINKS,
   SHOP_SECTIONS,
   getShopKeyForPath,
   isNavLinkActive,
@@ -27,9 +28,9 @@ import { useOutsideClose } from './use-outside-close'
 /** Grace period in ms before the mega panel closes after cursor leaves the trigger or panel. */
 const CLOSE_GRACE_MS = 200
 
-function preloadShopImages() {
-  for (const section of SHOP_SECTIONS) {
-    preload(section.imageSrc, {
+function preloadMenuImages() {
+  for (const { imageSrc } of [...SHOP_SECTIONS, ...SERVICES_LINKS]) {
+    preload(imageSrc, {
       as: 'image',
       fetchPriority: 'low',
       type: 'image/webp',
@@ -51,8 +52,17 @@ export function MegaNav() {
   const activeShop =
     SHOP_SECTIONS.find((section) => section.key === activeShopKey) ??
     SHOP_SECTIONS[0]!
+  const currentServiceHref = SERVICES_LINKS.find((service) =>
+    isNavLinkActive(pathname, service.href),
+  )?.href
+  const [activeServiceHref, setActiveServiceHref] = useState(
+    () => currentServiceHref ?? SERVICES_LINKS[0]!.href,
+  )
+  const activeService =
+    SERVICES_LINKS.find((service) => service.href === activeServiceHref) ??
+    SERVICES_LINKS[0]!
 
-  preloadShopImages()
+  preloadMenuImages()
 
   // Clear the close timer on unmount to prevent state updates on an unmounted component.
   useEffect(() => {
@@ -75,13 +85,16 @@ export function MegaNav() {
       if (key === 'shop' && currentShopKey) {
         setActiveShopKey(currentShopKey)
       }
+      if (key === 'services' && currentServiceHref) {
+        setActiveServiceHref(currentServiceHref)
+      }
       if (clickConfirmedMenuRef.current !== key) {
         clickConfirmedMenuRef.current = null
       }
       hoverOpenedMenuRef.current = key
       setOpenMenu(key)
     },
-    [clearCloseTimer, currentShopKey],
+    [clearCloseTimer, currentShopKey, currentServiceHref],
   )
 
   const toggleMenu = useCallback(
@@ -89,6 +102,9 @@ export function MegaNav() {
       clearCloseTimer()
       if (key === 'shop' && currentShopKey) {
         setActiveShopKey(currentShopKey)
+      }
+      if (key === 'services' && currentServiceHref) {
+        setActiveServiceHref(currentServiceHref)
       }
       setOpenMenu((current) => {
         const wasOpenedByHover = hoverOpenedMenuRef.current === key
@@ -104,7 +120,7 @@ export function MegaNav() {
         return current === key ? null : key
       })
     },
-    [clearCloseTimer, currentShopKey],
+    [clearCloseTimer, currentShopKey, currentServiceHref],
   )
 
   /** Schedule the close after the grace period. Cancelled by openMenuFromHover or keepOpen. */
@@ -222,6 +238,8 @@ export function MegaNav() {
           pathname={pathname}
         />
         <ServicesMegaPanel
+          activeService={activeService}
+          onActiveServiceChange={setActiveServiceHref}
           onClose={closeMenus}
           open={openMenu === 'services'}
           pathname={pathname}

@@ -1,3 +1,6 @@
+import { resolve } from 'node:path'
+
+import sharp from 'sharp'
 import { describe, expect, it } from 'vitest'
 
 import {
@@ -5,6 +8,7 @@ import {
   isNavLinkActive,
   isServicesPath,
   isShopPath,
+  SERVICES_LINKS,
 } from './data'
 
 describe('header navigation active state', () => {
@@ -39,4 +43,38 @@ describe('header navigation active state', () => {
     expect(isServicesPath('/pages/wholesale-account-request')).toBe(false)
     expect(isServicesPath('/pages/contact')).toBe(false)
   })
+})
+
+describe('service menu imagery', () => {
+  it('provides a distinct, labeled image for each existing service destination', () => {
+    expect(SERVICES_LINKS.map((service) => service.href)).toEqual([
+      '/pages/custom-tea-blends',
+      '/pages/private-label-packing',
+      '/pages/tea-bag-manufacturer',
+      '/pages/new-product-development-order-form',
+      '/pages/bulk-wholesale-supply',
+      '/pages/faq',
+    ])
+    expect(
+      new Set(SERVICES_LINKS.map((service) => service.imageSrc)).size,
+    ).toBe(6)
+    for (const service of SERVICES_LINKS) {
+      expect(service.imageAlt).not.toBe('')
+      expect(service.imageLabel).not.toBe('')
+    }
+  })
+
+  it.each(SERVICES_LINKS)(
+    '$label has a square 1024px WebP asset',
+    async (service) => {
+      const metadata = await sharp(
+        resolve('public', service.imageSrc.slice(1)),
+      ).metadata()
+      expect(metadata).toMatchObject({
+        width: 1024,
+        height: 1024,
+        format: 'webp',
+      })
+    },
+  )
 })

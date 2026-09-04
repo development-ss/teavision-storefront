@@ -1,9 +1,9 @@
 import type { ReactNode } from 'react'
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
-import { fireEvent, userEvent } from 'storybook/test'
+import { expect, fireEvent, userEvent, waitFor, within } from 'storybook/test'
 
 import { MegaNav } from './desktop'
-import { SHOP_SECTIONS, type ShopKey } from './data'
+import { SERVICES_LINKS, SHOP_SECTIONS, type ShopKey } from './data'
 import { MobileMegaNav } from './mobile'
 import { MobileServicesPanel } from './services/mobile-panel'
 import { MobileShopPanel } from './shop/mobile-panel'
@@ -28,6 +28,7 @@ const meta: Meta<typeof MegaNav> = {
   tags: ['autodocs'],
   parameters: {
     layout: 'fullscreen',
+    nextjs: { appDirectory: true },
   },
   decorators: [
     (Story) => (
@@ -228,12 +229,67 @@ export const DesktopServicesOpen: Story = {
   render: () => (
     <StoryPanelFrame>
       <ServicesMegaPanel
+        activeService={SERVICES_LINKS[1]!}
+        onActiveServiceChange={noop}
         onClose={noop}
         open
         pathname="/pages/private-label-packing"
       />
     </StoryPanelFrame>
   ),
+}
+
+export const ServiceImagePreviews: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    for (const service of SERVICES_LINKS) {
+      const preload = document.head.querySelector(
+        `link[rel="preload"][as="image"][href="${service.imageSrc}"]`,
+      )
+      await expect(preload).not.toBeNull()
+    }
+    await userEvent.click(canvas.getByRole('button', { name: 'Services' }))
+
+    const panelElement =
+      canvasElement.querySelector<HTMLElement>('#services-menu')
+    if (!panelElement) throw new Error('Services mega panel not found')
+    const panel = within(panelElement)
+
+    for (const service of SERVICES_LINKS) {
+      const link = panel.getByText(service.label, { selector: 'a' })
+      await userEvent.hover(link)
+      await expect(
+        panel.getByRole('img', { name: service.imageAlt }),
+      ).toHaveAttribute('src', service.imageSrc)
+      const image = panel.getByRole<HTMLImageElement>('img', {
+        name: service.imageAlt,
+      })
+      await image.decode()
+      await expect(image.naturalWidth).toBe(1024)
+      await expect(image.naturalHeight).toBe(1024)
+      await expect(image.getBoundingClientRect().width).toBeCloseTo(
+        image.getBoundingClientRect().height,
+        0,
+      )
+      await expect(
+        image.parentElement?.getBoundingClientRect().height,
+      ).toBeCloseTo(image.getBoundingClientRect().height, 0)
+      await expect(
+        panel.getByText(service.imageLabel, { selector: 'p' }),
+      ).toBeVisible()
+    }
+
+    for (const service of [...SERVICES_LINKS].reverse()) {
+      const link = panel.getByText(service.label, { selector: 'a' })
+      link.focus()
+      await waitFor(() => {
+        expect(
+          panel.getByRole('img', { name: service.imageAlt }),
+        ).toHaveAttribute('src', service.imageSrc)
+      })
+      await expect(link).toHaveAttribute('href', service.href)
+    }
+  },
 }
 
 export const MobileShopOpen: Story = {

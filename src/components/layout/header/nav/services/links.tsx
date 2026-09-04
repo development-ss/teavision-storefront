@@ -6,9 +6,11 @@ import { PANEL_LINK_CLASS } from '../styles'
 export function ServicesLinks({
   onClose,
   pathname,
+  onPreview,
 }: {
   onClose: () => void
   pathname: string
+  onPreview?: (href: string) => void
 }) {
   return (
     <div>
@@ -25,6 +27,8 @@ export function ServicesLinks({
               }
               className={PANEL_LINK_CLASS}
               onClick={onClose}
+              onMouseEnter={() => onPreview?.(link.href)}
+              onFocus={() => onPreview?.(link.href)}
             >
               {link.label}
             </Link>
