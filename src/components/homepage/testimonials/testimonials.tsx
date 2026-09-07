@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import { CircleCheck } from 'lucide-react'
 
 import { Eyebrow } from '@/components/ui/eyebrow'
 import { Section } from '@/components/ui/section'
@@ -7,82 +8,90 @@ import type { HomepageContent } from '@/lib/sanity/home-page'
 import { cn } from '@/lib/utils'
 
 import { TESTIMONIALS_FIXTURE } from '../content'
-import { TestimonialsSlider } from './testimonials-slider'
+import { GoogleRating } from '../google-rating'
+import { TestimonialsMarquee } from './marquee'
 
 export type TestimonialsProps = {
   intro?: HomepageContent['testimonials']['intro']
   items?: HomepageContent['testimonials']['items']
 }
 
+function excerpt(quote: string) {
+  if (quote.length <= 220) return quote
+
+  const start = quote.slice(0, 220)
+  const wordBoundary = start.lastIndexOf(' ')
+  return `${start.slice(0, wordBoundary > 0 ? wordBoundary : 220).trimEnd()}…`
+}
+
 export function Testimonials({
   intro = TESTIMONIALS_FIXTURE.intro,
   items = TESTIMONIALS_FIXTURE.items,
 }: TestimonialsProps = {}) {
+  if (items.length === 0) return null
+
   return (
-    <Section.Root tone="inverse">
+    <Section.Root tone="sunken" aria-label="Customer testimonials">
       <Section.Container>
-        <div className="mx-auto max-w-3xl text-center">
-          {intro.eyebrow && (
-            <Eyebrow tone="gold" className="mb-4 justify-center">
-              {intro.eyebrow}
+        <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)] lg:gap-16">
+          <div>
+            <Eyebrow className="text-gold-deep mb-6">
+              {intro.eyebrow || 'Partner perspectives'}
             </Eyebrow>
-          )}
-          <h2 className="type-heading-01 text-paper">{intro.title}</h2>
-          {intro.copy && <p className="text-paper/75 mt-4">{intro.copy}</p>}
+            <h2 className="type-heading-01 text-brand-deep max-w-[20ch]">
+              {intro.title}
+            </h2>
+            {intro.copy && (
+              <p className="text-ink-soft mt-6 max-w-[48ch] text-base leading-relaxed">
+                {intro.copy}
+              </p>
+            )}
+          </div>
+          <GoogleRating />
         </div>
-
-        <TestimonialsSlider slideCount={items.length}>
-          {items.map((testimonial) => (
-            <div
-              key={testimonial.name}
-              className="min-w-0 shrink-0 grow-0 basis-full pl-4"
-              role="group"
-              aria-roledescription="slide"
-              aria-label={`${testimonial.name} testimonial`}
-            >
-              <article className="border-paper/15 mx-auto max-w-5xl border-y py-6 md:py-8">
-                <div className="grid gap-6 md:grid-cols-[9rem_minmax(0,1fr)] md:items-start md:gap-12">
-                  <div className="flex flex-col items-start">
-                    <div className="border-paper/20 bg-paper size-24 shrink-0 overflow-hidden rounded-md border md:size-32">
-                      <Image
-                        src={testimonial.logo.src}
-                        alt={testimonial.logo.alt}
-                        width={testimonial.logo.width}
-                        height={testimonial.logo.height}
-                        sizes="(min-width: 768px) 128px, 96px"
-                        className={cn(
-                          'size-full object-contain',
-                          testimonial.logo.src.includes('st-ali-logo') &&
-                            'scale-[1.55]',
-                        )}
-                      />
-                    </div>
-                    <StarRating rating={5} size="lg" className="mt-4" />
-                  </div>
-
-                  <blockquote>
-                    <p className="text-paper/85 max-w-[70ch] text-base leading-relaxed md:text-[1.04rem]">
-                      {testimonial.quote}
-                    </p>
-                    <footer className="mt-6">
-                      <cite className="not-italic">
-                        <span className="font-display text-paper block text-[1.25rem] leading-tight">
-                          {testimonial.name}
-                        </span>
-                        <span className="text-paper/65 mt-1 block text-sm">
-                          {testimonial.role ? `${testimonial.role}` : null}
-                          {testimonial.role && testimonial.brand ? ', ' : null}
-                          {testimonial.brand ?? null}
-                        </span>
-                      </cite>
-                    </footer>
-                  </blockquote>
-                </div>
-              </article>
-            </div>
-          ))}
-        </TestimonialsSlider>
       </Section.Container>
+
+      <TestimonialsMarquee itemCount={items.length}>
+        {items.map((testimonial, index) => (
+          <li
+            key={`${testimonial.name}-${index}`}
+            className="border-hairline bg-card flex w-[82vw] max-w-96 shrink-0 flex-col gap-6 rounded-lg border p-6 sm:w-96"
+          >
+            <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-4 gap-y-2">
+              <div className="bg-paper row-span-2 size-18 shrink-0 overflow-hidden rounded-md">
+                <Image
+                  src={testimonial.logo.src}
+                  alt={testimonial.logo.alt}
+                  width={testimonial.logo.width}
+                  height={testimonial.logo.height}
+                  sizes="72px"
+                  className={cn(
+                    'size-full object-contain',
+                    testimonial.logo.src.includes('st-ali-logo') &&
+                      'scale-[1.55]',
+                  )}
+                />
+              </div>
+              <div className="min-w-0 self-end">
+                <p className="text-brand-deep font-semibold">
+                  {testimonial.brand || testimonial.name}
+                </p>
+                {testimonial.brand && (
+                  <p className="text-ink-soft text-sm">{testimonial.name}</p>
+                )}
+              </div>
+              <StarRating rating={5} size="lg" className="self-start" />
+            </div>
+            <blockquote className="font-display text-brand-deep text-lg leading-relaxed italic">
+              <p>“{excerpt(testimonial.quote)}”</p>
+            </blockquote>
+            <span className="bg-brand-tint text-brand-deep mt-auto inline-flex items-center gap-1.5 self-start rounded-sm px-2 py-1 text-xs font-semibold">
+              <CircleCheck aria-hidden="true" className="size-3.5" />
+              Verified Customer
+            </span>
+          </li>
+        ))}
+      </TestimonialsMarquee>
     </Section.Root>
   )
 }

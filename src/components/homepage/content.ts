@@ -439,8 +439,8 @@ export const SUPPLY_CHAIN_PROTECTION_FIXTURE = {
 
 export const TESTIMONIALS_FIXTURE = {
   intro: {
-    eyebrow: null,
-    title: 'Teavision Testimonials',
+    eyebrow: 'Partner perspectives',
+    title: 'Trusted by Australia’s leading brands',
     copy: "We're proud to be the trusted tea supplier for Australia's biggest and most loved brands. Our clients value our ability to source fresh, organic ingredients and provide flexible solutions for bulk tea bags, loose tea in bulk, and custom blends.",
   },
   items: [
