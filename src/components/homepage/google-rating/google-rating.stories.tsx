@@ -17,12 +17,13 @@ export const Default: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     await expect(canvas.getByRole('img', { name: 'Google' })).toBeVisible()
-    await expect(canvas.getByText('Verified Rating')).toBeVisible()
+    await expect(canvas.getByText('Customer reviews')).toBeVisible()
     await expect(canvas.getByText('Based on 76 reviews')).toBeVisible()
     const breakdown = canvas.getByRole('list', { name: 'Rating breakdown' })
     await expect(within(breakdown).getAllByRole('listitem')).toHaveLength(5)
-    await expect(within(breakdown).getByText('87%')).toBeVisible()
-    await expect(within(breakdown).getByText('0%')).toBeVisible()
+    await expect(within(breakdown).getByText('97.4%')).toBeVisible()
+    await expect(within(breakdown).getByText('74 reviews')).toBeInTheDocument()
+    await expect(canvas.getByText('7 September 2026')).toBeVisible()
     await expect(
       canvas.getByRole('link', { name: 'Read all reviews on Google' }),
     ).toHaveAttribute(

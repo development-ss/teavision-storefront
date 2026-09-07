@@ -6,8 +6,18 @@ import { Card } from '@/components/ui/card'
 import { StarRating } from '@/components/ui/star-rating'
 import { cn } from '@/lib/utils'
 
-// Distribution supplied in the design reference; the review count is 76.
-const DISTRIBUTION = [87, 9, 3, 1, 0] as const
+// Google Maps review summary verified on 7 September 2026, highest stars first.
+// Source: Teavision, 29 Palladium Cct, Clyde North (REVIEWS_URL below).
+const REVIEW_COUNTS = [74, 1, 0, 0, 1] as const
+const REVIEW_COUNT = REVIEW_COUNTS.reduce<number>(
+  (total, count) => total + count,
+  0,
+)
+const RATING =
+  REVIEW_COUNTS.reduce<number>(
+    (total, count, index) => total + count * (5 - index),
+    0,
+  ) / REVIEW_COUNT
 const REVIEWS_URL =
   'https://www.google.com/maps/search/?api=1&query=Teavision+29+Palladium+Circuit+Clyde+North'
 
@@ -28,24 +38,27 @@ export function GoogleRating() {
           className="h-auto w-23"
         />
         <span className="text-ink-soft text-sm font-semibold">
-          Verified Rating
+          Customer reviews
         </span>
       </div>
 
       <div className="mt-5 flex items-center gap-5">
         <p className="font-display text-brand-deep shrink-0 text-6xl leading-none font-semibold tracking-tight whitespace-nowrap sm:text-7xl">
-          4.9<span className="sr-only"> out of 5</span>
+          {RATING.toFixed(1)}
+          <span className="sr-only"> out of 5</span>
         </p>
         <div className="grid gap-1">
           <div aria-hidden="true">
-            <StarRating rating={5} size="lg" />
+            <StarRating rating={RATING} size="lg" />
           </div>
-          <p className="text-ink-soft text-sm">Based on 76 reviews</p>
+          <p className="text-ink-soft text-sm">
+            Based on {REVIEW_COUNT} reviews
+          </p>
         </div>
       </div>
 
       <ul aria-label="Rating breakdown" className="mt-6 grid gap-2">
-        {DISTRIBUTION.map((percentage, index) => (
+        {REVIEW_COUNTS.map((count, index) => (
           <li
             key={index}
             className="text-ink-soft flex items-center gap-3 text-sm tabular-nums"
@@ -70,7 +83,7 @@ export function GoogleRating() {
                 className="text-paper-3 fill-current"
               />
               <rect
-                width={percentage}
+                width={(count / REVIEW_COUNT) * 100}
                 height="6"
                 rx="3"
                 className={cn(
@@ -79,10 +92,19 @@ export function GoogleRating() {
                 )}
               />
             </svg>
-            <span className="w-8 text-right">{percentage}%</span>
+            <span className="w-12 text-right">
+              {((count / REVIEW_COUNT) * 100).toFixed(1)}%
+            </span>
+            <span className="sr-only">
+              {count} {count === 1 ? 'review' : 'reviews'}
+            </span>
           </li>
         ))}
       </ul>
+
+      <p className="text-ink-soft mt-4 text-xs">
+        Checked <time dateTime="2026-09-07">7 September 2026</time>
+      </p>
 
       <Button
         href={REVIEWS_URL}
