@@ -1,15 +1,18 @@
 import type { Mock } from 'vitest'
+import { cacheTag } from 'next/cache'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 
 import { shopifyFetch } from '@/lib/shopify/client'
 import {
   GetCollectionCursorIndexDocument,
+  GetCollectionNavigationProductsDocument,
   GetCollectionProductsDocument,
   ProductCollectionSortKeys,
 } from '@/lib/shopify/types'
 
 import {
   COLLECTION_PRODUCT_PAGE_SIZE,
+  getCollectionProductLinks,
   getCollectionPageIndex,
   getCollectionProductsPage,
   getCollectionTagCounts,
@@ -114,6 +117,67 @@ function makeProductsPayload(
     },
   }
 }
+
+describe('collection product navigation', () => {
+  beforeEach(() => {
+    shopifyFetchMock.mockReset()
+  })
+
+  test('uses a bounded navigation query, preserves order and handles, and formats names', async () => {
+    shopifyFetchMock.mockResolvedValue({
+      collection: {
+        products: {
+          nodes: [
+            {
+              handle: 'cocoa-15KG',
+              title: 'DUTCH CHOCOLATE COCOA POWDER 15KG',
+            },
+            { handle: 'blue-flower', title: 'BLUE CORNFLOWER (PREMIUM GRADE)' },
+            { handle: 'st-johns', title: 'ST. JOHN’S WORT-CUT' },
+          ],
+        },
+      },
+    })
+
+    await expect(
+      getCollectionProductLinks('herbs-and-spices'),
+    ).resolves.toEqual([
+      {
+        href: '/products/cocoa-15KG',
+        label: 'Dutch Chocolate Cocoa Powder 15kg',
+      },
+      {
+        href: '/products/blue-flower',
+        label: 'Blue Cornflower (Premium Grade)',
+      },
+      { href: '/products/st-johns', label: 'St. John’s Wort-Cut' },
+    ])
+    expect(shopifyFetchMock).toHaveBeenCalledWith({
+      query: GetCollectionNavigationProductsDocument,
+      variables: { handle: 'herbs-and-spices', first: 14 },
+    })
+    expect(cacheTag).toHaveBeenCalledWith(
+      'product',
+      'collection',
+      'collection-herbs-and-spices',
+    )
+  })
+
+  test.each([null, { products: { nodes: [] } }])(
+    'returns no invented links for an empty or missing collection',
+    async (collection) => {
+      shopifyFetchMock.mockResolvedValue({ collection })
+      await expect(getCollectionProductLinks('empty')).resolves.toEqual([])
+    },
+  )
+
+  test('propagates Shopify failures instead of caching an empty menu', async () => {
+    shopifyFetchMock.mockRejectedValue(new Error('Shopify unavailable'))
+    await expect(getCollectionProductLinks('herbs-and-spices')).rejects.toThrow(
+      'Shopify unavailable',
+    )
+  })
+})
 
 describe('Shopify collection pagination operations', () => {
   beforeEach(() => {

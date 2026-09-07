@@ -1,3 +1,14 @@
+query GetCollectionNavigationProducts($handle: String!, $first: Int!) {
+  collection(handle: $handle) {
+    products(first: $first, sortKey: COLLECTION_DEFAULT) {
+      nodes {
+        handle
+        title
+      }
+    }
+  }
+}
+
 query GetCollection($handle: String!) {
   collection(handle: $handle) {
     id

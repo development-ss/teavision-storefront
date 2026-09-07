@@ -6,6 +6,7 @@ import {
   GetCollectionCursorIndexDocument,
   GetCollectionDocument,
   GetCollectionMenuDocument,
+  GetCollectionNavigationProductsDocument,
   GetCollectionProductsDocument,
   GetCollectionSummariesDocument,
   GetCollectionsDocument,
@@ -36,6 +37,28 @@ import {
 
 const SHOPIFY_PAGE_SIZE = 250
 export const COLLECTION_PRODUCT_PAGE_SIZE = 24
+const COLLECTION_NAVIGATION_PRODUCT_LIMIT = 14
+
+/** Small, cached payload for product links in collection navigation. */
+export async function getCollectionProductLinks(
+  handle: string,
+): Promise<{ href: string; label: string }[]> {
+  'use cache'
+  cacheTag('product', 'collection', `collection-${handle}`)
+  cacheLife('hours')
+
+  const data = await shopifyFetch({
+    query: GetCollectionNavigationProductsDocument,
+    variables: { handle, first: COLLECTION_NAVIGATION_PRODUCT_LIMIT },
+  })
+
+  return (data.collection?.products.nodes ?? []).map((product) => ({
+    href: `/products/${product.handle}`,
+    label: product.title
+      .toLowerCase()
+      .replace(/(^|[\s(/-])\p{L}/gu, (match) => match.toUpperCase()),
+  }))
+}
 
 type ShopifyProductSummaryNode = {
   id: string

@@ -563,6 +563,23 @@ export async function createFakeShopifyServer({
       return
     }
 
+    if (operationName === 'GetCollectionNavigationProducts') {
+      const handle = readString(graphqlRequest.variables?.handle)
+      const product = makeCollectionProductNode()
+      writeJson(response, 200, {
+        data: {
+          collection: isFakeCollectionHandle(handle)
+            ? {
+                products: {
+                  nodes: [{ handle: product.handle, title: product.title }],
+                },
+              }
+            : null,
+        },
+      })
+      return
+    }
+
     if (operationName === 'GetCollectionProducts') {
       const handle = readString(graphqlRequest.variables?.handle)
       writeJson(response, 200, {
