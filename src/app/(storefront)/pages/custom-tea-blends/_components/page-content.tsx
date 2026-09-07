@@ -1,5 +1,7 @@
 import { ContactSection } from '@/components/contact/contact-section'
+import { Faq } from '@/components/homepage/faq'
 import { submitContactFormAction } from '@/lib/contact/actions'
+import { getServiceFaqs } from '@/lib/faq/content'
 
 import { BlendDetailsSection } from './blend-details-section'
 import { FlavourPicker } from './flavour-picker'
@@ -19,8 +21,13 @@ export function PageContent() {
       <BlendDetailsSection />
       <QualitySection />
       <ProcessSection />
-      {/* Shared contact section replaces the blend-brief form + FAQ (owner directive) */}
       <ContactSection action={submitContactFormAction} />
+      <Faq
+        title="Custom Tea Blending FAQs"
+        eyebrow={null}
+        description={null}
+        items={getServiceFaqs('custom-tea-blends')}
+      />
     </>
   )
 }

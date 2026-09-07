@@ -1,12 +1,12 @@
 import type { Metadata } from 'next'
 
 import { Faq } from '@/components/homepage/faq'
+import { FAQ_GROUPS } from '@/lib/faq/content'
 import { withNoindexRobots } from '@/lib/seo/noindex'
 
 import { HeroSection } from './_components/hero-section'
 import { JsonLd } from './_components/json-ld'
 import {
-  FAQ_GROUPS,
   FAQ_PAGE_DESCRIPTION,
   FAQ_PAGE_PATH,
   FAQ_PAGE_TITLE,
@@ -37,7 +37,7 @@ export default function Page() {
           eyebrow={null}
           description={null}
           title={group.title}
-          items={group.items}
+          items={[...group.items]}
           tone="surface"
         />
       ))}

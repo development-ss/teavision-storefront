@@ -1,8 +1,10 @@
 import type { Metadata } from 'next'
 
 import { ContactSection } from '@/components/contact/contact-section'
+import { Faq } from '@/components/homepage/faq'
 import { Testimonials } from '@/components/homepage/testimonials'
 import { submitContactFormAction } from '@/lib/contact/actions'
+import { getServiceFaqs } from '@/lib/faq/content'
 import { withNoindexRobots } from '@/lib/seo/noindex'
 
 import { CtaSection } from './_components/cta-section'
@@ -61,6 +63,12 @@ export default function Page() {
       <Testimonials />
       {/* Section 10 — Contact */}
       <ContactSection action={submitContactFormAction} />
+      <Faq
+        title="Tea Bag Manufacturing FAQs"
+        eyebrow={null}
+        description={null}
+        items={getServiceFaqs('tea-bag-manufacturer')}
+      />
     </>
   )
 }

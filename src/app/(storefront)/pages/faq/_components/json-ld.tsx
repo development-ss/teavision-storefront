@@ -1,7 +1,8 @@
+import { FAQ_GROUPS } from '@/lib/faq/content'
 import { serializeInlineJson } from '@/lib/seo/serialize-inline-json'
 import { getSiteUrl } from '@/lib/seo/site-url'
 
-import { FAQ_GROUPS, FAQ_PAGE_PATH, FAQ_PAGE_TITLE } from '../_lib/data'
+import { FAQ_PAGE_PATH, FAQ_PAGE_TITLE } from '../_lib/data'
 
 export function JsonLd() {
   const pageUrl = getSiteUrl(FAQ_PAGE_PATH)

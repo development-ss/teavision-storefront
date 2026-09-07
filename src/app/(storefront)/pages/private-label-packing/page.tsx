@@ -1,7 +1,9 @@
 import type { Metadata } from 'next'
 
 import { ContactSection } from '@/components/contact/contact-section'
+import { Faq } from '@/components/homepage/faq'
 import { submitContactFormAction } from '@/lib/contact/actions'
+import { getServiceFaqs } from '@/lib/faq/content'
 import { withNoindexRobots } from '@/lib/seo/noindex'
 
 import { CapabilitiesSection } from './_components/capabilities-section'
@@ -50,6 +52,12 @@ export default function Page() {
       <TopProductsSection />
       {/* Section 8 — Contact */}
       <ContactSection action={submitContactFormAction} />
+      <Faq
+        title="Private Label FAQs"
+        eyebrow={null}
+        description={null}
+        items={getServiceFaqs('private-label-packing')}
+      />
     </>
   )
 }

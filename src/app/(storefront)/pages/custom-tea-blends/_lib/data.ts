@@ -214,26 +214,3 @@ export const PROCESS_STEPS = [
     description: 'National delivery, export preparation, and 3PL support.',
   },
 ] satisfies TextCard[]
-
-export const FAQS = [
-  {
-    title: 'What are the MOQs?',
-    description:
-      'Typical starting MOQs are 20kg for bulk blends or 1,000-3,000 units depending on retail format.',
-  },
-  {
-    title: 'How long do samples take?',
-    description:
-      'R&D samples are usually ready in 1-3 weeks once the team has your brief.',
-  },
-  {
-    title: 'Can you match a flavour profile we already love?',
-    description:
-      'Yes. Send reference products or tasting notes and Teavision can create options for review.',
-  },
-  {
-    title: 'Do you export?',
-    description:
-      'Yes. The team can support export documentation and global dispatch planning.',
-  },
-] satisfies TextCard[]
