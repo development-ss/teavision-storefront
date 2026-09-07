@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 
@@ -22,8 +23,23 @@ export function Pagination({
   return (
     <nav
       aria-label="Blog pagination"
-      className="border-hairline mt-12 flex items-center justify-center gap-1 border-t pt-8"
+      className="border-hairline mt-12 flex flex-wrap items-center justify-center gap-1 border-t pt-8"
     >
+      {currentPage > 1 && (
+        <Link
+          href={getPaginationHref({
+            activeTag,
+            blogHandle,
+            page: currentPage - 1,
+          })}
+          rel="prev"
+          aria-label="Previous page"
+          className="type-label border-hairline bg-card text-ink hover:bg-brand-tint hover:text-brand focus-visible:ring-ring flex min-h-11 shrink-0 items-center justify-center gap-1 rounded-full border px-4 transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+        >
+          <ChevronLeft className="size-4" aria-hidden="true" />
+          Previous
+        </Link>
+      )}
       {getPaginationItems(currentPage, totalPages).map((item) =>
         typeof item === 'number' ? (
           <Link
@@ -52,6 +68,21 @@ export function Pagination({
             …
           </span>
         ),
+      )}
+      {currentPage < totalPages && (
+        <Link
+          href={getPaginationHref({
+            activeTag,
+            blogHandle,
+            page: currentPage + 1,
+          })}
+          rel="next"
+          aria-label="Next page"
+          className="type-label border-hairline bg-card text-ink hover:bg-brand-tint hover:text-brand focus-visible:ring-ring flex min-h-11 shrink-0 items-center justify-center gap-1 rounded-full border px-4 transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+        >
+          Next
+          <ChevronRight className="size-4" aria-hidden="true" />
+        </Link>
       )}
     </nav>
   )

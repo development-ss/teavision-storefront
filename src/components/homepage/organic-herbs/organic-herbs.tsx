@@ -16,10 +16,7 @@ export function OrganicHerbs({
 }: OrganicHerbsProps) {
   return (
     <Section.Root tone="sunken" spacing="none">
-      <Section.Container
-        variant="base"
-        className="grid items-center gap-10 py-12 md:py-16 lg:grid-cols-2 lg:gap-16 lg:py-20 xl:gap-20"
-      >
+      <Section.Container className="grid items-center gap-10 py-12 md:py-16 lg:grid-cols-2 lg:gap-16 lg:py-20 xl:gap-20">
         <div className="max-w-xl">
           {intro.eyebrow && <Eyebrow className="mb-4">{intro.eyebrow}</Eyebrow>}
           <h2 className="type-heading-02">{intro.title}</h2>
@@ -48,7 +45,7 @@ export function OrganicHerbs({
             src={image.src}
             alt={image.alt}
             fill
-            sizes="(min-width: 1024px) 536px, (min-width: 640px) 576px, calc(100vw - 2.5rem)"
+            sizes="(min-width: 1480px) 628px, (min-width: 1024px) 45vw, (min-width: 640px) 576px, calc(100vw - 2.5rem)"
             className="object-cover object-right"
           />
         </div>

@@ -31,3 +31,17 @@ export const MiddlePageTagged: Story = {
     totalPages: 10,
   },
 }
+
+export const LastPage: Story = {
+  args: {
+    ...Default.args,
+    currentPage: 5,
+  },
+}
+
+export const SinglePage: Story = {
+  args: {
+    ...Default.args,
+    totalPages: 1,
+  },
+}
