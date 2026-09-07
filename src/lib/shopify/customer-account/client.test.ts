@@ -94,6 +94,10 @@ describe('customerAccountFetch', () => {
     vi.stubEnv('NODE_ENV', 'test')
     vi.stubEnv('SHOPIFY_CUSTOMER_ACCOUNT_TEST_MODE', 'true')
     vi.stubEnv('SHOPIFY_CUSTOMER_ACCOUNT_TEST_URL', 'http://127.0.0.1:9011')
+    vi.stubEnv(
+      'SHOPIFY_CUSTOMER_ACCOUNT_REDIRECT_URI',
+      'https://example.test/account/callback',
+    )
   })
 
   afterEach(() => {
