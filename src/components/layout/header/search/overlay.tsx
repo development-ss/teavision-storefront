@@ -45,13 +45,16 @@ export function SearchOverlay({ open, onClose }: SearchOverlayProps) {
     )
     const focusFrame = window.requestAnimationFrame(() => inputEl?.focus())
     const previousOverflow = document.body.style.overflow
+    const hadOverflowHidden = document.body.classList.contains('overflow-hidden')
     document.body.classList.add('overflow-hidden')
 
     return () => {
       window.cancelAnimationFrame(focusFrame)
-      document.body.classList.remove('overflow-hidden')
+      if (!hadOverflowHidden) document.body.classList.remove('overflow-hidden')
       document.body.style.overflow = previousOverflow
-      previousFocusRef.current?.focus()
+      if (previousFocusRef.current?.isConnected) {
+        previousFocusRef.current.focus()
+      }
       previousFocusRef.current = null
     }
   }, [open])
