@@ -50,14 +50,15 @@ export default function Page() {
       <ProcessSection />
       {/* Section 7 — Top 20 Private Label Products */}
       <TopProductsSection />
-      {/* Section 8 — Contact */}
-      <ContactSection action={submitContactFormAction} />
+      {/* Section 8 — FAQs */}
       <Faq
         title="Private Label FAQs"
         eyebrow={null}
         description={null}
         items={getServiceFaqs('private-label-packing')}
       />
+      {/* Section 9 — Contact */}
+      <ContactSection action={submitContactFormAction} />
     </>
   )
 }

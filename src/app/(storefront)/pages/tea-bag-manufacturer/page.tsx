@@ -61,14 +61,15 @@ export default function Page() {
       <ReadyToShipSection />
       {/* Section 9 — Testimonials */}
       <Testimonials />
-      {/* Section 10 — Contact */}
-      <ContactSection action={submitContactFormAction} />
+      {/* Section 10 — FAQs */}
       <Faq
         title="Tea Bag Manufacturing FAQs"
         eyebrow={null}
         description={null}
         items={getServiceFaqs('tea-bag-manufacturer')}
       />
+      {/* Section 11 — Contact */}
+      <ContactSection action={submitContactFormAction} />
     </>
   )
 }
