@@ -25,5 +25,5 @@ export default meta
 
 type Story = StoryObj<typeof SearchTrigger>
 
-/** Default header placement: full width of its container, keyboard hint at lg+. */
+/** Default header placement: full width of its container. */
 export const Default: Story = {}

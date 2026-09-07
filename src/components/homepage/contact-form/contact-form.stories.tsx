@@ -34,9 +34,9 @@ export const Success: Story = {
   args: {},
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    await userEvent.type(canvas.getByLabelText('Name'), 'Buyer')
-    await userEvent.type(canvas.getByLabelText('Email'), 'buyer@example.com')
-    await userEvent.type(canvas.getByLabelText('Message'), 'Please contact me.')
+    await userEvent.type(canvas.getByLabelText(/^Name/), 'Buyer')
+    await userEvent.type(canvas.getByLabelText(/^Email/), 'buyer@example.com')
+    await userEvent.type(canvas.getByLabelText(/^Message/), 'Please contact me.')
     await userEvent.click(canvas.getByRole('button', { name: 'Submit' }))
 
     await expect(await canvas.findByRole('status')).toHaveTextContent(
@@ -51,9 +51,9 @@ export const Error: Story = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    await userEvent.type(canvas.getByLabelText('Name'), 'Buyer')
-    await userEvent.type(canvas.getByLabelText('Email'), 'buyer@example.com')
-    await userEvent.type(canvas.getByLabelText('Message'), 'Please contact me.')
+    await userEvent.type(canvas.getByLabelText(/^Name/), 'Buyer')
+    await userEvent.type(canvas.getByLabelText(/^Email/), 'buyer@example.com')
+    await userEvent.type(canvas.getByLabelText(/^Message/), 'Please contact me.')
     await userEvent.click(canvas.getByRole('button', { name: 'Submit' }))
 
     await expect(await canvas.findByRole('alert')).toHaveTextContent(
@@ -68,9 +68,9 @@ export const Pending: Story = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    await userEvent.type(canvas.getByLabelText('Name'), 'Buyer')
-    await userEvent.type(canvas.getByLabelText('Email'), 'buyer@example.com')
-    await userEvent.type(canvas.getByLabelText('Message'), 'Please contact me.')
+    await userEvent.type(canvas.getByLabelText(/^Name/), 'Buyer')
+    await userEvent.type(canvas.getByLabelText(/^Email/), 'buyer@example.com')
+    await userEvent.type(canvas.getByLabelText(/^Message/), 'Please contact me.')
     await userEvent.click(canvas.getByRole('button', { name: 'Submit' }))
 
     await expect(

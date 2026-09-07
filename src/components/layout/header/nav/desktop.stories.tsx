@@ -296,7 +296,7 @@ export const ServiceImagePreviews: Story = {
       const preload = document.head.querySelector(
         `link[rel="preload"][as="image"][href="${service.imageSrc}"]`,
       )
-      await expect(preload).not.toBeNull()
+      await expect(preload).toBeNull()
     }
     await userEvent.click(canvas.getByRole('button', { name: 'Services' }))
 
