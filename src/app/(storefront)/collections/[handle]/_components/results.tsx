@@ -211,6 +211,7 @@ export async function Results({
     : productsWithRatings
 
   const clearFiltersHref = getHref(handle, sort, [], query)
+  const hasActiveFilters = activeSelectedFilters.length > 0
   const categoryFilter = buildCategoryFilter({
     products: initialProductsResult.products,
     sourceFilter: initialProductsResult.filters.find(isCategoryFilter),
@@ -332,16 +333,26 @@ export async function Results({
             <div>
               <ProductList
                 clearActionLabel={
-                  normalizedQuery ? 'Clear search' : 'Clear filters'
+                  normalizedQuery
+                    ? 'Clear search'
+                    : hasActiveFilters
+                      ? 'Clear filters'
+                      : 'Browse collections'
                 }
                 clearFiltersHref={
-                  normalizedQuery ? clearSearchHref : clearFiltersHref
+                  normalizedQuery
+                    ? clearSearchHref
+                    : hasActiveFilters
+                      ? clearFiltersHref
+                      : '/collections'
                 }
                 currentPage={currentPage}
                 emptyMessage={
                   normalizedQuery
                     ? 'No products on this page match your search.'
-                    : undefined
+                    : hasActiveFilters
+                      ? undefined
+                      : 'No products are available in this collection right now. Browse another collection, or contact us for sourcing help.'
                 }
                 totalPages={normalizedQuery ? 1 : totalPages}
                 buildPageHref={

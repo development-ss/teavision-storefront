@@ -245,6 +245,9 @@ describe('PageContent out-of-range and stale-cursor handling', () => {
     const html = renderToStaticMarkup(element)
 
     expect(html).toContain('No matches')
+    expect(html).toMatch(/href="\/collections"[^>]*>Browse collections<\/a>/)
+    expect(html).toContain('No products are available in this collection')
+    expect(html).not.toContain('Clear filters')
   })
 
   it('renders normally for in-range page with products', async () => {
