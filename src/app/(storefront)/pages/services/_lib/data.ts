@@ -33,7 +33,7 @@ export const SERVICES = [
   {
     copy: "Stay inspired and know what's available. Browse downloadable insights into tea ranges, flavour families, and product options.",
     image: '/images/navigation/shop-tea-render.webp',
-    alt: 'Tea',
+    alt: 'Cup of tea with loose tea leaves and green leaves',
     title: 'Catalogues & Resources',
     href: '/pages/download-catalogues',
   },
