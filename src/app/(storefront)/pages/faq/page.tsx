@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import { Faq } from '@/components/homepage/faq'
 import { FAQ_GROUPS } from '@/lib/faq/content'
 import { withNoindexRobots } from '@/lib/seo/noindex'
+import { cn } from '@/lib/utils'
 
 import { HeroSection } from './_components/hero-section'
 import { JsonLd } from './_components/json-ld'
@@ -30,8 +31,8 @@ export default function Page() {
       <JsonLd />
       {/* Section 1 — Page heading on brand green */}
       <HeroSection />
-      {/* Sections 2-4 — FAQ groups */}
-      {FAQ_GROUPS.map((group) => (
+      {/* FAQ groups */}
+      {FAQ_GROUPS.map((group, index) => (
         <Faq
           key={group.id}
           eyebrow={null}
@@ -39,6 +40,11 @@ export default function Page() {
           title={group.title}
           items={[...group.items]}
           tone="surface"
+          spacing="compact"
+          className={cn(
+            index === 0 && 'pt-section md:pt-section',
+            index === FAQ_GROUPS.length - 1 && 'pb-section md:pb-section',
+          )}
         />
       ))}
     </>
