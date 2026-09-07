@@ -59,10 +59,11 @@ export function ProductPurchaseForm({
   const [quantity, setQuantity] = useState(() =>
     getVariantMinimumQuantity(initialVariant),
   )
-  const { addItem, error, isPending, message, resetFeedback } = useAddToCart({
-    addToCart,
-    onCartChanged,
-  })
+  const { addItem, error, isPending, isReady, message, resetFeedback } =
+    useAddToCart({
+      addToCart,
+      onCartChanged,
+    })
   useEffect(() => {
     if (!message) return
     const timer = setTimeout(resetFeedback, 2500)
@@ -90,10 +91,12 @@ export function ProductPurchaseForm({
     value: quantity,
   })
   const canAddToCart =
+    isReady &&
     !disabled &&
     selectedVariant?.availableForSale === true &&
     (maximumQuantity === undefined || maximumQuantity >= minimumQuantity)
-  const isVariantSelectDisabled = isPending || disabled || !hasAvailableVariant
+  const isVariantSelectDisabled =
+    !isReady || isPending || disabled || !hasAvailableVariant
 
   const isInlineLayout = layout === 'inline'
   const isCardLayout = layout === 'card'

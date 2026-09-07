@@ -5,7 +5,6 @@ import { sealCustomerSession } from '../../src/lib/shopify/customer-account/sess
 import { blockThirdPartyRequests } from '../mocks/third-party-network'
 
 const customerSessionSecret = 'test-session-secret-with-at-least-32-characters'
-const localBaseUrl = `http://127.0.0.1:${process.env.PLAYWRIGHT_PORT ?? '4173'}`
 const fakeShopifyBaseUrl = `http://127.0.0.1:${process.env.FAKE_SHOPIFY_PORT ?? '4517'}`
 const hostedShopifyCheckoutPattern =
   /myshopify\.com\/checkouts|checkout\.shopify\.com/
@@ -19,6 +18,10 @@ async function setCustomerSession(
   accessToken: string,
   customerId = 'gid://shopify/Customer/test-customer-1',
 ) {
+  // Cookies must use the same origin as navigation in both dev and production.
+  const localBaseUrl = test.info().project.use.baseURL
+  if (!localBaseUrl) throw new Error('Playwright baseURL is required')
+
   process.env.SHOPIFY_CUSTOMER_ACCOUNT_SESSION_SECRET = customerSessionSecret
   process.env.SHOPIFY_CUSTOMER_ACCOUNT_TEST_MODE = 'true'
   process.env.SHOPIFY_CUSTOMER_ACCOUNT_API_CLIENT_ID = 'test-client-id'
@@ -42,6 +45,33 @@ async function setCustomerSession(
     },
   ])
 }
+
+test('purchase controls wait for hydration when scripts arrive slowly', async ({
+  page,
+}) => {
+  let releaseScripts = () => undefined as void
+  const scriptsReady = new Promise<void>((resolve) => {
+    releaseScripts = resolve
+  })
+  await page.route('**/_next/static/**/*.js', async (route) => {
+    await scriptsReady
+    await route.continue()
+  })
+
+  try {
+    await page.goto('/products/test-standard-tea', { waitUntil: 'commit' })
+    const addButton = page.getByRole('button', { name: 'Add to Cart' })
+    await expect(addButton).toBeVisible()
+    await expect(addButton).toBeDisabled()
+    releaseScripts()
+    await expect(addButton).toBeEnabled()
+    await addButton.click()
+    await expect(page.getByText('5 added to cart')).toBeVisible()
+  } finally {
+    releaseScripts()
+    await page.unrouteAll({ behavior: 'wait' })
+  }
+})
 
 test('adds a product to cart, updates the cart, removes it, and exposes only fake checkout handoff', async ({
   page,
@@ -80,6 +110,11 @@ test('adds a product to cart, updates the cart, removes it, and exposes only fak
   await expect(
     page.getByRole('spinbutton', { name: 'Quantity of Test Standard Tea' }),
   ).toHaveValue('10')
+  // The input updates optimistically; wait for the server-confirmed summary
+  // before reloading so navigation cannot interrupt the quantity mutation.
+  await expect(
+    page.getByRole('complementary', { name: 'Order summary' }),
+  ).toContainText('10 items')
   await page.reload()
   await expect(page.getByText('10 items', { exact: true }).last()).toBeVisible()
   await expect(page.getByRole('list', { name: 'Cart items' })).toContainText(

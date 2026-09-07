@@ -138,11 +138,18 @@ export function ProductQuickView({
       : 1,
   )
   const [isLoading, setIsLoading] = useState(false)
-  const { addItem, error, isPending, message, reportError, resetFeedback } =
-    useAddToCart({
-      addToCart,
-      getSuccessMessage: () => 'Added to cart',
-    })
+  const {
+    addItem,
+    error,
+    isPending,
+    isReady,
+    message,
+    reportError,
+    resetFeedback,
+  } = useAddToCart({
+    addToCart,
+    getSuccessMessage: () => 'Added to cart',
+  })
 
   const selectedVariant = useMemo(() => {
     if (!productData) return null
@@ -348,7 +355,7 @@ export function ProductQuickView({
                         <ToggleButton
                           key={variant.id}
                           pressed={selectedVariantId === variant.id}
-                          disabled={isPending}
+                          disabled={!isReady || isPending}
                           aria-label={`${displayTitle}${!variant.availableForSale ? ', sold out' : ''}`}
                           className={cn(
                             'border-hairline bg-card text-ink hover:border-ink-faint aria-pressed:border-brand aria-pressed:bg-brand-tint aria-pressed:text-ink min-w-23 flex-col rounded-sm border-[1.5px] px-4.5 py-3 text-center transition-colors',
@@ -383,7 +390,7 @@ export function ProductQuickView({
                   min={minimumQuantity}
                   max={maximumQuantity}
                   step={quantityIncrement}
-                  disabled={isPending || !canAddToCart}
+                  disabled={!isReady || isPending || !canAddToCart}
                   label={`Quantity for ${productData.title}`}
                   className="justify-self-start"
                 />
@@ -396,7 +403,10 @@ export function ProductQuickView({
                   size="lg"
                   isLoading={isPending}
                   disabled={
-                    !canAddToCart || !canUseSelectedVariantQuantity || isPending
+                    !isReady ||
+                    !canAddToCart ||
+                    !canUseSelectedVariantQuantity ||
+                    isPending
                   }
                   onClick={handleAddToCart}
                 >

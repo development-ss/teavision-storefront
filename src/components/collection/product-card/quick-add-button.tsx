@@ -16,7 +16,8 @@ export function QuickAddButton({
   productTitle,
   variantId,
 }: QuickAddButtonProps) {
-  const { addItem, error, isPending, message, resetFeedback } = useAddToCart()
+  const { addItem, error, isPending, isReady, message, resetFeedback } =
+    useAddToCart()
   const justAdded = !!message && !isPending
 
   useEffect(() => {
@@ -32,7 +33,7 @@ export function QuickAddButton({
         variant="primary"
         size="sm"
         onClick={() => addItem(variantId, 1)}
-        disabled={isPending || justAdded}
+        disabled={!isReady || isPending || justAdded}
         isLoading={isPending}
         className="w-full"
         aria-label={

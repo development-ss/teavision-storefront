@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useSyncExternalStore } from 'react'
 import { useRouter } from 'next/navigation'
 
 import { addToCartAction } from '@/lib/cart/actions'
@@ -21,6 +21,9 @@ type UseAddToCartOptions = {
 }
 
 const DEFAULT_ERROR = 'Unable to add to cart. Please try again.'
+const subscribeToHydration = () => () => undefined
+const clientReady = () => true
+const serverReady = () => false
 
 export function useAddToCart({
   addToCart = addToCartAction,
@@ -29,6 +32,12 @@ export function useAddToCart({
   onCartChanged,
 }: UseAddToCartOptions = {}) {
   const router = useRouter()
+  // Server HTML must not accept clicks before React attaches event handlers.
+  const isReady = useSyncExternalStore(
+    subscribeToHydration,
+    clientReady,
+    serverReady,
+  )
   const [isPending, setIsPending] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -78,6 +87,7 @@ export function useAddToCart({
     addItem,
     error,
     isPending,
+    isReady,
     message,
     reportError,
     resetFeedback,

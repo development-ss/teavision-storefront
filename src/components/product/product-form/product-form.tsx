@@ -106,12 +106,19 @@ export function ProductForm({
     number | null
   >(null)
   const [pendingAdd, setPendingAdd] = useState<PendingAdd | null>(null)
-  const { addItem, error, isPending, message, reportError, resetFeedback } =
-    useAddToCart({
-      addToCart,
-      getErrorMessage: getAddToCartErrorMessage,
-      onCartChanged,
-    })
+  const {
+    addItem,
+    error,
+    isPending,
+    isReady,
+    message,
+    reportError,
+    resetFeedback,
+  } = useAddToCart({
+    addToCart,
+    getErrorMessage: getAddToCartErrorMessage,
+    onCartChanged,
+  })
 
   const selectedVariant = variants.find((v) => v.id === selectedVariantId)
   const canAddToCart = selectedVariant?.availableForSale === true
@@ -234,7 +241,7 @@ export function ProductForm({
                 <ToggleButton
                   key={v.id}
                   pressed={isSelected}
-                  disabled={!v.availableForSale}
+                  disabled={!isReady || !v.availableForSale}
                   aria-label={`${displayTitle}${!v.availableForSale ? ', out of stock' : ''}`}
                   className={cn(
                     'border-hairline bg-card text-ink hover:border-ink-faint aria-pressed:border-brand aria-pressed:bg-brand-tint aria-pressed:text-ink min-w-23 flex-col rounded-sm border-[1.5px] px-4.5 py-3.25 text-center transition-colors',
@@ -293,7 +300,7 @@ export function ProductForm({
           min={minimumQuantity}
           max={maximumQuantity}
           step={quantityIncrement}
-          disabled={!canAddToCart || isPending}
+          disabled={!isReady || !canAddToCart || isPending}
           describedBy={[
             error ? quantityErrorId : null,
             maximumQuantity !== undefined ? quantityLimitId : null,
@@ -309,7 +316,10 @@ export function ProductForm({
             onClick={() => addQuantityToCart(effectiveQuantity, 'primary')}
             isLoading={isPending && pendingAdd?.source === 'primary'}
             disabled={
-              !canAddToCart || !canUseSelectedVariantQuantity || isPending
+              !isReady ||
+              !canAddToCart ||
+              !canUseSelectedVariantQuantity ||
+              isPending
             }
             size="lg"
             className="w-full"
@@ -376,7 +386,7 @@ export function ProductForm({
           selectedTierQuantity={selectedBulkTierQuantity}
           maximumQuantity={maximumQuantity}
           canAddToCart={canAddToCart && bulkDealQuantity !== null}
-          disabled={isPending}
+          disabled={!isReady || isPending}
           isPending={isPending && pendingAdd?.source === 'bulk'}
           onGrabDeal={handleGrabDeal}
           onSelectTier={handleSelectBulkTier}
