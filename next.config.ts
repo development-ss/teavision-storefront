@@ -1,5 +1,5 @@
 import type { NextConfig } from 'next'
-import { withSentryConfig } from '@sentry/nextjs'
+import { withSentryConfig } from '@sentry/nextjs/config'
 
 import { getPolicyRedirects } from './src/lib/legal/policies'
 import { CANONICAL_BLOG_LISTING_PATH } from './src/lib/blog/paths'
