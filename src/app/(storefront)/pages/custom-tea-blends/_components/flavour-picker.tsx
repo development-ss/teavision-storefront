@@ -75,18 +75,26 @@ export function FlavourPicker() {
               team. Continue to the contact brief when you&rsquo;re ready to
               share the direction.
             </p>
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-              <Button href={briefHref} variant="secondary">
-                Continue to Brief
-                <ArrowRight className="size-4" aria-hidden="true" />
-              </Button>
+            <div className="mt-6">
+              <h3 className="type-label text-ink">How it works</h3>
+              <ol className="type-body-sm text-ink-soft mt-3 list-decimal space-y-2 pl-5">
+                <li>Tick your flavour notes.</li>
+                <li>Continue to the brief.</li>
+                <li>Our team picks it up from there.</li>
+              </ol>
             </div>
           </div>
 
           <div className="border-hairline-2 bg-card rounded-lg border p-4 sm:p-5">
-            <label htmlFor="flavour-search" className="type-label text-ink">
-              Search Flavours
-            </label>
+            <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+              <label htmlFor="flavour-search" className="type-label text-ink">
+                Search Flavours
+              </label>
+              <p className="type-body-sm text-ink-soft tabular-nums">
+                {selectedFlavours.length} /{' '}
+                {CUSTOM_TEA_BLEND_LIMITS.maxFlavours} selected
+              </p>
+            </div>
             <div className="focus-within:ring-ring border-hairline bg-card mt-2 flex min-h-12 items-center gap-3 rounded-sm border px-3 focus-within:ring-2 focus-within:ring-offset-2">
               <Search
                 className="text-ink-faint size-4 shrink-0"
@@ -97,6 +105,7 @@ export function FlavourPicker() {
                 type="search"
                 inputMode="search"
                 autoComplete="off"
+                aria-describedby="flavour-limit-hint"
                 name="flavourSearch"
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
@@ -104,8 +113,20 @@ export function FlavourPicker() {
                 className="type-body text-ink placeholder:text-ink-faint min-w-0 flex-1 border-0 bg-transparent outline-none"
               />
             </div>
+            <p
+              id="flavour-limit-hint"
+              className="type-body-sm text-ink-soft mt-2"
+            >
+              Tick up to {CUSTOM_TEA_BLEND_LIMITS.maxFlavours} flavours.
+            </p>
 
             <div className="mt-4" aria-live="polite">
+              {hasReachedLimit ? (
+                <p className="type-body-sm text-brand mb-3 font-medium">
+                  Maximum of {CUSTOM_TEA_BLEND_LIMITS.maxFlavours} flavours
+                  reached. Remove one to add another.
+                </p>
+              ) : null}
               {selectedFlavours.length > 0 ? (
                 <ul className="flex flex-wrap gap-2" role="list">
                   {selectedFlavours.map((flavour) => (
@@ -132,8 +153,8 @@ export function FlavourPicker() {
 
             <div className="mt-5 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
               {flavourGroups.map((group) => (
-                <div key={group.name} className="min-w-0">
-                  <p className="type-label text-ink">{group.name}</p>
+                <fieldset key={group.name} className="min-w-0">
+                  <legend className="type-label text-ink">{group.name}</legend>
                   <div className="mt-3 grid gap-2">
                     {group.options.map((flavour) => {
                       const isSelected = selectedFlavours.includes(flavour)
@@ -160,7 +181,7 @@ export function FlavourPicker() {
                       )
                     })}
                   </div>
-                </div>
+                </fieldset>
               ))}
             </div>
 
@@ -169,9 +190,24 @@ export function FlavourPicker() {
                 No matching flavours. Try another flavour note.
               </p>
             ) : null}
-            <p className="type-body-sm text-ink-soft mt-5">
-              Choose up to {CUSTOM_TEA_BLEND_LIMITS.maxFlavours} flavours.
-            </p>
+            <div className="border-hairline mt-6 border-t pt-5">
+              <p id="flavour-brief-hint" className="type-body-sm text-ink-soft">
+                {selectedFlavours.length === 0
+                  ? 'Tick flavours above to share your direction with our team, or continue without them.'
+                  : `${selectedFlavours.length} ${selectedFlavours.length === 1 ? 'flavour' : 'flavours'} ready to include in your brief.`}
+              </p>
+              <Button
+                href={briefHref}
+                variant={selectedFlavours.length > 0 ? 'primary' : 'secondary'}
+                aria-describedby="flavour-brief-hint"
+                className="mt-3 w-full sm:w-auto"
+              >
+                {selectedFlavours.length === 0
+                  ? 'Continue without flavours'
+                  : `Continue to Brief (${selectedFlavours.length})`}
+                <ArrowRight className="size-4 shrink-0" aria-hidden="true" />
+              </Button>
+            </div>
           </div>
         </div>
       </Section.Container>
