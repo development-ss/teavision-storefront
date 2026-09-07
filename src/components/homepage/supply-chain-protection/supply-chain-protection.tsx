@@ -12,7 +12,7 @@ export function SupplyChainProtection({
   marks,
 }: SupplyChainProtectionProps) {
   return (
-    <Section.Root tone="surface">
+    <Section.Root tone="sunken">
       <Section.Container>
         <div className="mx-auto max-w-200 text-center">
           {intro.eyebrow && (
