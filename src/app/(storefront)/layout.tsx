@@ -3,9 +3,11 @@ import { Suspense } from 'react'
 import { AnalyticsDestinationLoader } from '@/components/analytics/destination-loader'
 import { ConsentBanner } from '@/components/consent/banner'
 import { Footer } from '@/components/layout/footer'
-import { Header } from '@/components/layout/header'
+import { Header as HeaderView } from '@/components/layout/header'
 import { NewsletterPopup } from '@/components/layout/newsletter-popup'
 import { sendNewsletterSignupFormAction } from '@/lib/contact/actions'
+
+import { Header } from './_components/header'
 
 export default function StorefrontLayout({
   children,
@@ -20,7 +22,9 @@ export default function StorefrontLayout({
       >
         Skip to main content
       </a>
-      <Header />
+      <Suspense fallback={<HeaderView />}>
+        <Header />
+      </Suspense>
       <main id="main-content" tabIndex={-1} className="flex-1">
         {children}
       </main>
