@@ -68,6 +68,14 @@ export const LEGAL_ROUTE_EXPECTATIONS = LEGAL_POLICIES.map(
 
 export const STATIC_LAUNCH_ROUTE_EXPECTATIONS = [
   {
+    path: '/pages/services',
+    expectedStatus: 200,
+    canonicalPath: '/pages/services',
+    shouldIndexWhenEnabled: true,
+    shouldAppearInSitemap: true,
+    checks: INDEXABLE_PAGE_CHECKS,
+  },
+  {
     path: '/',
     expectedStatus: 200,
     canonicalPath: '/',
