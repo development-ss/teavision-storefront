@@ -8,6 +8,7 @@ import type { HomepageContent } from '@/lib/sanity/home-page'
 import { ContactSectionForm } from '../contact-section-form'
 
 type ContactSectionProps = {
+  className?: string
   action: (formData: FormData) => Promise<ContactActionResult>
   intro?: HomepageContent['contact']['intro']
   methods?: HomepageContent['contact']['methods']
@@ -37,12 +38,13 @@ const DEFAULT_CONTACT_METHODS = [
 ] satisfies HomepageContent['contact']['methods']
 
 export function ContactSection({
+  className,
   action,
   intro = DEFAULT_CONTACT_INTRO,
   methods = DEFAULT_CONTACT_METHODS,
 }: ContactSectionProps) {
   return (
-    <Section.Root id="need-help" tone="inverse">
+    <Section.Root id="need-help" tone="inverse" className={className}>
       <Section.Container className="grid gap-10 lg:grid-cols-2 lg:items-start">
         <div>
           {intro.eyebrow && <Eyebrow tone="gold">{intro.eyebrow}</Eyebrow>}
