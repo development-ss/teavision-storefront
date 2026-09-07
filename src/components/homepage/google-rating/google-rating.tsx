@@ -102,10 +102,6 @@ export function GoogleRating() {
         ))}
       </ul>
 
-      <p className="text-ink-soft mt-4 text-xs">
-        Checked <time dateTime="2026-09-07">7 September 2026</time>
-      </p>
-
       <Button
         href={REVIEWS_URL}
         variant="secondary"

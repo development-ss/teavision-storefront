@@ -23,7 +23,6 @@ export const Default: Story = {
     await expect(within(breakdown).getAllByRole('listitem')).toHaveLength(5)
     await expect(within(breakdown).getByText('97.4%')).toBeVisible()
     await expect(within(breakdown).getByText('74 reviews')).toBeInTheDocument()
-    await expect(canvas.getByText('7 September 2026')).toBeVisible()
     await expect(
       canvas.getByRole('link', { name: 'Read all reviews on Google' }),
     ).toHaveAttribute(
