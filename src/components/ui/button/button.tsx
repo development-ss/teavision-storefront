@@ -28,8 +28,6 @@ const buttonVariants = cva(
           'bg-ink text-paper hover:bg-ink-deep active:bg-ink-deep hover:-translate-y-0.5',
         secondary:
           'border-[1.5px] border-hairline bg-transparent text-ink hover:border-ink hover:bg-ink hover:text-paper',
-        googleReviews:
-          'rounded-lg border border-hairline bg-transparent text-google hover:border-google hover:bg-paper',
         danger:
           'bg-danger text-paper hover:bg-danger/90 active:bg-danger focus-visible:ring-danger hover:-translate-y-0.5',
         inverse: 'bg-paper text-ink hover:-translate-y-0.5 hover:shadow-2',

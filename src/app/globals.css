@@ -42,7 +42,6 @@
   --color-gold-deep: oklch(53% 0.088 70);
   --color-gold-tint: oklch(94% 0.034 84);
   --color-rating: oklch(82% 0.16 85);
-  --color-google: #1967d2;
 
   /* Functional feedback */
   --color-danger: oklch(45% 0.13 30);

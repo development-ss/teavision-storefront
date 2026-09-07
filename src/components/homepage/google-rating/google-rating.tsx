@@ -2,6 +2,7 @@ import Image from 'next/image'
 import { ArrowRight, Star } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
 import { StarRating } from '@/components/ui/star-rating'
 import { cn } from '@/lib/utils'
 
@@ -12,9 +13,11 @@ const REVIEWS_URL =
 
 export function GoogleRating() {
   return (
-    <aside
+    <Card
+      as="aside"
+      padding="lg"
       aria-label="Google rating summary"
-      className="bg-card border-hairline shadow-1 w-full max-w-md rounded-2xl border p-6 sm:p-8"
+      className="w-full max-w-md"
     >
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
         <Image
@@ -83,13 +86,13 @@ export function GoogleRating() {
 
       <Button
         href={REVIEWS_URL}
-        variant="googleReviews"
-        size="field"
+        variant="secondary"
+        size="sm"
         className="mt-6 w-full"
       >
-        Read all reviews on Google
+        <span className="whitespace-normal">Read all reviews on Google</span>
         <ArrowRight aria-hidden="true" className="size-4 shrink-0" />
       </Button>
-    </aside>
+    </Card>
   )
 }

@@ -14,7 +14,6 @@ const meta: Meta<typeof Button> = {
         'brand',
         'primary',
         'secondary',
-        'googleReviews',
         'danger',
         'inverse',
         'inverseSecondary',
