@@ -46,11 +46,11 @@ test('launch-critical AVIF assets stay within byte budgets', async () => {
   }
 })
 
-test('home uses its original source and fake Shopify uses its launch AVIF', async () => {
+test('home uses its regenerated source and fake Shopify uses its launch AVIF', async () => {
   const homeContent = await readSource('src/components/homepage/content.ts')
   const fakeShopify = await readSource('tests/mocks/shopify-graphql-server.ts')
 
-  assert.match(homeContent, /homepage-hero-tea-harvest\.png/)
+  assert.match(homeContent, /hero-still-life-v2\.png/)
   assert.match(fakeShopify, /bulk-wholesale-lcp\.avif/)
 })
 
