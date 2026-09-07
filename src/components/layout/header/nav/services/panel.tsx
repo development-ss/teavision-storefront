@@ -34,9 +34,9 @@ export function ServicesMegaPanel({
               concept to shelf.
             </p>
             <Link
-              href="/pages/wholesale"
+              href="/pages/services"
               aria-current={
-                pathname === '/pages/wholesale' ? 'page' : undefined
+                pathname === '/pages/services' ? 'page' : undefined
               }
               onClick={onClose}
               className="focus-visible:ring-ring type-label border-hairline text-ink hover:border-brand hover:text-brand aria-[current=page]:border-brand aria-[current=page]:text-brand mt-2 inline-flex items-center gap-2 self-start border-b-[1.5px] pb-1 transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
