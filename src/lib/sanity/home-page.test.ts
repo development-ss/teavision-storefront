@@ -330,29 +330,18 @@ describe('getHomepage', () => {
     expect(homepage.organicHerbs.image.src).toBe(
       'https://cdn.sanity.io/images/project/dataset/organic-herbs.jpg',
     )
-    expect(getSanityImageUrl).not.toHaveBeenCalledWith(
-      expect.objectContaining({
-        asset: expect.objectContaining({ _id: 'image-hero' }),
-      }),
-      expect.anything(),
+    expect(homepage.productRange.cards[0]?.image.src).toBe(
+      'https://cdn.sanity.io/images/project/dataset/card-0.jpg',
     )
-    expect(getSanityImageUrl).not.toHaveBeenCalledWith(
-      expect.objectContaining({
-        asset: expect.objectContaining({ _id: 'image-organic-herbs' }),
-      }),
-      expect.anything(),
+    expect(homepage.supplyChainProtection.marks[0]?.src).toBe(
+      'https://cdn.sanity.io/images/project/dataset/mark-0.jpg',
     )
+    expect(getSanityImageUrl).toHaveBeenCalledTimes(1)
     expect(getSanityImageUrl).toHaveBeenCalledWith(
       expect.objectContaining({
-        asset: expect.objectContaining({ _id: 'image-card-0' }),
+        asset: expect.objectContaining({ _id: 'image-og' }),
       }),
-      { fit: 'max', quality: 75, width: 900 },
-    )
-    expect(getSanityImageUrl).toHaveBeenCalledWith(
-      expect.objectContaining({
-        asset: expect.objectContaining({ _id: 'image-mark-0' }),
-      }),
-      { fit: 'max', quality: 75, width: 640 },
+      { fit: 'max', quality: 75, width: 1200 },
     )
   })
 

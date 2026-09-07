@@ -26,16 +26,7 @@ import type {
 } from '@/lib/sanity/types'
 import { getCollectionDisplayTitle } from '@/lib/shopify/collection-title'
 
-const IMAGE_OPTIONS_CARD: SanityImageUrlOptions = {
-  fit: 'max',
-  quality: 75,
-  width: 900,
-}
-const IMAGE_OPTIONS_MARK: SanityImageUrlOptions = {
-  fit: 'max',
-  quality: 75,
-  width: 640,
-}
+// Social platforms fetch this URL directly, without Next/Image optimization.
 const IMAGE_OPTIONS_OG: SanityImageUrlOptions = {
   fit: 'max',
   quality: 75,
@@ -258,7 +249,7 @@ function requireImageDimensions(
 function reshapeImage(
   image: SanityImageWithAlt | null,
   path: string,
-  options: SanityImageUrlOptions | 'original',
+  options?: SanityImageUrlOptions,
 ): HomepageImage {
   const requiredImage = requireObject(image, path)
   const source = requireObject(requiredImage.image, `${path}.image`)
@@ -270,12 +261,11 @@ function reshapeImage(
 
   const alt = requireString(requiredImage.alt, `${path}.alt`)
   const { width, height } = requireImageDimensions(requiredImage, path)
+  // Use the Sanity upload by default; only direct social previews need a transform.
   const src =
-    options === 'original'
-      ? asset.url
-      : asset._id
-        ? getSanityImageUrl(source as SanityImageSource, options)
-        : asset.url
+    options && asset._id
+      ? getSanityImageUrl(source as SanityImageSource, options)
+      : asset.url
 
   if (!src) fail(`${path}.image.asset.url`, 'image URL is required')
 
@@ -291,7 +281,7 @@ function reshapeImage(
 function reshapeOptionalImage(
   image: SanityImageWithAlt | null | undefined,
   path: string,
-  options: SanityImageUrlOptions,
+  options?: SanityImageUrlOptions,
 ): HomepageImage | null {
   return image ? reshapeImage(image, path, options) : null
 }
@@ -302,7 +292,7 @@ function reshapeProofPoint(
 ): HomepageProofPoint {
   const path = `hero.proofPoints[${index}]`
   const image = point.image
-    ? reshapeImage(point.image, `${path}.image`, IMAGE_OPTIONS_MARK)
+    ? reshapeImage(point.image, `${path}.image`)
     : undefined
   const icon = optionalString(point.iconKey) ?? undefined
 
@@ -320,11 +310,7 @@ function reshapeImageCard(
   card: SanityHomeImageCard,
   path: string,
 ): HomepageImageCard {
-  const badge = reshapeOptionalImage(
-    card.badge,
-    `${path}.badge`,
-    IMAGE_OPTIONS_MARK,
-  )
+  const badge = reshapeOptionalImage(card.badge, `${path}.badge`)
   const body = optionalString(card.body)
   const href = requireHref(card.href, `${path}.href`)
   const title = requireString(card.title, `${path}.title`)
@@ -334,7 +320,7 @@ function reshapeImageCard(
       ? getCollectionDisplayTitle(title)
       : title,
     href,
-    image: reshapeImage(card.image, `${path}.image`, IMAGE_OPTIONS_CARD),
+    image: reshapeImage(card.image, `${path}.image`),
     action: requireString(card.action, `${path}.action`),
     ...(badge ? { badge } : {}),
     ...(body ? { body } : {}),
@@ -353,14 +339,8 @@ function reshapeHero(hero: SanityHomeHero | null): HomepageContent['hero'] {
       ...cta,
       href: cta.href === '/collections' ? '#product-range' : cta.href,
     },
-    // Keep the CMS upload as the single high-quality master. Next/Image owns
-    // responsive sizing and final AVIF/WebP encoding for this LCP asset.
-    image: reshapeImage(requiredHero.image, 'hero.image', 'original'),
-    trustMarks: reshapeImage(
-      requiredHero.trustMarks,
-      'hero.trustMarks',
-      IMAGE_OPTIONS_MARK,
-    ),
+    image: reshapeImage(requiredHero.image, 'hero.image'),
+    trustMarks: reshapeImage(requiredHero.trustMarks, 'hero.trustMarks'),
     proofPoints: requireArray(requiredHero.proofPoints, 'hero.proofPoints').map(
       reshapeProofPoint,
     ),
@@ -386,7 +366,7 @@ function reshapeTestimonial(
   const path = `testimonials.items[${index}]`
 
   return {
-    logo: reshapeImage(testimonial.logo, `${path}.logo`, IMAGE_OPTIONS_MARK),
+    logo: reshapeImage(testimonial.logo, `${path}.logo`),
     name: requireString(testimonial.name, `${path}.name`),
     role: optionalString(testimonial.role),
     brand: optionalString(testimonial.brand),
@@ -497,13 +477,7 @@ function reshapeHomepage(data: SanityHomePageResult): HomepageContent {
     },
     organicHerbs: {
       intro: reshapeSection(organicHerbs.intro, 'organicHerbs.intro'),
-      // Preserve the square CMS master so Next/Image can select a sharp,
-      // responsive derivative without first inheriting a 900px lossy resize.
-      image: reshapeImage(
-        organicHerbs.image,
-        'organicHerbs.image',
-        'original',
-      ),
+      image: reshapeImage(organicHerbs.image, 'organicHerbs.image'),
       checklist: requireArray(
         organicHerbs.checklist,
         'organicHerbs.checklist',
@@ -531,11 +505,7 @@ function reshapeHomepage(data: SanityHomePageResult): HomepageContent {
         supplyChainProtection.marks,
         'supplyChainProtection.marks',
       ).map((mark, index) =>
-        reshapeImage(
-          mark,
-          `supplyChainProtection.marks[${index}]`,
-          IMAGE_OPTIONS_MARK,
-        ),
+        reshapeImage(mark, `supplyChainProtection.marks[${index}]`),
       ),
     },
     testimonials: {
