@@ -1,4 +1,5 @@
 import { Section } from '@/components/ui/section'
+import { Eyebrow } from '@/components/ui/eyebrow'
 import type { PaginatedArticles } from '@/lib/blog/operations'
 
 import { ArticleList } from '../article-list'
@@ -30,7 +31,16 @@ export function ArticleResults({
   return (
     <Section.Root tone="sunken" className={className}>
       <Section.Container>
-        <Section.Intro align="left" eyebrow="Tea Journal" title={heading} />
+        <div className="max-w-prose">
+          <Eyebrow className="mb-4">Tea Journal</Eyebrow>
+          <h2
+            id="articles"
+            tabIndex={-1}
+            className="type-heading-01 focus-visible:ring-ring scroll-mt-34 rounded-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none lg:scroll-mt-46"
+          >
+            {heading}
+          </h2>
+        </div>
 
         <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -51,6 +61,14 @@ export function ArticleResults({
           activeTag={activeTag}
           blogHandle={blogHandle}
           tags={tags}
+        />
+
+        <Pagination
+          activeTag={activeTag}
+          blogHandle={blogHandle}
+          currentPage={paginated.currentPage}
+          totalPages={paginated.totalPages}
+          variant="compact"
         />
 
         {paginated.totalArticles === 0 ? (

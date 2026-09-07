@@ -37,9 +37,11 @@ export function getPaginationHref({
   blogHandle: string
   page: number
 }) {
-  return getListingHref({
+  const path = getListingHref({
     activeTag,
     blogHandle,
     page,
   })
+
+  return `${path}#articles`
 }

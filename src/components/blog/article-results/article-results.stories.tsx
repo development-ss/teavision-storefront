@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
+import { expect, within } from 'storybook/test'
 
 import { sampleArticles } from '../story-data'
 import { ArticleResults } from './article-results'
@@ -27,6 +28,20 @@ export const LatestArticles: Story = {
       totalArticles: sampleArticles.length,
     },
     tags: ['Herbal Tea', 'Japanese Tea', 'Tea Bag', 'Wholesale Tea'],
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const heading = canvas.getByRole('heading', { name: 'Latest Articles' })
+    await expect(heading).toHaveAttribute('id', 'articles')
+    await expect(heading).toHaveAttribute('tabindex', '-1')
+    heading.focus({ preventScroll: true })
+    await expect(heading).toHaveFocus()
+    await expect(
+      canvas.getByRole('navigation', { name: 'Article page navigation' }),
+    ).toBeVisible()
+    await expect(
+      canvas.getByRole('navigation', { name: 'Blog pagination' }),
+    ).toBeVisible()
   },
 }
 
