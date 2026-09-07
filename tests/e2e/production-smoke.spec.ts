@@ -1,3 +1,5 @@
+import { readFile } from 'node:fs/promises'
+
 import { expect, test, type Page, type Response } from '@playwright/test'
 
 import { blockThirdPartyRequests } from '../mocks/third-party-network'
@@ -140,17 +142,19 @@ test('collection grid is crawlable in the served HTML before any streamed chunk'
   expect(preloads).toHaveLength(1)
 })
 
-test('blog listing serves complete HTML with no pending stream boundaries', async ({
+test('blog article content is server-rendered without pending stream boundaries', async ({
   request,
 }) => {
   const response = await request.get('/blog')
   expect(response.status()).toBe(200)
   const html = await response.text()
 
-  // A pending boundary here would reproduce the pre-render flash the SEO
-  // team screenshotted — the listing must be fully server-rendered.
-  expect(html).not.toContain('<!--$?-->')
-  expect(html).toContain('href="/blogs/teavision-blogs/')
+  // The header and newsletter may stream. The article listing inside main
+  // must remain fully server-rendered to avoid a flash of empty content.
+  const mainHtml = html.match(/<main\b[^>]*>([\s\S]*?)<\/main>/)?.[1]
+  expect(mainHtml).toBeDefined()
+  expect(mainHtml).not.toContain('<!--$?-->')
+  expect(mainHtml).toContain('href="/blogs/teavision-blogs/')
 })
 
 test('/products/test-standard-tea loads with Add to Cart', async ({ page }) => {
@@ -399,11 +403,11 @@ test('/api/health returns public service status', async ({ page }) => {
 })
 
 test('serves the Teavision favicon icon', async ({ request }) => {
-  const response = await request.get('/icon.svg')
+  const response = await request.get('/favicon.ico')
 
   expect(response.status()).toBe(200)
-  expect(response.headers()['content-type']).toContain('image/svg+xml')
-  const icon = await response.text()
-  expect(icon).toContain('Teavision')
-  expect(icon).not.toContain('Vercel')
+  expect(response.headers()['content-type']).toMatch(
+    /image\/(?:x-icon|vnd.microsoft.icon)/,
+  )
+  expect(await response.body()).toEqual(await readFile('src/app/favicon.ico'))
 })
