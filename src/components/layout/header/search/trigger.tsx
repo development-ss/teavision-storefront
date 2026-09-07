@@ -30,12 +30,6 @@ export function SearchTrigger({ onClick }: SearchTriggerProps) {
       <span className="min-w-0 flex-1 truncate text-left">
         Search teas, herbs &amp; spices&hellip;
       </span>
-      <kbd
-        className="border-hairline bg-paper text-ink-faint hidden shrink-0 rounded-sm border px-1.5 py-0.5 font-mono text-[11px] lg:inline-block"
-        aria-hidden="true"
-      >
-        /
-      </kbd>
     </Button>
   )
 }
