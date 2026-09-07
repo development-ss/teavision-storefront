@@ -18,6 +18,124 @@ type TrustooRatingsResponse = {
 const TRUSTOO_PRODUCT_RATINGS_URL =
   'https://api.trustoo.io/api/v1/reviews/get_products_rating'
 
+export type ProductReview = {
+  id: string
+  rating: number
+  author: string
+  title: string
+  content: string
+  date: string | null
+  reply: string
+}
+
+export type ProductReviewsPage = {
+  reviews: ProductReview[]
+  page: number
+  totalPages: number
+  totalCount: number
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+function reviewText(value: unknown): string {
+  return typeof value === 'string' ? value.trim() : ''
+}
+
+function parseReview(value: unknown): ProductReview | null {
+  if (!isRecord(value)) return null
+  const id = reviewText(value.id)
+  const rating = Number(value.star)
+  if (!id || !Number.isInteger(rating) || rating < 1 || rating > 5) return null
+  const date = reviewText(value.commented_at).slice(0, 10)
+
+  return {
+    id,
+    rating,
+    author: reviewText(value.author) || 'Customer',
+    title: reviewText(value.title),
+    content: reviewText(value.content),
+    date:
+      /^\d{4}-\d{2}-\d{2}$/.test(date) && Number.isFinite(Date.parse(date))
+        ? date
+        : null,
+    reply: reviewText(value.reply_content),
+  }
+}
+
+// Public storefront feed used by Trustoo's review widget. It contains only
+// published reviews and accepts the same shop domain as the ratings endpoint.
+export async function getTrustooProductReviews(
+  handle: string,
+  page = 1,
+): Promise<ProductReviewsPage | null> {
+  'use cache'
+  cacheTag('trustoo-reviews')
+  cacheLife('minutes')
+
+  if (
+    !trustooShopDomain ||
+    !/^[a-z0-9][a-z0-9-]{0,254}$/.test(handle) ||
+    !Number.isSafeInteger(page) ||
+    page < 1
+  )
+    return null
+
+  const params = new URLSearchParams({
+    shop: trustooShopDomain,
+    product_handle: handle,
+    page: String(page),
+    limit: '10',
+    no_empty: '2',
+  })
+
+  try {
+    const response = await fetch(
+      `https://api.trustoo.io/api/v1/reviews/get_product_reviews?${params}`,
+      {
+        cache: 'no-store',
+        signal: AbortSignal.timeout(5000),
+      },
+    )
+    if (!response.ok) throw new Error('Review request failed')
+    const json: unknown = await response.json()
+    if (
+      !isRecord(json) ||
+      json.code !== 0 ||
+      !isRecord(json.data) ||
+      !Array.isArray(json.data.list) ||
+      !isRecord(json.data.page)
+    )
+      throw new Error('Invalid reviews response')
+    const pagination = json.data.page
+    if (
+      ![pagination.cur_page, pagination.total_page, pagination.count].every(
+        (value) =>
+          typeof value === 'number' &&
+          Number.isSafeInteger(value) &&
+          value >= 0,
+      ) ||
+      pagination.cur_page !== page
+    )
+      throw new Error('Invalid reviews pagination')
+    const reviews = json.data.list.map(parseReview)
+    if (reviews.some((review) => review === null))
+      throw new Error('Invalid review')
+
+    cacheLife('hours')
+    return {
+      reviews: reviews as ProductReview[],
+      page,
+      totalPages: pagination.total_page as number,
+      totalCount: pagination.count as number,
+    }
+  } catch {
+    logEvent('warn', 'trustoo_failed', { reason: 'reviews-unavailable', page })
+    return null
+  }
+}
+
 function isTrustooRatingRow(value: unknown): value is TrustooRatingRow {
   return typeof value === 'object' && value !== null
 }

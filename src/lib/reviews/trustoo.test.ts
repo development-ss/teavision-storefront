@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
 import { logEvent } from '@/lib/observability/logger'
 
-import { getTrustooProductRatings } from './trustoo'
+import { getTrustooProductRatings, getTrustooProductReviews } from './trustoo'
 
 vi.mock('next/cache', () => ({
   cacheLife: vi.fn(),
@@ -121,5 +121,110 @@ describe('getTrustooProductRatings', () => {
       handleCount: 1,
       reason: 'request-threw',
     })
+  })
+
+  test('reads product-scoped published reviews and preserves ratings without comments', async () => {
+    fetchMock.mockResolvedValue(
+      Response.json({
+        code: 0,
+        data: {
+          page: { cur_page: 2, total_page: 2, count: 11 },
+          list: [
+            {
+              id: '21183126',
+              star: 5,
+              author: 'Jemima K. ',
+              content: 'Beautiful tea',
+              commented_at: '2023-04-12 19:43:34',
+              reply_content: 'Thank you',
+              author_email: 'private@example.com',
+            },
+            {
+              id: '25224602',
+              star: 4,
+              author: 'Robin F.',
+              content: '',
+              commented_at: 'invalid',
+            },
+          ],
+        },
+      }),
+    )
+    const result = await getTrustooProductReviews('organic-peppermint', 2)
+    expect(result).toEqual({
+      page: 2,
+      totalPages: 2,
+      totalCount: 11,
+      reviews: [
+        {
+          id: '21183126',
+          rating: 5,
+          author: 'Jemima K.',
+          title: '',
+          content: 'Beautiful tea',
+          date: '2023-04-12',
+          reply: 'Thank you',
+        },
+        {
+          id: '25224602',
+          rating: 4,
+          author: 'Robin F.',
+          title: '',
+          content: '',
+          date: null,
+          reply: '',
+        },
+      ],
+    })
+    const url = new URL(String(fetchMock.mock.calls[0]?.[0]))
+    expect(url.pathname).toBe('/api/v1/reviews/get_product_reviews')
+    expect(Object.fromEntries(url.searchParams)).toEqual({
+      shop: 'mrteashop-com.myshopify.com',
+      product_handle: 'organic-peppermint',
+      page: '2',
+      limit: '10',
+      no_empty: '2',
+    })
+    expect(JSON.stringify(result)).not.toContain('private@example.com')
+  })
+
+  test('distinguishes an empty review list from a failed request', async () => {
+    fetchMock.mockResolvedValueOnce(
+      Response.json({
+        code: 0,
+        data: { page: { cur_page: 1, total_page: 0, count: 0 }, list: [] },
+      }),
+    )
+    await expect(getTrustooProductReviews('new-tea')).resolves.toEqual({
+      page: 1,
+      totalPages: 0,
+      totalCount: 0,
+      reviews: [],
+    })
+    fetchMock.mockRejectedValueOnce(new Error('timeout'))
+    await expect(getTrustooProductReviews('new-tea')).resolves.toBeNull()
+  })
+
+  test.each([
+    null,
+    { code: 0, data: { list: [] } },
+    { code: 1, data: null },
+    {
+      code: 0,
+      data: {
+        page: { cur_page: 1, total_page: 1, count: 1 },
+        list: [{ id: 'bad', star: 6 }],
+      },
+    },
+  ])('rejects malformed review responses: %j', async (response) => {
+    fetchMock.mockResolvedValue(Response.json(response))
+    await expect(getTrustooProductReviews('tea')).resolves.toBeNull()
+  })
+
+  test('does not request unscoped reviews or invalid pages', async () => {
+    await expect(getTrustooProductReviews('')).resolves.toBeNull()
+    await expect(getTrustooProductReviews('tea', 0)).resolves.toBeNull()
+    await expect(getTrustooProductReviews('tea', 1.5)).resolves.toBeNull()
+    expect(fetchMock).not.toHaveBeenCalled()
   })
 })
