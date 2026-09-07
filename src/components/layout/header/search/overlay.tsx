@@ -1,7 +1,7 @@
 'use client'
 
 import { X } from 'lucide-react'
-import { useEffect, useRef, Suspense } from 'react'
+import { Suspense, useEffect, useRef } from 'react'
 
 import { Eyebrow } from '@/components/ui/eyebrow'
 import { IconButton } from '@/components/ui/icon-button'
@@ -25,40 +25,62 @@ type SearchOverlayProps = {
   onClose: () => void
 }
 
+const FOCUSABLE_SELECTOR =
+  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+
 export function SearchOverlay({ open, onClose }: SearchOverlayProps) {
   const panelRef = useRef<HTMLDivElement>(null)
+  const previousFocusRef = useRef<HTMLElement | null>(null)
 
-  // Focus the search input when the overlay opens
   useEffect(() => {
     if (!open) return
+
+    previousFocusRef.current =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null
 
     const inputEl = panelRef.current?.querySelector<HTMLInputElement>(
       '[data-search-input]',
     )
-    if (inputEl) {
-      const id = window.setTimeout(() => inputEl.focus(), 30)
-      return () => window.clearTimeout(id)
-    }
-  }, [open])
-
-  // Close on Escape
-  useEffect(() => {
-    if (!open) return
-
-    function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape') onClose()
-    }
-    document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [open, onClose])
-
-  // Lock body scroll while the modal overlay is open
-  useEffect(() => {
-    if (!open) return
-
+    const focusFrame = window.requestAnimationFrame(() => inputEl?.focus())
+    const previousOverflow = document.body.style.overflow
     document.body.classList.add('overflow-hidden')
-    return () => document.body.classList.remove('overflow-hidden')
+
+    return () => {
+      window.cancelAnimationFrame(focusFrame)
+      document.body.classList.remove('overflow-hidden')
+      document.body.style.overflow = previousOverflow
+      previousFocusRef.current?.focus()
+      previousFocusRef.current = null
+    }
   }, [open])
+
+  function handleKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
+    if (event.key === 'Escape') {
+      onClose()
+      return
+    }
+
+    if (event.key !== 'Tab') return
+
+    const focusableElements = Array.from(
+      panelRef.current?.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR) ?? [],
+    )
+
+    if (focusableElements.length === 0) return
+
+    const firstFocusable = focusableElements[0]
+    const lastFocusable = focusableElements[focusableElements.length - 1]
+
+    if (event.shiftKey && document.activeElement === firstFocusable) {
+      event.preventDefault()
+      lastFocusable?.focus()
+    } else if (!event.shiftKey && document.activeElement === lastFocusable) {
+      event.preventDefault()
+      firstFocusable?.focus()
+    }
+  }
 
   if (!open) return null
 
@@ -78,6 +100,7 @@ export function SearchOverlay({ open, onClose }: SearchOverlayProps) {
         role="dialog"
         aria-modal="true"
         aria-label="Site search"
+        onKeyDown={handleKeyDown}
       >
         <div className="max-w-wide px-gutter mx-auto pt-5 pb-7">
           {/* Close button row */}

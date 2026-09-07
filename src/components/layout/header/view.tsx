@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import Link from 'next/link'
 import { CircleUserRound, Menu, Phone, ShoppingCart, X } from 'lucide-react'
-import { Suspense, useCallback, useEffect, useState } from 'react'
+import { Suspense, useCallback, useState } from 'react'
 
 import { IconButton } from '@/components/ui/icon-button'
 
@@ -35,24 +35,6 @@ export function Header({
   const [mobileOpen, setMobileOpen] = useState(false)
   const openSearch = useCallback(() => setSearchOpen(true), [])
   const closeSearch = useCallback(() => setSearchOpen(false), [])
-
-  // "/" opens search from anywhere on the page, unless focus is in a field.
-  useEffect(() => {
-    function handleKeyDown(e: KeyboardEvent) {
-      if (e.key !== '/' || e.metaKey || e.ctrlKey || e.altKey) return
-      if (
-        e.target instanceof HTMLElement &&
-        (e.target.isContentEditable ||
-          e.target.closest('input, textarea, select, [contenteditable]'))
-      ) {
-        return
-      }
-      e.preventDefault()
-      setSearchOpen(true)
-    }
-    document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [])
 
   return (
     <>

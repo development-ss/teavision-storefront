@@ -63,8 +63,8 @@ export function SearchForm({
         className={cn(
           // Comfortable body scale — Hanken Grotesk, no oversized clamp
           'type-body',
-          // Shared .field treatment: hairline border, brand border + glow on focus
-          'border-hairline bg-card text-ink placeholder:text-ink-faint rounded-sm border',
+          // Shared field treatment: visible border, brand border + glow on focus
+          'border-ink-faint bg-card text-ink placeholder:text-ink-faint rounded-sm border',
           // Sizing — generous vertical padding, room for search icon on right
           'min-h-12 w-full py-3.5 pr-12 pl-4 shadow-none',
           // Focus: brand border + green glow (same as TextInput / Textarea)

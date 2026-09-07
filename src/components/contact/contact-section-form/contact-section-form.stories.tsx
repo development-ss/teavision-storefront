@@ -10,6 +10,15 @@ const errorAction = async () => ({
   error: 'Unable to send your message right now.',
 })
 
+const fieldErrorAction = async () => ({
+  success: false,
+  error: 'Please fill in all required fields.',
+  fieldErrors: {
+    name: 'Enter your name.',
+    email: 'Enter a valid email address.',
+  },
+})
+
 function pendingAction() {
   return new Promise<never>(() => undefined)
 }
@@ -59,6 +68,26 @@ export const Error: Story = {
     await expect(await canvas.findByRole('alert')).toHaveTextContent(
       'Unable to send your message right now.',
     )
+  },
+}
+
+export const FieldErrors: Story = {
+  args: {
+    action: fieldErrorAction,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await userEvent.type(canvas.getByLabelText('Name'), 'Buyer')
+    await userEvent.type(canvas.getByLabelText('Email'), 'buyer@example.com')
+    await userEvent.type(canvas.getByLabelText('Message'), 'Please contact me.')
+    await userEvent.click(canvas.getByRole('button', { name: 'Submit' }))
+
+    await expect(await canvas.findByText('Enter your name.')).toBeVisible()
+    await expect(canvas.getByLabelText('Name')).toHaveAttribute(
+      'aria-invalid',
+      'true',
+    )
+    await expect(canvas.getByLabelText('Name')).toHaveFocus()
   },
 }
 

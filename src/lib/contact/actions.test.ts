@@ -312,6 +312,29 @@ describe('sendWholesaleAccountAction', () => {
 })
 
 describe('email field delivery', () => {
+  test('returns field-specific errors for an invalid contact enquiry', async () => {
+    const result = await submitContactFormAction(
+      formData({
+        ...VALID_CONTACT_SUBMISSION,
+        name: '',
+        email: 'not-an-email',
+        message: '',
+      }),
+    )
+
+    expect(result).toEqual({
+      success: false,
+      error: 'Please fill in all required fields.',
+      fieldErrors: {
+        name: 'Enter your name.',
+        email: 'Enter a valid email address.',
+        message: 'Enter a message.',
+      },
+    })
+    expect(checkRateLimitMock).not.toHaveBeenCalled()
+    expect(resendSendMock).not.toHaveBeenCalled()
+  })
+
   test('includes the contact email in the message and reply-to address', async () => {
     const result = await submitContactFormAction(
       formData(VALID_CONTACT_SUBMISSION),

@@ -175,7 +175,7 @@ describe('buildUrlInventoryRows', () => {
     )
 
     expect(countsByType).toEqual({
-      static: 15,
+      static: 16,
       legal: 5,
       page: 1,
       product: 2,
@@ -183,7 +183,7 @@ describe('buildUrlInventoryRows', () => {
       blog: 1,
       article: 3,
     })
-    expect(rows).toHaveLength(29)
+    expect(rows).toHaveLength(30)
     expect(paths).toEqual(
       expect.arrayContaining([
         '/',
@@ -191,6 +191,7 @@ describe('buildUrlInventoryRows', () => {
         '/pages/privacy-policy',
         '/pages/certifications',
         '/pages/download-catalogues',
+        '/pages/services',
         '/pages/how-long-does-bulk-tea-last',
         '/pages/consultant-page',
         '/products/first-product',

@@ -18,6 +18,7 @@ import {
   npdBlendFieldName,
 } from '@/lib/contact/npd-order'
 import type {
+  ContactField,
   ContactActionResult,
   NewsletterSignupActionResult,
 } from '@/lib/contact/types'
@@ -187,25 +188,43 @@ function readWholesaleAccountSubmission(
   }
 }
 
-function isValidSubmission(submission: ContactSubmission) {
+function getContactFieldErrors(
+  submission: ContactSubmission,
+): Partial<Record<ContactField, string>> {
+  const errors: Partial<Record<ContactField, string>> = {}
+
   if (!submission.name || submission.name.length > CONTACT_NAME_MAX_LENGTH) {
-    return false
+    errors.name = submission.name
+      ? `Name must be ${CONTACT_NAME_MAX_LENGTH} characters or fewer.`
+      : 'Enter your name.'
   }
+
+  if (submission.phone.length > CONTACT_PHONE_MAX_LENGTH) {
+    errors.phone = `Phone number must be ${CONTACT_PHONE_MAX_LENGTH} characters or fewer.`
+  }
+
   if (
     !submission.email ||
     submission.email.length > CONTACT_EMAIL_MAX_LENGTH ||
     !EMAIL_PATTERN.test(submission.email)
   ) {
-    return false
+    errors.email = !submission.email
+      ? 'Enter your email address.'
+      : submission.email.length > CONTACT_EMAIL_MAX_LENGTH
+        ? `Email must be ${CONTACT_EMAIL_MAX_LENGTH} characters or fewer.`
+        : 'Enter a valid email address.'
   }
+
   if (
     !submission.message ||
     submission.message.length > CONTACT_MESSAGE_MAX_LENGTH
   ) {
-    return false
+    errors.message = submission.message
+      ? `Message must be ${CONTACT_MESSAGE_MAX_LENGTH} characters or fewer.`
+      : 'Enter a message.'
   }
-  if (submission.phone.length > CONTACT_PHONE_MAX_LENGTH) return false
-  return submission.website.length === 0
+
+  return errors
 }
 
 function isValidCustomTeaBlendSubmission(submission: CustomTeaBlendSubmission) {
@@ -348,8 +367,9 @@ async function submitContactSubmission(
     return { success: true }
   }
 
-  if (!isValidSubmission(submission)) {
-    return { success: false, error: VALIDATION_ERROR }
+  const fieldErrors = getContactFieldErrors(submission)
+  if (Object.keys(fieldErrors).length > 0) {
+    return { success: false, error: VALIDATION_ERROR, fieldErrors }
   }
 
   if (await isRateLimited(surface)) {
