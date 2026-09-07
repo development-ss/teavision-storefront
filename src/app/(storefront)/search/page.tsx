@@ -40,17 +40,19 @@ export async function generateMetadata({
 
 export default function SearchPage({ searchParams }: Props) {
   return (
-    <Suspense fallback={<SearchHero state={SEARCH_FALLBACK_STATE} />}>
-      {searchParams.then((resolvedSearchParams) => {
-        const state = parseSearchParams(resolvedSearchParams)
-        const resultPromise = getSearchaniseSearchResults(state)
+    <div className="min-h-screen">
+      <Suspense fallback={<SearchHero state={SEARCH_FALLBACK_STATE} />}>
+        {searchParams.then((resolvedSearchParams) => {
+          const state = parseSearchParams(resolvedSearchParams)
+          const resultPromise = getSearchaniseSearchResults(state)
 
-        return (
-          <Suspense fallback={<SearchHero state={state} />}>
-            <SearchResults resultPromise={resultPromise} state={state} />
-          </Suspense>
-        )
-      })}
-    </Suspense>
+          return (
+            <Suspense fallback={<SearchHero state={state} />}>
+              <SearchResults resultPromise={resultPromise} state={state} />
+            </Suspense>
+          )
+        })}
+      </Suspense>
+    </div>
   )
 }
