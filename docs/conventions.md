@@ -121,6 +121,7 @@ Only on Server Actions files (`src/lib/*/actions.ts`). Never on a component file
 - Keep animation variant names generic, such as `float-primary` and `float-secondary`, so CMS-driven content can swap image sources without renaming components.
 - Pass `src`, intrinsic `width`/`height`, responsive `sizes`, and width classes from the owning section. Do not create content-specific animation components for individual campaigns, products, or sections.
 - Keep decorative animated media hidden from assistive technology. Meaningful product or editorial images should use ordinary `next/image` with useful alt text.
+- Pass Sanity asset URLs directly to `next/image`; let Next.js handle responsive sizing and final compression. Do not resize or recompress them through Sanity first. Explicit Sanity transformations are reserved for images fetched directly, such as social preview metadata.
 
 ## Section layout
 
