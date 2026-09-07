@@ -43,7 +43,7 @@ export function Dashboard({ dashboard }: DashboardProps) {
             href="/account/logout"
             variant="secondary"
             size="sm"
-            prefetch={false}
+            reloadDocument
           >
             Log out
           </Button>

@@ -367,7 +367,11 @@ export async function createFakeCustomerAccountApiServer(
       const callbackUrl = new URL(redirectUri)
       callbackUrl.searchParams.set('code', code)
       callbackUrl.searchParams.set('state', state)
-      response.writeHead(302, { Location: callbackUrl.toString() })
+      response.writeHead(302, {
+        Location: callbackUrl.toString(),
+        'Set-Cookie':
+          'fake_customer_session=signed-in; Path=/authentication; HttpOnly; SameSite=Lax',
+      })
       response.end()
       return
     }
@@ -418,6 +422,27 @@ export async function createFakeCustomerAccountApiServer(
         refresh_token: tokens.refreshToken,
         token_type: 'Bearer',
       })
+      return
+    }
+
+    if (
+      request.method === 'GET' &&
+      requestUrl.pathname === '/authentication/logout'
+    ) {
+      const redirectUri = requestUrl.searchParams.get(
+        'post_logout_redirect_uri',
+      )
+      if (!redirectUri || !requestUrl.searchParams.get('id_token_hint')) {
+        writeJson(response, 400, { error: 'invalid_request' })
+        return
+      }
+
+      response.writeHead(302, {
+        Location: redirectUri,
+        'Set-Cookie':
+          'fake_customer_session=; Path=/authentication; HttpOnly; SameSite=Lax; Max-Age=0',
+      })
+      response.end()
       return
     }
 
