@@ -18,24 +18,30 @@ import {
   isShopPath,
   type MenuKey,
   type ShopKey,
+  type ShopSection,
 } from './data'
 import { MobileServicesPanel } from './services/mobile-panel'
 import { MobileShopPanel } from './shop/mobile-panel'
 
 type MobileMegaNavProps = {
+  shopSections?: ShopSection[]
   open: boolean
   onClose: () => void
 }
 
-export function MobileMegaNav({ open, onClose }: MobileMegaNavProps) {
+export function MobileMegaNav({
+  open,
+  onClose,
+  shopSections = SHOP_SECTIONS,
+}: MobileMegaNavProps) {
   const pathname = usePathname()
   const [openMenu, setOpenMenu] = useState<MenuKey | null>(null)
-  const currentShopKey = getShopKeyForPath(pathname)
+  const currentShopKey = getShopKeyForPath(pathname, shopSections)
   const [activeShopKey, setActiveShopKey] = useState<ShopKey>(
     () => currentShopKey ?? 'tea',
   )
   const activeShop =
-    SHOP_SECTIONS.find((section) => section.key === activeShopKey) ??
+    shopSections.find((section) => section.key === activeShopKey) ??
     SHOP_SECTIONS[0]!
 
   const closeAll = () => {

@@ -54,9 +54,15 @@ export function MobileShopPanel({
           {/* Links — negative margin compensates for px-2.5 padding so text aligns with heading */}
           <ul className="-mx-2.5 grid gap-0.5 sm:grid-cols-2" role="list">
             {activeShop.links.map((link) => (
-              <li key={`mobile-${activeShop.key}-${link.href}-${link.label}`}>
+              <li
+                key={`mobile-${activeShop.key}-${link.href}-${link.label}`}
+                className="min-w-0 wrap-anywhere"
+              >
                 <Link
                   href={link.href}
+                  prefetch={
+                    activeShop.productCollectionHandle ? false : undefined
+                  }
                   aria-current={
                     isNavLinkActive(pathname, link.href) ? 'page' : undefined
                   }

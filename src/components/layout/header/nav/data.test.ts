@@ -8,6 +8,7 @@ import {
   isNavLinkActive,
   isServicesPath,
   isShopPath,
+  SHOP_SECTIONS,
   SERVICES_LINKS,
 } from './data'
 
@@ -42,6 +43,25 @@ describe('header navigation active state', () => {
     expect(isServicesPath('/pages/faq')).toBe(true)
     expect(isServicesPath('/pages/wholesale-account-request')).toBe(false)
     expect(isServicesPath('/pages/contact')).toBe(false)
+  })
+})
+
+describe('shop product menu links', () => {
+  it('selects a category from its server-provided product links', () => {
+    const sections = SHOP_SECTIONS.map((section) => ({
+      ...section,
+      links:
+        section.key === 'superfood-powders'
+          ? [{ href: '/products/live-powder', label: 'Live powder' }]
+          : section.links,
+    }))
+
+    expect(getShopKeyForPath('/products/live-powder', sections)).toBe(
+      'superfood-powders',
+    )
+    expect(
+      getShopKeyForPath('/products/live-powder-extra', sections),
+    ).toBeUndefined()
   })
 })
 

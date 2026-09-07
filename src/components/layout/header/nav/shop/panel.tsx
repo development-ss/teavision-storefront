@@ -20,7 +20,7 @@ export function ShopMegaPanel({
   return (
     <div
       id="shop-mega"
-      className="bg-paper border-hairline shadow-4 absolute inset-x-0 top-full z-50 border-b"
+      className="bg-paper border-hairline shadow-4 absolute inset-x-0 top-full z-50 max-h-[calc(100dvh-10rem)] overflow-y-auto border-b"
       hidden={!open}
     >
       <div className="max-w-wide px-gutter mx-auto py-10">
@@ -56,7 +56,7 @@ export function ShopMegaPanel({
           </div>
 
           {/* Category selector + links */}
-          <div className="flex flex-col gap-5">
+          <div className="flex min-w-0 flex-col gap-5">
             {/* Category tabs */}
             <div className="flex flex-wrap gap-2" role="list">
               {SHOP_SECTIONS.map((section) => {
@@ -85,9 +85,15 @@ export function ShopMegaPanel({
                 role="list"
               >
                 {activeShop.links.map((link) => (
-                  <li key={`${activeShop.key}-${link.href}-${link.label}`}>
+                  <li
+                    key={`${activeShop.key}-${link.href}-${link.label}`}
+                    className="min-w-0 wrap-anywhere"
+                  >
                     <Link
                       href={link.href}
+                      prefetch={
+                        activeShop.productCollectionHandle ? false : undefined
+                      }
                       aria-current={
                         isNavLinkActive(pathname, link.href)
                           ? 'page'

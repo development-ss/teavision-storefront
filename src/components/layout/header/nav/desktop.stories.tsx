@@ -10,7 +10,23 @@ import { MobileShopPanel } from './shop/mobile-panel'
 import { ServicesMegaPanel } from './services/panel'
 import { ShopMegaPanel } from './shop/panel'
 
-const activeShop = SHOP_SECTIONS[2] ?? SHOP_SECTIONS[0]!
+// Representative server props; production names and handles come from Shopify.
+const shopSections = SHOP_SECTIONS.map((section) => ({
+  ...section,
+  links: section.productCollectionHandle
+    ? Array.from({ length: 14 }, (_, index) => ({
+        href:
+          index === 0
+            ? '/products/example-' + section.key
+            : `/products/example-${section.key}-${index}`,
+        label:
+          index === 0
+            ? 'Example ' + section.name
+            : `Premium Certified Organic Ingredient ${index} (Wholesale Powder 15kg)`,
+      }))
+    : section.links,
+}))
+const activeShop = shopSections[2] ?? shopSections[0]!
 
 function ignoreShopKey(key: ShopKey) {
   void key
@@ -25,6 +41,7 @@ function StoryPanelFrame({ children }: { children: ReactNode }) {
 const meta: Meta<typeof MegaNav> = {
   title: 'Layout/Header/Mega Nav',
   component: MegaNav,
+  args: { shopSections },
   tags: ['autodocs'],
   parameters: {
     layout: 'fullscreen',
@@ -156,7 +173,9 @@ export const Default: Story = {
 }
 
 export const Mobile: StoryObj<typeof MobileMegaNav> = {
-  render: () => <MobileMegaNav open onClose={() => {}} />,
+  render: () => (
+    <MobileMegaNav shopSections={shopSections} open onClose={() => {}} />
+  ),
   parameters: {
     viewport: {
       defaultViewport: 'mobile1',
@@ -187,6 +206,17 @@ export const Mobile: StoryObj<typeof MobileMegaNav> = {
     if (!herbsPanel) {
       throw new Error('Mobile shop category change did not update the panel')
     }
+    await expect(
+      within(herbsPanel).getByRole('link', { name: 'Example Herbs & Spices' }),
+    ).toHaveAttribute('href', '/products/example-herbs-spices')
+    await userEvent.click(
+      within(shopPanel).getByRole('button', { name: 'Superfood Powders' }),
+    )
+    await expect(
+      within(shopPanel).getByRole('link', {
+        name: 'Example Superfood Powders',
+      }),
+    ).toHaveAttribute('href', '/products/example-superfood-powders')
 
     const servicesButton = canvasElement.querySelector<HTMLButtonElement>(
       'button[aria-controls="mobile-services-mega"]',
@@ -223,6 +253,26 @@ export const DesktopShopOpen: Story = {
       />
     </StoryPanelFrame>
   ),
+}
+
+export const CollectionProductLinks: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await userEvent.click(canvas.getByRole('button', { name: 'Shop' }))
+    for (const section of shopSections.filter(
+      (item) => item.productCollectionHandle,
+    )) {
+      await userEvent.click(canvas.getByRole('button', { name: section.name }))
+      for (const link of section.links) {
+        await expect(
+          canvas.getByRole('link', { name: link.label }),
+        ).toHaveAttribute('href', link.href)
+      }
+      await expect(
+        canvas.getByRole('link', { name: 'View all ' + section.name }),
+      ).toHaveAttribute('href', section.ctaHref)
+    }
+  },
 }
 
 export const DesktopServicesOpen: Story = {

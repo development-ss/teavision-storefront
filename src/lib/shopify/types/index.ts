@@ -208,6 +208,7 @@ export {
   GetCollectionCursorIndexDocument,
   GetCollectionDocument,
   GetCollectionMenuDocument,
+  GetCollectionNavigationProductsDocument,
   GetCollectionProductsDocument,
   GetCollectionSummariesDocument,
   GetCollectionsDocument,

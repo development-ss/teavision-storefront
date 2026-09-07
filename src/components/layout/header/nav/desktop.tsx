@@ -19,6 +19,7 @@ import {
   isShopPath,
   type MenuKey,
   type ShopKey,
+  type ShopSection,
 } from './data'
 import { DESKTOP_MENU_ITEM_CLASS, NAV_TRIGGER_CLASS } from './styles'
 import { ServicesMegaPanel } from './services/panel'
@@ -38,19 +39,23 @@ function preloadMenuImages() {
   }
 }
 
-export function MegaNav() {
+export function MegaNav({
+  shopSections = SHOP_SECTIONS,
+}: {
+  shopSections?: ShopSection[]
+}) {
   const pathname = usePathname()
   const navRef = useRef<HTMLDivElement | null>(null)
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const hoverOpenedMenuRef = useRef<MenuKey | null>(null)
   const clickConfirmedMenuRef = useRef<MenuKey | null>(null)
   const [openMenu, setOpenMenu] = useState<MenuKey | null>(null)
-  const currentShopKey = getShopKeyForPath(pathname)
+  const currentShopKey = getShopKeyForPath(pathname, shopSections)
   const [activeShopKey, setActiveShopKey] = useState<ShopKey>(
     () => currentShopKey ?? 'tea',
   )
   const activeShop =
-    SHOP_SECTIONS.find((section) => section.key === activeShopKey) ??
+    shopSections.find((section) => section.key === activeShopKey) ??
     SHOP_SECTIONS[0]!
   const currentServiceHref = SERVICES_LINKS.find((service) =>
     isNavLinkActive(pathname, service.href),

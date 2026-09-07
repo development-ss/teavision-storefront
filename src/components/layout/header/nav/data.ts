@@ -23,6 +23,7 @@ export type ShopSection = {
   asideDescription?: string
   imageAlt?: string
   imageSrc?: string
+  productCollectionHandle?: string
 }
 
 const SHOP_IMAGE_SRC = {
@@ -108,9 +109,8 @@ export const SHOP_SECTIONS = [
     imageSrc: SHOP_IMAGE_SRC['herbs-spices'],
     asideDescription:
       'Browse wholesale herbs and spices with practical support for quality, supply, and repeat ordering.',
-    links: [
-      { href: '/collections/herbs-and-spices', label: 'All Spices & Herbs' },
-    ],
+    productCollectionHandle: 'herbs-and-spices',
+    links: [],
   },
   {
     key: 'superfood-powders',
@@ -118,12 +118,8 @@ export const SHOP_SECTIONS = [
     ctaHref: '/collections/superfood-extract-powders-proteins-supplements',
     imageAlt: 'Superfood Powders',
     imageSrc: SHOP_IMAGE_SRC['superfood-powders'],
-    links: [
-      {
-        href: '/collections/superfood-extract-powders-proteins-supplements',
-        label: 'All Products',
-      },
-    ],
+    productCollectionHandle: 'superfood-extract-powders-proteins-supplements',
+    links: [],
   },
 ] satisfies ShopSection[]
 
@@ -216,8 +212,11 @@ export function isShopPath(pathname: string): boolean {
   )
 }
 
-export function getShopKeyForPath(pathname: string): ShopKey | undefined {
-  return SHOP_SECTIONS.find(
+export function getShopKeyForPath(
+  pathname: string,
+  sections: ShopSection[] = SHOP_SECTIONS,
+): ShopKey | undefined {
+  return sections.find(
     (section) =>
       isNavLinkActive(pathname, section.ctaHref) ||
       section.links.some((link) => isNavLinkActive(pathname, link.href)),

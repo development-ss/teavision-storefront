@@ -10,6 +10,7 @@ import { IconButton } from '@/components/ui/icon-button'
 
 import { CartCount } from './cart/count'
 import { MegaNav } from './nav/desktop'
+import { SHOP_SECTIONS, type ShopSection } from './nav/data'
 import { SearchTrigger } from './search/trigger'
 
 // Interaction-gated islands: kept out of the shared header bundle so their JS
@@ -25,7 +26,11 @@ const SearchOverlay = dynamic(
   { ssr: false },
 )
 
-export function Header() {
+export function Header({
+  shopSections = SHOP_SECTIONS,
+}: {
+  shopSections?: ShopSection[]
+}) {
   const [searchOpen, setSearchOpen] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const openSearch = useCallback(() => setSearchOpen(true), [])
@@ -173,14 +178,18 @@ export function Header() {
         <div className="bg-paper/80 border-hairline relative hidden border-b backdrop-blur-md lg:block">
           <div className="max-w-wide px-gutter mx-auto flex h-12 items-stretch">
             <Suspense fallback={null}>
-              <MegaNav />
+              <MegaNav shopSections={shopSections} />
             </Suspense>
           </div>
         </div>
 
         {/* Mobile nav — lazy: only mounts (and loads its chunk) once opened */}
         {mobileOpen && (
-          <MobileMegaNav open onClose={() => setMobileOpen(false)} />
+          <MobileMegaNav
+            shopSections={shopSections}
+            open
+            onClose={() => setMobileOpen(false)}
+          />
         )}
       </header>
 
