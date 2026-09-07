@@ -8,6 +8,9 @@ import { securityHeaders } from './src/lib/security/headers'
 const developmentProxyOrigins = ['detonate-trickster-venus.ngrok-free.dev']
 
 const nextConfig: NextConfig = {
+  // Keep fake-Shopify browser tests separate from the developer's running app.
+  distDir:
+    process.env.SHOPIFY_STOREFRONT_TEST_MODE === 'true' ? '.next-e2e' : '.next',
   allowedDevOrigins: developmentProxyOrigins,
   cacheComponents: true,
   experimental: {
