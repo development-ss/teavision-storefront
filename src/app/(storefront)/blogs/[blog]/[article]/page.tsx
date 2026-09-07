@@ -188,7 +188,7 @@ export default async function ArticlePage({ params }: Props) {
                 width={article.featuredImage.width}
                 height={article.featuredImage.height}
                 preload
-                sizes="(min-width: 1280px) 1152px, (min-width: 1024px) calc(100vw - 4rem), 100vw"
+                sizes="(min-width: 1480px) 1336px, (min-width: 1440px) calc(100vw - 9rem), (min-width: 400px) 90vw, calc(100vw - 2.5rem)"
                 className="h-auto w-full object-cover"
               />
             </div>

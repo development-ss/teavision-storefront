@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { generateListingMetadata } from '@/app/(storefront)/blogs/[blog]/_lib/metadata'
-import { getSanityImageUrl, sanityFetch } from '@/lib/sanity/client'
+import { sanityFetch } from '@/lib/sanity/client'
 import type {
   SanityBlogListingResult,
   SanityBlogPostSummary,
@@ -29,7 +29,6 @@ vi.mock('next/cache', () => ({
 }))
 
 vi.mock('@/lib/sanity/client', () => ({
-  getSanityImageUrl: vi.fn(),
   sanityFetch: vi.fn(),
 }))
 
@@ -92,19 +91,9 @@ describe('getPublicArticleAuthorName', () => {
 describe('getDefaultBlogListing', () => {
   beforeEach(() => {
     vi.mocked(sanityFetch).mockReset()
-    vi.mocked(getSanityImageUrl).mockReset()
-    vi.mocked(getSanityImageUrl).mockImplementation((_source, options = {}) => {
-      const width = options.width ? `w=${options.width}` : null
-      const quality = options.quality ? `q=${options.quality}` : null
-      const fit = options.fit ? `fit=${options.fit}` : null
-
-      return ['https://cdn.sanity.io/generated.jpg', width, quality, fit]
-        .filter((part): part is string => Boolean(part))
-        .join('?')
-    })
   })
 
-  it('carries LQIP and uses bounded image options by listing use case', async () => {
+  it('carries LQIP and Sanity asset URLs for Next/Image optimization', async () => {
     const result: SanityDefaultBlogListingResult = {
       allTagArrays: [{ categories: ['Green Tea'], tags: ['Wholesale'] }],
       articles: [makePost('latest')],
@@ -125,35 +114,16 @@ describe('getDefaultBlogListing', () => {
 
     expect(listing?.heroImage).toMatchObject({
       lqip: 'data:image/jpeg;base64,hero',
-      url: expect.stringContaining('w=1920'),
+      url: 'https://cdn.sanity.io/images/project/dataset/hero.jpg',
     })
     expect(listing?.featuredArticles[0]?.featuredImage).toMatchObject({
       lqip: 'data:image/jpeg;base64,featured',
-      url: expect.stringContaining('w=900'),
+      url: 'https://cdn.sanity.io/images/project/dataset/featured.jpg',
     })
     expect(listing?.paginated.articles[0]?.featuredImage).toMatchObject({
       lqip: 'data:image/jpeg;base64,latest',
-      url: expect.stringContaining('w=960'),
+      url: 'https://cdn.sanity.io/images/project/dataset/latest.jpg',
     })
-
-    expect(vi.mocked(getSanityImageUrl)).toHaveBeenCalledWith(
-      expect.objectContaining({
-        asset: expect.objectContaining({ _id: 'image-hero' }),
-      }),
-      { fit: 'max', quality: 75, width: 1920 },
-    )
-    expect(vi.mocked(getSanityImageUrl)).toHaveBeenCalledWith(
-      expect.objectContaining({
-        asset: expect.objectContaining({ _id: 'image-featured' }),
-      }),
-      { fit: 'max', quality: 75, width: 900 },
-    )
-    expect(vi.mocked(getSanityImageUrl)).toHaveBeenCalledWith(
-      expect.objectContaining({
-        asset: expect.objectContaining({ _id: 'image-latest' }),
-      }),
-      { fit: 'max', quality: 75, width: 960 },
-    )
   })
 
   it('removes the legacy SEO agency attribution from article summaries', async () => {
@@ -220,16 +190,6 @@ describe('getDefaultBlogListing', () => {
 describe('getHomepageArticles', () => {
   beforeEach(() => {
     vi.mocked(sanityFetch).mockReset()
-    vi.mocked(getSanityImageUrl).mockReset()
-    vi.mocked(getSanityImageUrl).mockImplementation((_source, options = {}) => {
-      const width = options.width ? `w=${options.width}` : null
-      const quality = options.quality ? `q=${options.quality}` : null
-      const fit = options.fit ? `fit=${options.fit}` : null
-
-      return ['https://cdn.sanity.io/generated.jpg', width, quality, fit]
-        .filter((part): part is string => Boolean(part))
-        .join('?')
-    })
   })
 
   it('uses a configurable max post count while preserving the default of 3', async () => {
@@ -269,10 +229,6 @@ describe('getHomepageArticles', () => {
 describe('generateListingMetadata', () => {
   beforeEach(() => {
     vi.mocked(sanityFetch).mockReset()
-    vi.mocked(getSanityImageUrl).mockReset()
-    vi.mocked(getSanityImageUrl).mockReturnValue(
-      'https://cdn.sanity.io/generated.jpg',
-    )
   })
 
   it('noindexes tagged blog listings while allowing crawlers to follow links', async () => {
@@ -362,9 +318,6 @@ describe('generateListingMetadata', () => {
 describe('getTagListing', () => {
   beforeEach(() => {
     vi.mocked(sanityFetch).mockReset()
-    vi.mocked(getSanityImageUrl).mockReturnValue(
-      'https://cdn.sanity.io/generated.jpg',
-    )
   })
 
   it('returns the tag-filtered, paginated articles', async () => {
@@ -412,9 +365,6 @@ describe('getTagListing', () => {
 describe('getBlogSearchListing', () => {
   beforeEach(() => {
     vi.mocked(sanityFetch).mockReset()
-    vi.mocked(getSanityImageUrl).mockReturnValue(
-      'https://cdn.sanity.io/generated.jpg',
-    )
   })
 
   it('returns query matches collapsed onto a single page', async () => {

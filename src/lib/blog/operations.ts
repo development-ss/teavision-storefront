@@ -1,4 +1,3 @@
-import type { SanityImageSource } from '@sanity/image-url'
 import { cacheLife, cacheTag } from 'next/cache'
 
 import { formatAustralianDate } from '@/lib/date-formatting'
@@ -8,8 +7,7 @@ import {
   defaultBlogListingQuery,
   homepageBlogPostsQuery,
 } from '@/lib/sanity/queries/blog'
-import { getSanityImageUrl, sanityFetch } from '@/lib/sanity/client'
-import type { SanityImageUrlOptions } from '@/lib/sanity/client'
+import { sanityFetch } from '@/lib/sanity/client'
 import type {
   SanityBlogPost,
   SanityBlogPostSummary,
@@ -121,24 +119,6 @@ export type DefaultBlogListing = {
   allTags: string[]
 }
 
-// Bounded Sanity image URL options by use case.
-// Quality is constrained to the values allowed in next.config.ts (68 or 75).
-const IMAGE_OPTIONS_HERO: SanityImageUrlOptions = {
-  width: 1920,
-  quality: 75,
-  fit: 'max',
-}
-const IMAGE_OPTIONS_FEATURED_CARD: SanityImageUrlOptions = {
-  width: 900,
-  quality: 75,
-  fit: 'max',
-}
-const IMAGE_OPTIONS_CARD: SanityImageUrlOptions = {
-  width: 960,
-  quality: 75,
-  fit: 'max',
-}
-
 function isNonEmpty(value: string | null | undefined): value is string {
   return Boolean(value?.trim())
 }
@@ -170,23 +150,10 @@ function estimateReadingTime(text: string): number {
   return Math.max(1, Math.ceil(words / WORDS_PER_MINUTE))
 }
 
-function reshapeImage(
-  image: SanityImageWithAlt | null,
-  imageOptions?: SanityImageUrlOptions,
-): BlogImage | null {
-  const source = image?.image
-  const asset = source?.asset
-  if (!asset?._id && !asset?.url) return null
-
-  let url = asset.url
-  if (asset._id && source) {
-    try {
-      url = getSanityImageUrl(source as SanityImageSource, imageOptions)
-    } catch {
-      url = asset.url
-    }
-  }
-
+function reshapeImage(image: SanityImageWithAlt | null): BlogImage | null {
+  const asset = image?.image?.asset
+  // Next/Image owns responsive resizing and encoding from the Sanity upload.
+  const url = asset?.url
   if (!url) return null
 
   return {
@@ -238,7 +205,6 @@ function reshapeTags(article: SanityBlogPostSummary): string[] {
 
 function reshapeArticleSummary(
   article: SanityBlogPostSummary,
-  imageOptions: SanityImageUrlOptions = IMAGE_OPTIONS_CARD,
 ): BlogArticleSummary {
   const bodyText = normalizeBodyText(article.bodyText)
   const excerpt = article.excerpt?.trim() || truncateText(bodyText, 180)
@@ -249,7 +215,7 @@ function reshapeArticleSummary(
     handle: article.slug ?? article._id,
     title,
     excerpt,
-    featuredImage: reshapeImage(article.featuredImage, imageOptions),
+    featuredImage: reshapeImage(article.featuredImage),
     publishedAt: article.publishedAt ?? FALLBACK_PUBLISHED_AT,
     tags: reshapeTags(article),
     authorName: getPublicArticleAuthorName(article.author?.name),
@@ -399,14 +365,10 @@ export async function getBlog(handle: string): Promise<BlogIndex | null> {
 
   if (!data.blog) return null
 
-  const articles = data.articles.map((a) =>
-    reshapeArticleSummary(a, IMAGE_OPTIONS_CARD),
-  )
+  const articles = data.articles.map((a) => reshapeArticleSummary(a))
   const featuredArticles = getFeaturedArticles(
     articles,
-    (data.blog.featuredPosts ?? []).map((a) =>
-      reshapeArticleSummary(a, IMAGE_OPTIONS_FEATURED_CARD),
-    ),
+    (data.blog.featuredPosts ?? []).map((a) => reshapeArticleSummary(a)),
   )
   const description = data.blog.description?.trim() ?? ''
 
@@ -415,7 +377,7 @@ export async function getBlog(handle: string): Promise<BlogIndex | null> {
     handle: data.blog.slug ?? normalizedHandle,
     title: data.blog.title?.trim() || 'Tea Journal',
     description,
-    heroImage: reshapeImage(data.blog.heroImage, IMAGE_OPTIONS_HERO),
+    heroImage: reshapeImage(data.blog.heroImage),
     seo: reshapeSeo(data.blog.seo, description),
     articles,
     featuredArticles,
@@ -477,7 +439,7 @@ export async function getDefaultBlogListing(
   const rawFeatured = (data.blog.featuredPosts ?? []) as SanityBlogPostSummary[]
   const featuredArticles = rawFeatured
     .slice(0, 2)
-    .map((a) => reshapeArticleSummary(a, IMAGE_OPTIONS_FEATURED_CARD))
+    .map((a) => reshapeArticleSummary(a))
 
   const totalArticles = data.totalCount
   const totalPages = Math.max(1, Math.ceil(totalArticles / ARTICLES_PER_PAGE))
@@ -500,9 +462,7 @@ export async function getDefaultBlogListing(
     rawArticles = (clamped.articles ?? []) as SanityBlogPostSummary[]
   }
 
-  const pageArticles = rawArticles.map((a) =>
-    reshapeArticleSummary(a, IMAGE_OPTIONS_CARD),
-  )
+  const pageArticles = rawArticles.map((a) => reshapeArticleSummary(a))
   const description = data.blog.description?.trim() ?? ''
 
   // Derive all unique tags from the lightweight allTagArrays subquery
@@ -518,7 +478,7 @@ export async function getDefaultBlogListing(
     handle: data.blog.slug ?? normalizedHandle,
     title: data.blog.title?.trim() || 'Tea Journal',
     description,
-    heroImage: reshapeImage(data.blog.heroImage, IMAGE_OPTIONS_HERO),
+    heroImage: reshapeImage(data.blog.heroImage),
     seo: reshapeSeo(data.blog.seo, description),
     featuredArticles,
     paginated: {
