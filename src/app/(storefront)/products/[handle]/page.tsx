@@ -14,7 +14,11 @@ import { withNoindexRobots } from '@/lib/seo/noindex'
 import { serializeInlineJson } from '@/lib/seo/serialize-inline-json'
 import { SITE_URL } from '@/lib/seo/site-url'
 import { getVisibleProductReviewSummary } from '@/lib/reviews/summary'
-import { getTrustooProductRatings } from '@/lib/reviews/trustoo'
+import { loadProductReviews } from '@/lib/reviews/actions'
+import {
+  getTrustooProductRatings,
+  getTrustooProductReviews,
+} from '@/lib/reviews/trustoo'
 import { sanitizeShopifyCompactHtml } from '@/lib/shopify/html-content'
 import { RichText } from '@/components/ui/rich-text'
 import { Badge } from '@/components/ui/badge'
@@ -22,6 +26,7 @@ import { Eyebrow } from '@/components/ui/eyebrow'
 import { StarRating } from '@/components/ui/star-rating'
 import { ProductForm } from '@/components/product/product-form'
 import { ProductGallery } from '@/components/product/product-gallery'
+import { Reviews } from '@/components/product/reviews'
 
 import { DynamicPurchaseForm } from './_components/dynamic-purchase-form'
 import { RelatedProducts } from './_components/related-products'
@@ -125,8 +130,9 @@ export async function ProductContent({
   const productUrl = `${SITE_URL}/products/${product.handle}`
   const hasAvailableVariant = product.variants.some((v) => v.availableForSale)
   const descriptionHtml = sanitizeShopifyCompactHtml(product.descriptionHtml)
-  const productReviewSummaries = await getTrustooProductRatings([
-    product.handle,
+  const [productReviewSummaries, productReviews] = await Promise.all([
+    getTrustooProductRatings([product.handle]),
+    getTrustooProductReviews(product.handle),
   ])
   const productReviewSummary = productReviewSummaries[product.handle] ?? {
     rating: product.rating,
@@ -301,7 +307,10 @@ export async function ProductContent({
             <h1 className="font-display text-ink text-[clamp(2rem,3.4vw,2.9rem)] leading-[1.04] font-medium">
               {product.title}
             </h1>
-            <div className="flex flex-wrap items-center gap-2.5">
+            <a
+              href="#reviews"
+              className="focus-visible:ring-ring flex w-fit flex-wrap items-center gap-2.5 rounded-sm hover:underline focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+            >
               <StarRating rating={displayRating} size="lg" />
               <span className="type-mono-meta text-ink-faint">
                 {displayReviewCount === 0
@@ -310,7 +319,7 @@ export async function ProductContent({
                       displayReviewCount === 1 ? 'review' : 'reviews'
                     }`}
               </span>
-            </div>
+            </a>
           </div>
 
           {/* Production element order: buy controls → description → availability → tags.
@@ -356,6 +365,13 @@ export async function ProductContent({
           ) : null}
         </div>
       </div>
+
+      <Reviews
+        key={product.handle}
+        handle={product.handle}
+        initialPage={productReviews}
+        loadPageAction={loadProductReviews}
+      />
 
       {/* Product recommendations — mb keeps the last carousel clear of the footer */}
       <div className="my-[clamp(50px,7vw,90px)] flex flex-col gap-10">

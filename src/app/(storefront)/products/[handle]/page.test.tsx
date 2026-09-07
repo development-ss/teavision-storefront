@@ -2,7 +2,10 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import type { ReactNode } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { getTrustooProductRatings } from '@/lib/reviews/trustoo'
+import {
+  getTrustooProductRatings,
+  getTrustooProductReviews,
+} from '@/lib/reviews/trustoo'
 import { getProduct } from '@/lib/shopify/operations/product'
 import type { Product } from '@/lib/shopify/types'
 import { makeProduct } from '@/tests/fixtures/shopify/product'
@@ -59,6 +62,7 @@ vi.mock('@/components/product/product-gallery', () => ({
 
 vi.mock('@/lib/reviews/trustoo', () => ({
   getTrustooProductRatings: vi.fn(),
+  getTrustooProductReviews: vi.fn().mockResolvedValue(null),
 }))
 
 vi.mock('@/lib/shopify/operations/product', () => ({
@@ -280,6 +284,22 @@ describe('ProductContent aggregateRating JSON-LD', () => {
   })
 
   it('emits aggregateRating when the same rating and review count are visible', async () => {
+    vi.mocked(getTrustooProductReviews).mockResolvedValueOnce({
+      page: 1,
+      totalPages: 1,
+      totalCount: 1,
+      reviews: [
+        {
+          id: 'review-1',
+          rating: 5,
+          author: 'Tea buyer',
+          title: '',
+          content: 'Fresh and fragrant.',
+          date: '2026-09-01',
+          reply: '',
+        },
+      ],
+    })
     vi.mocked(getTrustooProductRatings).mockResolvedValue({
       'reviewed-tea': { rating: 4.7, reviewCount: 12 },
     })
@@ -296,6 +316,10 @@ describe('ProductContent aggregateRating JSON-LD', () => {
 
     expect(html).toContain('4.7')
     expect(html).toContain('12 reviews')
+    expect(html).toContain('href="#reviews"')
+    expect(html).toContain('id="reviews"')
+    expect(html).toContain('Fresh and fragrant.')
+    expect(getTrustooProductReviews).toHaveBeenCalledWith('reviewed-tea')
     expect(html).toContain('<svg width="20" height="20"')
     expect(html).toContain('text-rating')
     expect(html).not.toContain('shopify-product-reviews')
