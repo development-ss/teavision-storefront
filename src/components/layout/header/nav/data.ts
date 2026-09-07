@@ -225,6 +225,7 @@ export function getShopKeyForPath(
 
 export function isServicesPath(pathname: string): boolean {
   return (
+    isNavLinkActive(pathname, '/pages/services') ||
     isNavLinkActive(pathname, '/pages/wholesale') ||
     SERVICES_LINKS.some((link) => isNavLinkActive(pathname, link.href))
   )
