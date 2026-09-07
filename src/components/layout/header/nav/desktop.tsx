@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { ChevronDown } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { createPortal, preload } from 'react-dom'
+import { createPortal } from 'react-dom'
 
 import { DisclosureButton } from '@/components/ui/disclosure-button'
 import { cn } from '@/lib/utils'
@@ -28,16 +28,6 @@ import { useOutsideClose } from './use-outside-close'
 
 /** Grace period in ms before the mega panel closes after cursor leaves the trigger or panel. */
 const CLOSE_GRACE_MS = 200
-
-function preloadMenuImages() {
-  for (const { imageSrc } of [...SHOP_SECTIONS, ...SERVICES_LINKS]) {
-    preload(imageSrc, {
-      as: 'image',
-      fetchPriority: 'low',
-      type: 'image/webp',
-    })
-  }
-}
 
 export function MegaNav({
   shopSections = SHOP_SECTIONS,
@@ -66,8 +56,6 @@ export function MegaNav({
   const activeService =
     SERVICES_LINKS.find((service) => service.href === activeServiceHref) ??
     SERVICES_LINKS[0]!
-
-  preloadMenuImages()
 
   // Clear the close timer on unmount to prevent state updates on an unmounted component.
   useEffect(() => {
