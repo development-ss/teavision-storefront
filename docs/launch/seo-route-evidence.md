@@ -70,5 +70,11 @@ property access or dated proof.
 | Enabled indexing | `node scripts/seo/probe-launch-seo.mjs --mode enabled` | Robots sitemap line, matrix sitemap URLs, canonical checks, no noindex on indexable routes | Pass | 2026-06-23 final readiness audit against local fake-provider production lifecycle with `DISABLE_INDEXING=false`; launch-host proof still pending |
 | Policy redirects | `node scripts/seo/probe-launch-seo.mjs --mode redirects` | Registry redirects include privacy and terms aliases | Pass | 2026-06-23 local command output: privacy and terms aliases present, 8 redirects total |
 | Runbook evidence | `node scripts/seo/probe-launch-seo.mjs --mode runbook` | Required evidence headings and runbook evidence text are present | Pass | 2026-06-23 local command output |
-| Structured data | `SEO_PROBE_PRODUCT_PATH=/products/example-product node scripts/seo/probe-launch-seo.mjs --mode enabled` | Product JSON-LD parses when a product page is renderable | Pending | Pending representative product path |
+| Structured data | `node scripts/seo/probe-launch-seo.mjs --mode enabled --base-url https://www.teavision.com.au --product-path /products/organic-coldandflu-tea` | Product JSON-LD parses and AggregateRating matches visible reviews | Pass | 2026-09-07 public production check passed for the real product. |
 | Search Console | Owner Search Console access | Submit `/sitemap.xml` and inspect representative URLs after cutover | Owner-gated | Pending owner access |
+
+### Public production follow-up: 7 September 2026
+
+Enabled-indexing checks passed on the existing production deployment using `/products/organic-coldandflu-tea`. Product and AggregateRating JSON-LD both passed, including agreement with the visible review summary. The generic pattern rules that the probe leaves to source inspection were also checked with concrete public requests: `/collections/all/products/organic-coldandflu-tea` returned 308 to `/products/organic-coldandflu-tea`, and `/blogs/journal/readiness-probe` returned 308 to `/blogs/teavision-blogs/readiness-probe`. The latter validates redirect mapping only, not the existence of a probe article.
+
+Private Search Console inspection remains pending. Automatic approval review rejected opening the Teavision property because explicit owner access was not recorded. A Teavision-only, read-only inspection has been requested; no property was inspected, sitemap submitted, or indexing setting changed. Public checks verify the existing deployment and do not establish the state of the unpushed candidate after deployment.

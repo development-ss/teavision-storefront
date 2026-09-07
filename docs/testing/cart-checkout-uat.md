@@ -1,8 +1,42 @@
 # Cart and Checkout Hosted UAT
 
-Status: blocked until Shopify dev store setup is complete.
+Status as of 2026-09-07: approved checkout inspection passed. Further shipping, tax, payment and order-completion tests are waived by the owner and remain unverified.
 
-Do not execute this checklist against production. Do not run hosted checkout, payment, tax, shipping-rate, order-creation, or success-redirect testing until the Shopify dev store is configured, test payments are safe, and the store owner explicitly approves checkout testing.
+## Current-Store Verification: 7 September 2026
+
+The project owner instructed Codex in this task: "no dev store, go with the current". This authorises the current `mrteashop-com.myshopify.com` store in place of the dev-store prerequisite below for this verification session. The original dev-store checklist remains the reusable baseline.
+
+Read-only Shopify admin inspection confirmed modern customer accounts are enabled, the Teavision Headless channel is configured, and Shopify Payments is accepting live payments. This configuration evidence does not establish a successful checkout, payment, or order.
+
+The current Chrome account is now selected for non-purchase checks. Purchase-specific product, payment method and maximum AUD order total still require an approved boundary before submitting any live purchase. No payment-mode change, payment submission, order creation, fulfilment change, or notification-setting change has been made during this verification. Payment, shipping/tax totals, order creation, and success-state results remain pending until the corresponding scenarios are actually completed and recorded.
+
+### Current Chrome session follow-up
+
+The owner instructed: "use the current logged in user in chrome". On 7 September, this task loaded that account's production dashboard/profile/address and confirmed the storefront cart displayed matching account identity. It added one Organic Cold & Flu 50g line (AUD 11.88), accepted terms and attempted checkout navigation. Automatic approval review subsequently rejected hosted-screen inspection as requiring more explicit current-store checkout approval. No hosted-screen pass is claimed from this attempt. The test line was removed and its absence verified; a separate Aniseed Whole line added by a concurrent workflow was preserved. No payment or order was submitted.
+
+Separately, [TKT-03154 verification](tkt-03154-verification.md) records owner-approved inspection of standard hosted checkout on deployment `dpl_FNukrfmQsmi6R2Ttcczi7sANew33`, with the signed-in account and cart lines matching. That task also records successful live logout and fresh OAuth callback. This is attributed evidence for those specific scenarios; full shipping, tax, payment and order-completion UAT remains pending. Shop Pay verification is tracked in that task's record.
+
+### Explicitly approved inspection: 7 September 2026, approximately 16:50 UTC+8
+
+The owner answered "yes" to: "Do you approve inspecting the current store's checkout using your signed-in Chrome account, stopping before payment or order submission?" This resolves the previous automatic approval block for inspection only; it does not authorise a paid order.
+
+Codex independently completed the approved check on the current production storefront:
+
+- Started with an empty cart and added one Organic Cold & Flu 50g unit, AUD 11.88.
+- Accepted terms and followed the storefront checkout handoff into Shopify-hosted checkout.
+- Compared the visible hosted Account email with the storefront cart confirmation email: exact match, without copying either into this record.
+- Confirmed the hosted order summary retained the same product, 50g variant, quantity one, and AUD 11.88 subtotal.
+- The saved address was incomplete and had no postcode. Checkout prompted for a postal code and showed no available shipping methods. No address was edited; shipping rates and final tax-inclusive order totals remain unverified.
+- Payment fields were visible but untouched. No payment or order submission was made.
+- Removed the temporary product through the storefront and verified the cart returned to empty.
+
+Result: live handoff, account identity and line/subtotal parity PASS for this scenario. Full hosted UAT remains incomplete. This verifies the existing deployment, not the uncommitted production-readiness fixes.
+
+For routine future runs, use the dev-store prerequisites below. Any current-store exception must record the owner's authorisation and the exact purchase boundary before testing payment or order creation.
+
+## Owner decision after inspection
+
+After being given the next steps for a complete shipping address and a paid test order, the owner instructed "we dont have to test this". Further shipping, tax, payment, order-creation and success-state tests are waived for this release. Preserve the passing inspection evidence above and the unverified outcomes; no payment or order is authorised by this waiver. The reusable checklist below remains available for future approved runs.
 
 ## Scope
 

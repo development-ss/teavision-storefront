@@ -2,6 +2,14 @@
 
 ## Automated Local Production Evidence
 
+### Verification: 7 September 2026
+
+The final fake-provider production run passed **44/44 browser tests**, including signed-in checkout handoff, account switching, cart persistence after reload, login/logout document navigation, responsive smoke coverage, and a regression that deliberately delays JavaScript delivery. Purchase controls remain disabled until hydration completes, then successfully add the minimum product quantity.
+
+The cart persistence test now waits for the server-confirmed order summary before reloading; the quantity input alone is optimistic. Signed-in fixtures use the active Playwright `baseURL` for cookies so both development and production hostnames are tested correctly.
+
+Command: `PLAYWRIGHT_PORT=54173 node --env-file=.env.local node_modules/@playwright/test/cli.js test --config=playwright.production.config.ts --output=.tmp/readiness-hydration-results` (set `PLAYWRIGHT_PORT` with the platform's environment syntax). The production config supplied local fake providers and test credentials. No real hosted checkout or payment was performed by this run.
+
 Run the local production browser suite with:
 
 ```bash

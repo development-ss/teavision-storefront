@@ -40,13 +40,27 @@ Keep the local fake Customer Account API for automated unit, integration, Storyb
 
 ## Phase 15 OAuth Launch Evidence
 
+### Configuration inspection: 7 September 2026
+
+The owner authorised verification against the current store in this Codex task ("no dev store, go with the current"). Read-only inspection of Shopify admin, `mrteashop-com` → Headless → Teavision Headless → Customer Account API, confirmed:
+
+- Modern customer accounts are enabled and the client type is Public (web app).
+- The configured callbacks include `https://www.teavision.com.au/account/callback` and `https://teavision-storefront.vercel.app/account/callback`.
+- The configured logout URLs include `https://www.teavision.com.au/account/login` and `https://teavision-storefront.vercel.app/account/login`.
+- Matching JavaScript origins are registered for both hosts.
+- `customer_read_customers`, `customer_write_customers`, `customer_read_orders`, `customer_read_markets`, and `customer_read_companies` are enabled.
+
+The initial shared vercel.app-origin configuration blocker is resolved. A later read-only Vercel inspection on 7 September confirmed separate Production and Preview entries, with Production using `https://www.teavision.com.au/account/callback` and `https://www.teavision.com.au/account/login`. Both match the Shopify allow-list. A separate task applied these changes and deployed commit `076aca8e69ff8fae26f37e1967b0a563d0c6f6d5` as `dpl_FNukrfmQsmi6R2Ttcczi7sANew33`. This readiness task made no environment changes.
+
+The separate task's [TKT-03154 verification](tkt-03154-verification.md) records successful live logout, fresh email-code sign-in, callback and standard hosted-checkout account/cart parity. This task independently used the owner's current signed-in Chrome session to load the production dashboard, profile and saved address; the storefront cart confirmation identity matched. No customer records or credentials are reproduced here. Populated order data and customer/company pricing parity still need evidence. The deployed correction excludes this task's uncommitted readiness fixes. After explicit inspection-only approval, this task also independently confirmed that the hosted checkout Account email exactly matched the storefront cart confirmation email. Product/variant, quantity and subtotal matched; no payment or order was submitted. See [cart-checkout-uat.md](cart-checkout-uat.md) for the dated boundary and remaining shipping-address limitation.
+
 Before recording Customer Account OAuth as launch-ready, confirm that the production `SHOPIFY_CUSTOMER_ACCOUNT_REDIRECT_URI` and `SHOPIFY_CUSTOMER_ACCOUNT_LOGOUT_REDIRECT_URI` values match the callback and logout redirect URLs configured in Shopify admin.
 
 Direct `/account/login/start` links must use `prefetch={false}` so Next.js does not prefetch into the OAuth-start redirect path. Normal internal `/account` links can remain regular app navigation.
 
 Automated local/fake tests cover `/account`, `/account/login`, `/account/login/start`, `/account/callback`, `/account/logout`, legacy account bridge routes, and cart buyer-identity checkout handoff. They prove app-side routing, local callback/logout behavior, fake OAuth exchange, protected route handling, and fake checkout handoff only.
 
-Live Shopify Customer Account OAuth is blocked until owner/admin approval is recorded. The evidence record must include owner approval, date, tester, configured callback URL, configured logout URL, store/admin context, and pass/fail result.
+For future live OAuth runs, record owner/admin approval, date, tester, configured callback URL, configured logout URL, store/admin context, and pass/fail result. The current release evidence is linked above.
 
 ## Protected Customer Data Access
 
