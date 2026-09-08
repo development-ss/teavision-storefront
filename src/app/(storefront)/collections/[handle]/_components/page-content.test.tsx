@@ -591,7 +591,7 @@ describe('Collection hero and page content rendering', () => {
 
     expect(heroHtml).not.toContain('data-testid="collection-rich-hero"')
     expect(heroHtml).toContain('aria-label="Breadcrumb"')
-    expect(heroHtml).toContain('Wholesale collection')
+    expect(heroHtml).not.toContain('Wholesale collection')
     expect(heroHtml).not.toContain('Read more about Wholesale Bulk Tea')
     expect(storyHtml).toContain('Read more about Wholesale Bulk Tea')
     expect(storyHtml).toContain(
@@ -627,7 +627,7 @@ describe('Collection hero and page content rendering', () => {
     expect(html).toContain(
       'iStock-1828083790.jpg%3Fv%3D1707454172%26width%3D1600',
     )
-    expect(html).toContain('Wholesale collection')
+    expect(html).not.toContain('Wholesale collection')
     expect(html).toContain('aria-label="Breadcrumb"')
     expect(html).toContain('Aniseed collection description.')
   })

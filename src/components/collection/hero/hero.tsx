@@ -2,7 +2,6 @@ import Image from 'next/image'
 import Link from 'next/link'
 
 import { Button } from '@/components/ui/button'
-import { Eyebrow } from '@/components/ui/eyebrow'
 import { Section } from '@/components/ui/section'
 import type {
   HeroImage,
@@ -80,8 +79,7 @@ export function Hero({
           )}
         >
           <div className="flex min-w-0 flex-col justify-center px-6 py-8 sm:px-8 md:py-10 lg:px-12">
-            <Eyebrow>Wholesale collection</Eyebrow>
-            <h1 className="font-display text-brand-deep mt-4 max-w-[24ch] text-[clamp(2rem,3.6vw,3.5rem)] leading-[1.12] font-medium text-balance wrap-break-word">
+            <h1 className="font-display text-brand-deep max-w-[24ch] text-[clamp(2rem,3.6vw,3.5rem)] leading-[1.12] font-medium text-balance wrap-break-word">
               {title}
             </h1>
             {category ? (
