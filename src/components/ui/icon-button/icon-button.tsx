@@ -15,7 +15,7 @@ const iconButtonVariants = cva(
         outline: 'border border-hairline hover:bg-brand-tint hover:text-brand',
         ghost: 'text-ink-soft hover:bg-brand-tint hover:text-brand',
         rating:
-          'rounded-sm text-gold hover:bg-transparent hover:text-gold-deep aria-pressed:text-gold-deep',
+          'rounded-sm text-rating hover:bg-transparent hover:text-rating aria-pressed:text-rating',
       },
       size: {
         sm: 'size-11',
