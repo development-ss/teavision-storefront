@@ -90,11 +90,11 @@ export function ProductPurchaseForm({
     quantityIncrement,
     value: quantity,
   })
-  const canAddToCart =
-    isReady &&
+  const isVariantPurchasable =
     !disabled &&
     selectedVariant?.availableForSale === true &&
     (maximumQuantity === undefined || maximumQuantity >= minimumQuantity)
+  const canAddToCart = isReady && isVariantPurchasable
   const isVariantSelectDisabled =
     !isReady || isPending || disabled || !hasAvailableVariant
 
@@ -253,7 +253,7 @@ export function ProductPurchaseForm({
                 ? 'Adding…'
                 : justAdded
                   ? 'Added'
-                  : canAddToCart
+                  : isVariantPurchasable
                     ? 'Add to cart'
                     : 'Sold out'}
             </Button>
