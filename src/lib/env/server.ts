@@ -36,6 +36,14 @@ export function getShopifyWebhookSecret(): string | undefined {
   return optionalEnv('SHOPIFY_WEBHOOK_SECRET')
 }
 
+export function getTrustooPublicToken(): string | undefined {
+  return optionalEnv('TRUSTOO_PUBLIC_TOKEN')
+}
+
+export function getTrustooPrivateToken(): string | undefined {
+  return optionalEnv('TRUSTOO_PRIVATE_TOKEN')
+}
+
 export function isNoindexModeEnabledFromEnv(): boolean {
   return truthyEnv('DISABLE_INDEXING')
 }

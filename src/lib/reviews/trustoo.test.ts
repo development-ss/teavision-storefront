@@ -1,10 +1,16 @@
+import { createHmac } from 'node:crypto'
+
 import { cacheLife, cacheTag } from 'next/cache'
 import type { Mock } from 'vitest'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
 import { logEvent } from '@/lib/observability/logger'
 
-import { getTrustooProductRatings, getTrustooProductReviews } from './trustoo'
+import {
+  createTrustooProductReview,
+  getTrustooProductRatings,
+  getTrustooProductReviews,
+} from './trustoo'
 
 vi.mock('next/cache', () => ({
   cacheLife: vi.fn(),
@@ -15,11 +21,103 @@ vi.mock('@/lib/env/public', () => ({
   trustooShopDomain: 'mrteashop-com.myshopify.com',
 }))
 
+const envMocks = vi.hoisted(() => ({
+  getTrustooPrivateToken: vi.fn(),
+  getTrustooPublicToken: vi.fn(),
+}))
+
+vi.mock('@/lib/env/server', () => envMocks)
+
 vi.mock('@/lib/observability/logger', () => ({
   logEvent: vi.fn(),
 }))
 
 const fetchMock = vi.fn() as Mock<typeof fetch>
+
+describe('createTrustooProductReview', () => {
+  beforeEach(() => {
+    fetchMock.mockReset()
+    envMocks.getTrustooPublicToken.mockReset()
+    envMocks.getTrustooPrivateToken.mockReset()
+    vi.stubGlobal('fetch', fetchMock)
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-09-08T04:05:06.000Z'))
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+    vi.unstubAllGlobals()
+  })
+
+  test('does not submit when server credentials are missing', async () => {
+    await expect(
+      createTrustooProductReview({
+        productId: 'gid://shopify/Product/123',
+        rating: 5,
+        author: 'A customer',
+        email: 'customer@example.com',
+        content: 'Fresh and fragrant.',
+      }),
+    ).resolves.toEqual({ ok: false, reason: 'not-configured' })
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
+
+  test('signs and submits a valid product review', async () => {
+    envMocks.getTrustooPublicToken.mockReturnValue('public-token')
+    envMocks.getTrustooPrivateToken.mockReturnValue('private-token')
+    fetchMock.mockResolvedValue(Response.json({ code: 0, data: { id: 'r-1' } }))
+
+    await expect(
+      createTrustooProductReview({
+        productId: 'gid://shopify/Product/123',
+        rating: 5,
+        author: 'A customer',
+        email: 'customer@example.com',
+        content: 'Fresh and fragrant.',
+      }),
+    ).resolves.toEqual({ ok: true, id: 'r-1' })
+
+    const [url, init] = fetchMock.mock.calls[0] ?? []
+    const body = JSON.stringify({
+      product_id: '123',
+      rating: 5,
+      author: 'A customer',
+      author_email: 'customer@example.com',
+      author_country: 'AU',
+      content: 'Fresh and fragrant.',
+      source: 'ChatWILL',
+    })
+    expect(url).toBe('https://rapi.trustoo.io/api/v1/openapi/create_review')
+    expect(init?.method).toBe('POST')
+    expect(init?.body).toBe(body)
+    expect(init?.headers).toMatchObject({
+      'Content-Type': 'application/json',
+      'Public-Token': 'public-token',
+      Timestamp: '1788840306',
+    })
+    expect((init?.headers as Record<string, string>).Sign).toBe(
+      createHmac('sha256', 'private-token')
+        .update(`timestamp=1788840306|${body}`)
+        .digest('hex'),
+    )
+  })
+
+  test('returns a provider error for malformed or failed responses', async () => {
+    envMocks.getTrustooPublicToken.mockReturnValue('public-token')
+    envMocks.getTrustooPrivateToken.mockReturnValue('private-token')
+    fetchMock.mockResolvedValue(Response.json({ code: 1, data: null }))
+
+    await expect(
+      createTrustooProductReview({
+        productId: '123',
+        rating: 4,
+        author: 'A customer',
+        email: 'customer@example.com',
+        content: 'Good tea overall.',
+      }),
+    ).resolves.toEqual({ ok: false, reason: 'provider-error' })
+  })
+})
 
 describe('getTrustooProductRatings', () => {
   beforeEach(() => {

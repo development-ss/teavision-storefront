@@ -1,6 +1,9 @@
+import { createHmac } from 'node:crypto'
+
 import { cacheLife, cacheTag } from 'next/cache'
 
 import { trustooShopDomain } from '@/lib/env/public'
+import { getTrustooPrivateToken, getTrustooPublicToken } from '@/lib/env/server'
 import { logEvent } from '@/lib/observability/logger'
 
 import type { ProductReviewSummary } from './summary'
@@ -17,6 +20,8 @@ type TrustooRatingsResponse = {
 
 const TRUSTOO_PRODUCT_RATINGS_URL =
   'https://api.trustoo.io/api/v1/reviews/get_products_rating'
+const TRUSTOO_CREATE_REVIEW_URL =
+  'https://rapi.trustoo.io/api/v1/openapi/create_review'
 
 export type ProductReview = {
   id: string
@@ -35,12 +40,90 @@ export type ProductReviewsPage = {
   totalCount: number
 }
 
+export type CreateTrustooReviewInput = {
+  productId: string
+  rating: number
+  author: string
+  email: string
+  content: string
+}
+
+export type CreateTrustooReviewResult =
+  | { ok: true; id: string }
+  | { ok: false; reason: 'not-configured' | 'provider-error' }
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
 }
 
 function reviewText(value: unknown): string {
   return typeof value === 'string' ? value.trim() : ''
+}
+
+function numericProductId(value: string): string | null {
+  const match = /^gid:\/\/shopify\/Product\/(\d+)$/.exec(value)
+  return match?.[1] ?? (/^\d+$/.test(value) ? value : null)
+}
+
+export async function createTrustooProductReview(
+  input: CreateTrustooReviewInput,
+): Promise<CreateTrustooReviewResult> {
+  const publicToken = getTrustooPublicToken()
+  const privateToken = getTrustooPrivateToken()
+  const productId = numericProductId(input.productId)
+
+  if (!publicToken || !privateToken || !trustooShopDomain || !productId) {
+    logEvent('warn', 'trustoo_failed', {
+      reason: 'review-submit-not-configured',
+    })
+    return { ok: false, reason: 'not-configured' }
+  }
+
+  const body = JSON.stringify({
+    product_id: productId,
+    rating: input.rating,
+    author: input.author,
+    author_email: input.email,
+    author_country: 'AU',
+    content: input.content,
+    // Trustoo's OpenAPI create endpoint expects this source label for
+    // reviews submitted through the custom storefront integration.
+    source: 'ChatWILL',
+  })
+  const timestamp = Math.floor(Date.now() / 1000).toString()
+  const sign = createHmac('sha256', privateToken)
+    .update(`timestamp=${timestamp}|${body}`)
+    .digest('hex')
+
+  try {
+    const response = await fetch(TRUSTOO_CREATE_REVIEW_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Public-Token': publicToken,
+        Sign: sign,
+        Timestamp: timestamp,
+      },
+      body,
+      signal: AbortSignal.timeout(8000),
+    })
+    if (!response.ok) throw new Error(`Trustoo responded ${response.status}`)
+
+    const json: unknown = await response.json()
+    if (
+      !isRecord(json) ||
+      json.code !== 0 ||
+      !isRecord(json.data) ||
+      typeof json.data.id !== 'string' ||
+      json.data.id.length === 0
+    )
+      throw new Error('Trustoo returned an unusable review response')
+
+    return { ok: true, id: json.data.id }
+  } catch {
+    logEvent('warn', 'trustoo_failed', { reason: 'review-submit-failed' })
+    return { ok: false, reason: 'provider-error' }
+  }
 }
 
 function parseReview(value: unknown): ProductReview | null {
