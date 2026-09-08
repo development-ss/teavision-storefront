@@ -234,7 +234,7 @@ function makeCollection(handle: string) {
       title: 'Tea Masters Selection',
       image: fakeProductImage,
       descriptionHtml:
-        '<img src="https://cdn.shopify.com/s/files/1/0786/8339/files/tea_masters.png"><p>Rare teas selected for tea lovers.</p>',
+        '<img src="https://cdn.shopify.com/s/files/1/0786/8339/files/tea_masters.png"><p>Rare teas selected for tea lovers, cafes, retailers and hospitality venues. Explore distinctive loose leaf teas from renowned tea-growing regions, with a variety of styles to suit your menu and daily ritual. Each tea brings its own character, aroma and flavour to the cup. Discover the complete Tea Masters Selection.</p>',
     }
   if (handle === 'test-empty')
     return {

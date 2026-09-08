@@ -277,11 +277,6 @@ export function parseCollectionRichHero(
   }
 }
 
-function truncateHeroDescription(value: string): string {
-  if (value.length <= 280) return value
-  return `${value.slice(0, 277).trimEnd()}…`
-}
-
 export function cleanHeroDescription(value: string): string {
   const withoutMarkers = removeCitationMarkers(value)
     .replace(/\s+/g, ' ')
@@ -295,7 +290,7 @@ export function cleanHeroDescription(value: string): string {
         ? ''
         : withoutMarkers
 
-  return truncateHeroDescription(cleaned)
+  return cleaned
 }
 
 export function normalizeHtml(html: string): string {

@@ -130,7 +130,7 @@ test('launch image components avoid deprecated priority and invalid preload comb
   )
   const collectionHeroBlocks = imageBlocks(collectionHero)
   const collectionBannerBlock = collectionHeroBlocks.find((block) =>
-    block.includes("'object-cover'"),
+    block.includes('object-cover'),
   )
   assert.ok(
     collectionBannerBlock,

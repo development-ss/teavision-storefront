@@ -74,11 +74,11 @@ export function Hero({
         </nav>
         <div
           className={cn(
-            'bg-paper grid overflow-hidden',
-            image && 'md:grid-cols-2',
+            'bg-paper grid overflow-hidden md:min-h-120 lg:min-h-132',
+            image && 'lg:grid-cols-2',
           )}
         >
-          <div className="flex min-w-0 flex-col justify-center px-6 py-8 sm:px-8 md:py-10 lg:px-12">
+          <div className="flex min-w-0 flex-col justify-center px-6 py-10 sm:px-8 md:py-14 lg:px-12 lg:py-16">
             <h1 className="font-display text-brand-deep max-w-[24ch] text-[clamp(2rem,3.6vw,3.5rem)] leading-[1.12] font-medium text-balance wrap-break-word">
               {title}
             </h1>
@@ -86,24 +86,24 @@ export function Hero({
               <p className="text-brand mt-3 text-lg font-medium">{category}</p>
             ) : null}
             {intro ? (
-              <p className="text-ink-soft mt-5 max-w-[60ch] text-base leading-relaxed">
+              <p className="text-ink-soft mt-6 max-w-[60ch] text-base leading-relaxed wrap-break-word md:text-lg">
                 {intro}
               </p>
             ) : null}
           </div>
           {image ? (
-            <div className="relative min-h-56 md:min-h-80">
+            <div className="relative aspect-3/2 min-h-64 lg:aspect-auto lg:min-h-0">
               <Image
                 src={getSizedShopifyImageUrl(image.url, 1600)}
                 alt={image.altText ?? ''}
                 fill
-                sizes="(min-width: 1480px) 668px, (min-width: 768px) 45vw, 90vw"
+                sizes="(min-width: 1480px) 668px, (min-width: 1024px) 45vw, 90vw"
                 className={cn(
-                  'object-cover',
+                  'object-cover object-right',
                   image.width &&
                     image.height &&
                     image.height > image.width &&
-                    'object-contain',
+                    'object-contain object-center',
                 )}
                 loading="eager"
                 fetchPriority="high"

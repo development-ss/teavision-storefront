@@ -51,6 +51,11 @@ for (const handle of [
       await expect(page.locator('img[src*="wholesale_tea.png"]')).toHaveCount(0)
     }
     if (handle === 'test-masters') {
+      await expect(hero).toContainText(
+        'Discover the complete Tea Masters Selection.',
+      )
+      const panel = hero.locator('h1').locator('..').locator('..')
+      expect((await panel.boundingBox())?.height).toBeGreaterThanOrEqual(528)
       await expect(hero.locator('img')).toHaveAttribute(
         'src',
         /tea-masters-hero/,

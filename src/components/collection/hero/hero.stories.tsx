@@ -34,6 +34,15 @@ export const Default: Story = {
 }
 
 export const NoImage: Story = { args: { image: null } }
+export const LongIntroduction: Story = {
+  args: {
+    intro:
+      'Discover our selection of loose leaf teas sourced from renowned tea-growing regions. Carefully curated for tea lovers, cafes, retailers and hospitality venues, this collection celebrates the character and craft of each origin. Explore a variety of styles, from delicate white teas and fragrant oolongs to rich black teas and refreshing green teas, and find the right tea for your menu or daily ritual.',
+  },
+  play: async ({ canvas, args }) => {
+    await expect(canvas.getByText(args.intro)).toBeVisible()
+  },
+}
 export const PortraitPackaging: Story = {
   args: {
     title: 'Private Label Packaging',

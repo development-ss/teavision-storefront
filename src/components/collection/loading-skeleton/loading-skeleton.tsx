@@ -29,15 +29,14 @@ export function LoadingSkeleton({
             <div aria-hidden="true">
               <Skeleton className="mb-5 h-5 w-64 max-w-full" />
               <div
-                className="bg-paper grid md:grid-cols-2"
+                className="bg-paper grid md:min-h-120 lg:min-h-132 lg:grid-cols-2"
                 data-skeleton="hero"
               >
-                <div className="grid content-center gap-5 px-6 py-8 sm:px-8 md:py-10 lg:px-12">
-                  <Skeleton className="h-3 w-36" />
+                <div className="grid content-center gap-6 px-6 py-10 sm:px-8 md:py-14 lg:px-12 lg:py-16">
                   <Skeleton className="h-12 w-4/5" />
-                  <Skeleton className="h-16 w-full" />
+                  <Skeleton className="h-32 w-full" />
                 </div>
-                <Skeleton className="min-h-56 rounded-none md:min-h-80" />
+                <Skeleton className="aspect-3/2 min-h-64 rounded-none lg:aspect-auto lg:min-h-0" />
               </div>
             </div>
           </Section.Container>

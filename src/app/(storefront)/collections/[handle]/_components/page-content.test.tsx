@@ -559,7 +559,7 @@ describe('Collection hero and page content rendering', () => {
     expect(html).toContain('View our Tea Bag Manufacturing Catalogue')
     expect(html).toContain('Minimum Order Quantity: 6,000 Tea Bags Per Blend')
     expect(html).toMatch(
-      /<img(?=[^>]*class="object-cover")(?=[^>]*fetchPriority="high")(?=[^>]*loading="eager")[^>]*>/,
+      /<img(?=[^>]*class="object-cover[^"]*")(?=[^>]*fetchPriority="high")(?=[^>]*loading="eager")[^>]*>/,
     )
     expect(html).toMatch(
       /<link(?=[^>]*rel="preload")(?=[^>]*as="image")(?=[^>]*fetchPriority="high")[^>]*>/,
@@ -622,7 +622,7 @@ describe('Collection hero and page content rendering', () => {
     expect(html.match(/<h1\b/g)).toHaveLength(1)
     expect(html).toContain('>Aniseed Tea</h1>')
     expect(html).toContain('bg-paper grid overflow-hidden')
-    expect(html).toContain('class="object-cover"')
+    expect(html).toContain('class="object-cover object-right"')
     expect(html).not.toContain('opacity-35')
     expect(html).toContain(
       'iStock-1828083790.jpg%3Fv%3D1707454172%26width%3D1600',
@@ -767,7 +767,7 @@ describe('Collection hero and page content rendering', () => {
       '<p class="type-body text-ink-soft mt-4 max-w-[58ch]">Hero summary should not render',
     )
     expect(heroHtml).toMatch(
-      /<img(?=[^>]*class="object-cover")(?=[^>]*fetchPriority="high")(?=[^>]*loading="eager")[^>]*>/,
+      /<img(?=[^>]*class="object-cover[^"]*")(?=[^>]*fetchPriority="high")(?=[^>]*loading="eager")[^>]*>/,
     )
     expect(heroHtml).toMatch(
       /<link(?=[^>]*rel="preload")(?=[^>]*as="image")(?=[^>]*fetchPriority="high")[^>]*>/,

@@ -28,6 +28,30 @@ const collection: Collection = {
 }
 
 describe('collection content migration', () => {
+  it.each(['metafield', 'rich hero', 'paragraph', 'description'])(
+    'retains the complete introduction from %s without adding ellipses',
+    (source) => {
+      const intro =
+        'Carefully selected teas for cafes, retailers and tea lovers. '
+          .repeat(8)
+          .trim()
+      const hero = getCollectionHero({
+        ...collection,
+        hero:
+          source === 'metafield'
+            ? { intro, heading: null, image: null }
+            : undefined,
+        description: source === 'description' ? intro : '',
+        descriptionHtml:
+          source === 'rich hero'
+            ? `<section class="bulk-header"><p>${intro}</p></section>`
+            : source === 'paragraph'
+              ? `<p>${intro}</p>`
+              : '',
+      })
+      expect(hero.intro).toBe(intro)
+    },
+  )
   it.each([
     ['tea_masters.png', '/images/collections/tea-masters-hero.webp'],
     [

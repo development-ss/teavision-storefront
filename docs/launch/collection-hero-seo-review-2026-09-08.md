@@ -127,6 +127,8 @@ Acceptance checks:
 
 ## Implemented behavior
 
+Follow-up on 2026-09-09: removed the generic eyebrow label and the 280-character hero-introduction limit. Hero copy now retains the complete selected introduction; SEO description length handling is separate. The panel has a 480px minimum height from tablet width and 528px on desktop, grows with its content, and stacks text above the image below 1024px. The loading placeholder and responsive image sizes match these conditions. Desktop landscape crops align right to retain the original still-life subjects; portrait packaging stays contained and centered. Tea Masters was visually checked at 1440px, 768px and 390px with its complete introduction and no horizontal overflow.
+
 All successful base and category collection pages use `src/components/collection/hero/hero.tsx`: breadcrumb navigation above a warm split panel, a prominent HTML H1 and introductory copy, optional photography, and wrapping actions beneath it. On mobile, text precedes the image. Missing images, dimensions, paragraphs or CTA links no longer select another template. Loading placeholders reserve the same general composition; the base route retains its real product-grid streaming fallback.
 
 `src/lib/shopify/collection-content.ts` adapts old Shopify HTML into content fields. A marked rich section can supply zero, one, two or three actions. Body links and trailing story content survive extraction, while script/style content and obsolete disclosure controls are removed. Imported H1s become H2s; stories starting below H2 shift their entire hierarchy together. Unknown image dimensions remain unknown instead of receiving invented sizes. The responsive image container reserves its own height.
