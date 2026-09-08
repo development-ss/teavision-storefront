@@ -16,6 +16,11 @@ query GetCollection($handle: String!) {
     title
     description
     descriptionHtml
+    heroHeading: metafield(namespace: "custom", key: "hero_heading") { value }
+    heroIntro: metafield(namespace: "custom", key: "hero_intro") { value }
+    heroImage: metafield(namespace: "custom", key: "hero_image") {
+      reference { ... on MediaImage { image { url altText width height } } }
+    }
     updatedAt
     image {
       url

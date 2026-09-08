@@ -140,6 +140,11 @@ export type Collection = {
   title: string
   description: string
   descriptionHtml: string
+  hero?: {
+    heading: string | null
+    intro: string | null
+    image: ShopifyImage | null
+  }
   featuredImage: ShopifyImage | null
   updatedAt: string
   seo: {

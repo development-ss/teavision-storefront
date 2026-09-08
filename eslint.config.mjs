@@ -31,6 +31,8 @@ const eslintConfig = defineConfig([
     'build/**',
     'storybook-static/**',
     'next-env.d.ts',
+    // Generated GraphQL output is checked by TypeScript; lint the source queries/config.
+    'src/lib/shopify/types/generated/**',
     // Git worktrees
     '.worktrees/**',
     // Claude Code agent worktrees and local settings
