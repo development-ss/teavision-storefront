@@ -36,7 +36,7 @@ export function LoadingSkeleton({
                   <Skeleton className="h-12 w-4/5" />
                   <Skeleton className="h-32 w-full" />
                 </div>
-                <Skeleton className="aspect-3/2 min-h-64 rounded-none lg:aspect-auto lg:min-h-0" />
+                <Skeleton className="aspect-3/2 w-full self-center rounded-none" />
               </div>
             </div>
           </Section.Container>

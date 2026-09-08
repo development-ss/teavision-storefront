@@ -15,6 +15,7 @@ const meta: Meta<typeof Hero> = {
       'Loose leaf teas and botanical ingredients for cafes, retailers and foodservice teams.',
     image: {
       url: '/images/collections/wholesale-tea-hero-v2.webp',
+      position: 'right',
       altText: 'Loose tea and herbal ingredients',
       width: 1536,
       height: 1024,
@@ -37,10 +38,28 @@ export const NoImage: Story = { args: { image: null } }
 export const LongIntroduction: Story = {
   args: {
     intro:
-      'Discover our selection of loose leaf teas sourced from renowned tea-growing regions. Carefully curated for tea lovers, cafes, retailers and hospitality venues, this collection celebrates the character and craft of each origin. Explore a variety of styles, from delicate white teas and fragrant oolongs to rich black teas and refreshing green teas, and find the right tea for your menu or daily ritual.',
+      'Discover our selection of loose leaf teas sourced from renowned tea-growing regions. Carefully curated for tea lovers, cafes, retailers and hospitality venues, this collection celebrates the character and craft of each origin. Explore a variety of styles, from delicate white teas and fragrant oolongs to rich black teas and refreshing green teas, and find the right tea for your menu or daily ritual. '
+        .repeat(3)
+        .trim(),
   },
   play: async ({ canvas, args }) => {
     await expect(canvas.getByText(args.intro)).toBeVisible()
+    const frame = canvas.getByRole('img').getBoundingClientRect()
+    await expect(frame.width / frame.height).toBeCloseTo(1.5, 2)
+  },
+}
+export const LeftAlignedImage: Story = {
+  args: {
+    image: {
+      url: '/images/collections/wholesale-tea-hero-v2.webp',
+      altText: 'Example of a left-aligned hero image',
+      width: 1536,
+      height: 1024,
+      position: 'left',
+    },
+  },
+  play: async ({ canvas }) => {
+    await expect(canvas.getByRole('img')).toHaveClass('object-left')
   },
 }
 export const PortraitPackaging: Story = {

@@ -92,14 +92,19 @@ export function Hero({
             ) : null}
           </div>
           {image ? (
-            <div className="relative aspect-3/2 min-h-64 lg:aspect-auto lg:min-h-0">
+            <div className="relative aspect-3/2 w-full self-center">
               <Image
                 src={getSizedShopifyImageUrl(image.url, 1600)}
                 alt={image.altText ?? ''}
                 fill
                 sizes="(min-width: 1480px) 668px, (min-width: 1024px) 45vw, 90vw"
                 className={cn(
-                  'object-cover object-right',
+                  'object-cover',
+                  image.position === 'right'
+                    ? 'object-right'
+                    : image.position === 'left'
+                      ? 'object-left'
+                      : 'object-center',
                   image.width &&
                     image.height &&
                     image.height > image.width &&

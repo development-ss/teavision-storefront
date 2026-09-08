@@ -64,6 +64,21 @@ for (const handle of [
         'alt',
         /Black cast-iron teapot/,
       )
+      await expect(hero.locator('img')).toHaveClass(/object-right/)
+      for (const width of [1280, 768, 390]) {
+        await page.setViewportSize({ width, height: 900 })
+        await expect
+          .poll(async () => {
+            const bounds = await hero.locator('img').boundingBox()
+            return bounds
+              ? Math.abs(bounds.width / bounds.height - 1.5)
+              : Infinity
+          })
+          .toBeLessThan(0.01)
+        await expect(hero).toContainText(
+          'Discover the complete Tea Masters Selection.',
+        )
+      }
     }
     if (handle === 'test-explicit') {
       await expect(hero.locator('h1')).toHaveText('Custom Collection Heading')

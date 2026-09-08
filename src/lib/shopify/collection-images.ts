@@ -1,11 +1,16 @@
 import type { ShopifyImage } from './types'
 
+export type HeroImage = ShopifyImage & {
+  position?: 'left' | 'center' | 'right'
+}
+
 // Migration of audited legacy image assets, not collection layout overrides.
 // Preserve each original hero scene; never substitute an unrelated featured photo.
 // New collections should use custom.hero_image (a Storefront-readable file reference).
-const LEGACY_IMAGES: Record<string, ShopifyImage> = {
+const LEGACY_IMAGES: Record<string, HeroImage> = {
   'wholesale_tea.png': {
     url: '/images/collections/wholesale-tea-hero-v2.webp',
+    position: 'right',
     width: 1536,
     height: 1024,
     altText:
@@ -13,6 +18,7 @@ const LEGACY_IMAGES: Record<string, ShopifyImage> = {
   },
   'wholesale_spices_37111047-e440-43d3-891e-54fddc0f71f9.png': {
     url: '/images/collections/herbs-and-spices-hero-v2.webp',
+    position: 'right',
     width: 1536,
     height: 1024,
     altText:
@@ -20,6 +26,7 @@ const LEGACY_IMAGES: Record<string, ShopifyImage> = {
   },
   'australian_native_tea.png': {
     url: '/images/collections/australian-native-ingredients-hero-v2.webp',
+    position: 'right',
     width: 1536,
     height: 1024,
     altText:
@@ -27,6 +34,7 @@ const LEGACY_IMAGES: Record<string, ShopifyImage> = {
   },
   'wellness_tea_59455684-1285-4797-a05f-0b6bb3ae9ae8.png': {
     url: '/images/collections/wellness-functional-tea-hero.webp',
+    position: 'right',
     width: 1536,
     height: 1024,
     altText:
@@ -34,6 +42,7 @@ const LEGACY_IMAGES: Record<string, ShopifyImage> = {
   },
   'speciality_tea.png': {
     url: '/images/collections/speciality-tea-hero.webp',
+    position: 'right',
     width: 1536,
     height: 1024,
     altText:
@@ -41,12 +50,14 @@ const LEGACY_IMAGES: Record<string, ShopifyImage> = {
   },
   'organic_tea_6d641d5d-32cf-4674-8426-4ac32368ad8c.png': {
     url: '/images/collections/certified-organic-tea-hero.webp',
+    position: 'right',
     width: 1536,
     height: 1024,
     altText: 'Bowl of dried green tea on pale stone with fresh leafy branches',
   },
   'tea_masters.png': {
     url: '/images/collections/tea-masters-hero.webp',
+    position: 'right',
     width: 1536,
     height: 1024,
     altText:
@@ -97,7 +108,7 @@ const LEGACY_IMAGES: Record<string, ShopifyImage> = {
   },
 }
 
-export function getLegacyHeroImage(source: string): ShopifyImage | undefined {
+export function getLegacyHeroImage(source: string): HeroImage | undefined {
   try {
     const url = new URL(source, 'https://www.teavision.com.au')
     if (!['cdn.shopify.com', 'www.teavision.com.au'].includes(url.hostname))

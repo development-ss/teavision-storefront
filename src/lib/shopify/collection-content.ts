@@ -1,8 +1,8 @@
-import type { Collection, ShopifyImage } from '@/lib/shopify/types'
+import type { Collection } from '@/lib/shopify/types'
 
-import { getLegacyHeroImage } from './collection-images'
+import { getLegacyHeroImage, type HeroImage } from './collection-images'
 
-export type HeroImage = ShopifyImage
+export type { HeroImage } from './collection-images'
 
 export function getCollectionPageNumber(
   value: string | string[] | undefined,

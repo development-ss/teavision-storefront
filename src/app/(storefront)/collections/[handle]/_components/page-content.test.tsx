@@ -622,7 +622,7 @@ describe('Collection hero and page content rendering', () => {
     expect(html.match(/<h1\b/g)).toHaveLength(1)
     expect(html).toContain('>Aniseed Tea</h1>')
     expect(html).toContain('bg-paper grid overflow-hidden')
-    expect(html).toContain('class="object-cover object-right"')
+    expect(html).toContain('class="object-cover object-center"')
     expect(html).not.toContain('opacity-35')
     expect(html).toContain(
       'iStock-1828083790.jpg%3Fv%3D1707454172%26width%3D1600',
