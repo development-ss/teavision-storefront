@@ -448,8 +448,8 @@ export const TESTIMONIALS_FIXTURE = {
       logo: {
         src: '/images/testimonials/mood-tea-logo.png',
         alt: 'MOOD Tea logo',
-        width: 325,
-        height: 400,
+        width: 567,
+        height: 140,
       },
       name: 'Ashley McGrath',
       role: 'GM Social Enterprise',
@@ -461,8 +461,8 @@ export const TESTIMONIALS_FIXTURE = {
       logo: {
         src: '/images/testimonials/st-ali-logo.png',
         alt: 'St. Ali logo',
-        width: 325,
-        height: 400,
+        width: 354,
+        height: 87,
       },
       name: 'Lucy Ward',
       role: '',
@@ -474,8 +474,8 @@ export const TESTIMONIALS_FIXTURE = {
       logo: {
         src: '/images/testimonials/buy-organics-online-logo.png',
         alt: 'Buy Organics Online logo',
-        width: 325,
-        height: 400,
+        width: 130,
+        height: 88,
       },
       name: 'Owner',
       role: '',
@@ -487,8 +487,8 @@ export const TESTIMONIALS_FIXTURE = {
       logo: {
         src: '/images/testimonials/remedy-drinks-logo.png',
         alt: 'Remedy Drinks logo',
-        width: 325,
-        height: 400,
+        width: 419,
+        height: 420,
       },
       name: 'Julia Blair',
       role: 'Global Head of Manufacturing',

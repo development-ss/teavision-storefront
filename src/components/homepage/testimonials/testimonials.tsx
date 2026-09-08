@@ -65,11 +65,7 @@ export function Testimonials({
                   width={testimonial.logo.width}
                   height={testimonial.logo.height}
                   sizes="(min-width: 640px) 72px, 56px"
-                  className={cn(
-                    'size-full object-contain',
-                    testimonial.logo.src.includes('st-ali-logo') &&
-                      'scale-[1.55]',
-                  )}
+                  className="size-full object-contain p-1"
                 />
               </div>
               <div className="min-w-0 self-end">
