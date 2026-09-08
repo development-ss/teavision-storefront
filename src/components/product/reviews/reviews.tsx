@@ -2,18 +2,26 @@
 
 import { useState, useTransition } from 'react'
 
+import type { ProductReviewActionState } from '@/lib/reviews/actions'
 import type { ProductReviewsPage } from '@/lib/reviews/trustoo'
 import { Button } from '@/components/ui/button'
 import { Section } from '@/components/ui/section'
 import { StarRating } from '@/components/ui/star-rating'
 
+import { ReviewForm } from './review-form'
+
 type ReviewsProps = {
   handle: string
+  productTitle: string
   initialPage: ProductReviewsPage | null
   loadPageAction: (
     handle: string,
     page: number,
   ) => Promise<ProductReviewsPage | null>
+  submitReviewAction: (
+    previousState: ProductReviewActionState,
+    formData: FormData,
+  ) => Promise<ProductReviewActionState>
 }
 
 const dateFormatter = new Intl.DateTimeFormat('en-AU', {
@@ -23,9 +31,16 @@ const dateFormatter = new Intl.DateTimeFormat('en-AU', {
   timeZone: 'UTC',
 })
 
-export function Reviews({ handle, initialPage, loadPageAction }: ReviewsProps) {
+export function Reviews({
+  handle,
+  productTitle,
+  initialPage,
+  loadPageAction,
+  submitReviewAction,
+}: ReviewsProps) {
   const [data, setData] = useState(initialPage)
   const [failed, setFailed] = useState(initialPage === null)
+  const [isFormOpen, setIsFormOpen] = useState(false)
   const [pending, startTransition] = useTransition()
 
   function loadMore() {
@@ -61,12 +76,33 @@ export function Reviews({ handle, initialPage, loadPageAction }: ReviewsProps) {
       spacing="none"
       className="border-hairline mt-12 scroll-mt-40 border-t pt-10 md:mt-16"
     >
-      <h2
-        id="reviews-heading"
-        className="font-display text-ink text-3xl font-medium"
-      >
-        Reviews
-      </h2>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <h2
+          id="reviews-heading"
+          className="font-display text-ink text-3xl font-medium"
+        >
+          Reviews
+        </h2>
+        <Button
+          type="button"
+          variant="secondary"
+          size="sm"
+          aria-expanded={isFormOpen}
+          aria-controls="review-form"
+          onClick={() => setIsFormOpen((open) => !open)}
+        >
+          {isFormOpen ? 'Close review form' : 'Write a review'}
+        </Button>
+      </div>
+      {isFormOpen ? (
+        <div id="review-form" className="mt-6">
+          <ReviewForm
+            productTitle={productTitle}
+            action={submitReviewAction}
+            onCancel={() => setIsFormOpen(false)}
+          />
+        </div>
+      ) : null}
       {data && data.reviews.length > 0 ? (
         <ul className="divide-hairline mt-6 divide-y">
           {data.reviews.map((review) => (

@@ -166,6 +166,33 @@ test('/products/test-standard-tea loads with Add to Cart', async ({ page }) => {
   assertNoLiveFlow()
 })
 
+test('PDP review form validates and reports an unavailable review provider', async ({
+  page,
+}) => {
+  const assertNoLiveFlow = observeForbiddenLiveFlowUrls(page)
+
+  await gotoWithoutServerError(page, '/products/test-standard-tea')
+  await page.getByRole('button', { name: 'Write a review' }).click()
+
+  const form = page.getByRole('form', {
+    name: 'Write a review for Test Standard Tea',
+  })
+  await expect(form).toBeVisible()
+  await form.getByRole('button', { name: '5 stars' }).click()
+  await form.locator('#review-author').fill('A customer')
+  await form.locator('#review-email').fill('customer@example.com')
+  await form.locator('#review-content').fill('Fresh and fragrant tea.')
+  await form.getByRole('button', { name: 'Submit review' }).click()
+
+  await expect(
+    form.getByText(
+      'Reviews are temporarily unavailable. Please try again later.',
+      { exact: true },
+    ),
+  ).toBeVisible()
+  assertNoLiveFlow()
+})
+
 test('/cart loads the cart shell or empty-cart state', async ({ page }) => {
   const assertNoLiveFlow = observeForbiddenLiveFlowUrls(page)
 

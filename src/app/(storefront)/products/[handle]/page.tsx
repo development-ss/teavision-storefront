@@ -14,7 +14,10 @@ import { withNoindexRobots } from '@/lib/seo/noindex'
 import { serializeInlineJson } from '@/lib/seo/serialize-inline-json'
 import { SITE_URL } from '@/lib/seo/site-url'
 import { getVisibleProductReviewSummary } from '@/lib/reviews/summary'
-import { loadProductReviews } from '@/lib/reviews/actions'
+import {
+  loadProductReviews,
+  submitProductReviewAction,
+} from '@/lib/reviews/actions'
 import {
   getTrustooProductRatings,
   getTrustooProductReviews,
@@ -369,8 +372,14 @@ export async function ProductContent({
       <Reviews
         key={product.handle}
         handle={product.handle}
+        productTitle={product.title}
         initialPage={productReviews}
         loadPageAction={loadProductReviews}
+        submitReviewAction={submitProductReviewAction.bind(
+          null,
+          product.handle,
+          product.id,
+        )}
       />
 
       {/* Product recommendations — mb keeps the last carousel clear of the footer */}

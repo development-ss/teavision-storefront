@@ -54,8 +54,13 @@ const meta: Meta<typeof Reviews> = {
   tags: ['autodocs'],
   args: {
     handle: 'organic-peppermint',
+    productTitle: 'Organic Peppermint',
     initialPage: firstPage,
     loadPageAction: async () => nextPage,
+    submitReviewAction: async () => ({
+      status: 'success',
+      message: 'Thanks for sharing your experience.',
+    }),
   },
   parameters: { a11y: { test: 'error' } },
 }
@@ -74,13 +79,47 @@ export const Default: Story = {
       await canvas.findByText('Great tea for our cafe.'),
     ).toBeVisible()
     await expect(canvas.getByText('Showing 3 of 3 reviews')).toBeVisible()
-    await expect(canvas.queryByRole('button')).not.toBeInTheDocument()
+    await expect(
+      canvas.queryByRole('button', { name: 'Load more reviews' }),
+    ).not.toBeInTheDocument()
   },
 }
 
 export const Empty: Story = {
   args: { initialPage: { page: 1, totalPages: 0, totalCount: 0, reviews: [] } },
 }
+
+export const WriteReview: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Write a review' }),
+    )
+    const form = canvas.getByRole('form', {
+      name: 'Write a review for Organic Peppermint',
+    })
+    await expect(form).toBeVisible()
+    const formCanvas = within(form)
+    await userEvent.click(formCanvas.getByRole('button', { name: '5 stars' }))
+    await expect(
+      form.querySelector('input[name="rating"][value="5"]'),
+    ).toBeChecked()
+    await userEvent.type(formCanvas.getByLabelText(/^Name/), 'A customer')
+    await userEvent.type(
+      formCanvas.getByLabelText(/^Email \(private\)/),
+      'customer@example.com',
+    )
+    await userEvent.type(
+      formCanvas.getByLabelText(/^Review/),
+      'Fresh and fragrant tea.',
+    )
+    await userEvent.click(
+      formCanvas.getByRole('button', { name: 'Submit review' }),
+    )
+    await expect(await canvas.findByText('Review received')).toBeVisible()
+  },
+}
+
 export const Unavailable: Story = {
   args: { initialPage: null, loadPageAction: async () => null },
 }
