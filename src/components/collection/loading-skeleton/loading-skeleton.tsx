@@ -24,32 +24,24 @@ export function LoadingSkeleton({
     >
       <span className="sr-only">Loading collection</span>
       {showHero ? (
-        <>
-          <Section.Root tone="transparent" spacing="none">
-            <Section.Container className="pt-6">
-              <div className="overflow-hidden" aria-hidden="true">
-                <Skeleton
-                  className="aspect-16/7 w-full rounded-none"
-                  data-skeleton="hero"
-                />
-              </div>
-            </Section.Container>
-          </Section.Root>
-          <Section.Root tone="transparent" spacing="none">
-            <Section.Container>
+        <Section.Root tone="transparent" spacing="none" className="pt-6">
+          <Section.Container>
+            <div aria-hidden="true">
+              <Skeleton className="mb-5 h-5 w-64 max-w-full" />
               <div
-                className="flex flex-wrap items-center gap-2 pt-5.5"
-                aria-hidden="true"
+                className="bg-paper grid md:grid-cols-2"
+                data-skeleton="hero"
               >
-                <Skeleton className="h-3 w-10" />
-                <Skeleton className="h-3 w-1.5" />
-                <Skeleton className="h-3 w-20" />
-                <Skeleton className="h-3 w-1.5" />
-                <Skeleton className="h-3 w-72 max-w-full" />
+                <div className="grid content-center gap-5 px-6 py-8 sm:px-8 md:py-10 lg:px-12">
+                  <Skeleton className="h-3 w-36" />
+                  <Skeleton className="h-12 w-4/5" />
+                  <Skeleton className="h-16 w-full" />
+                </div>
+                <Skeleton className="min-h-56 rounded-none md:min-h-80" />
               </div>
-            </Section.Container>
-          </Section.Root>
-        </>
+            </div>
+          </Section.Container>
+        </Section.Root>
       ) : null}
       <Section.Root tone="transparent" className="pt-8 md:pt-10">
         <Section.Container>

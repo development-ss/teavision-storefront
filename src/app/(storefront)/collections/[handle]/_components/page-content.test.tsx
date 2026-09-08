@@ -554,12 +554,12 @@ describe('Collection hero and page content rendering', () => {
     ])
     const html = renderToStaticMarkup(heroElement)
 
-    expect(html).toContain('data-testid="collection-rich-hero"')
+    expect(html).toContain('data-testid="collection-hero"')
     expect(html).toContain('Ready-Made Bulk Tea Bags for Cafes')
     expect(html).toContain('View our Tea Bag Manufacturing Catalogue')
     expect(html).toContain('Minimum Order Quantity: 6,000 Tea Bags Per Blend')
     expect(html).toMatch(
-      /<img(?=[^>]*class="h-auto max-h-90 w-full object-cover")(?=[^>]*fetchPriority="high")(?=[^>]*loading="eager")[^>]*>/,
+      /<img(?=[^>]*class="object-cover")(?=[^>]*fetchPriority="high")(?=[^>]*loading="eager")[^>]*>/,
     )
     expect(html).toMatch(
       /<link(?=[^>]*rel="preload")(?=[^>]*as="image")(?=[^>]*fetchPriority="high")[^>]*>/,
@@ -621,12 +621,11 @@ describe('Collection hero and page content rendering', () => {
 
     expect(html.match(/<h1\b/g)).toHaveLength(1)
     expect(html).toContain('>Aniseed Tea</h1>')
-    expect(html).toContain('bg-brand-deep text-paper relative overflow-hidden')
+    expect(html).toContain('bg-paper grid overflow-hidden')
     expect(html).toContain('class="object-cover"')
     expect(html).not.toContain('opacity-35')
-    expect(html).toContain('collection-hero-scrim absolute inset-0 z-1')
     expect(html).toContain(
-      'iStock-1828083790.jpg%3Fv%3D1707454172%26width%3D1440',
+      'iStock-1828083790.jpg%3Fv%3D1707454172%26width%3D1600',
     )
     expect(html).toContain('Wholesale collection')
     expect(html).toContain('aria-label="Breadcrumb"')
@@ -727,9 +726,9 @@ describe('Collection hero and page content rendering', () => {
     const collection = collectionFixture({
       handle: 'wholesale-bulk-tea',
       title: 'Wholesale Bulk Tea',
-      description: 'Hero summary should not render in banner mode.',
+      description: 'Fallback description.',
       descriptionHtml: `
-          <img src="https://cdn.shopify.com/s/files/1/0786/8339/files/Wholesale-Bulk-Tea_1440x640.jpg" alt="Wholesale Bulk Tea">
+          <img src="https://cdn.shopify.com/s/files/1/0786/8339/files/wholesale_tea.png" alt="Wholesale Bulk Tea">
           <h2>Wholesale Bulk Tea</h2>
           <p>Browse loose leaf teas for cafes, retailers, and foodservice teams.</p>
           <h3>Why hospitality teams choose Teavision</h3>
@@ -760,9 +759,7 @@ describe('Collection hero and page content rendering', () => {
     expect(heroHtml.match(/<h1\b/g)).toHaveLength(1)
     expect(heroHtml).not.toContain('<h1 class="sr-only"')
     expect(heroHtml).not.toContain('type-display')
-    expect(heroHtml).toContain(
-      '<h1 aria-current="page" class="type-mono-meta text-gold-deep m-0 inline">Wholesale Bulk Tea</h1>',
-    )
+    expect(heroHtml).toContain('>Wholesale Bulk Tea</h1>')
     expect(heroHtml).not.toContain(
       '<span aria-current="page" class="text-gold-deep">Wholesale Bulk Tea</span>',
     )
@@ -770,7 +767,7 @@ describe('Collection hero and page content rendering', () => {
       '<p class="type-body text-ink-soft mt-4 max-w-[58ch]">Hero summary should not render',
     )
     expect(heroHtml).toMatch(
-      /<img(?=[^>]*class="w-full object-cover")(?=[^>]*fetchPriority="high")(?=[^>]*loading="eager")[^>]*>/,
+      /<img(?=[^>]*class="object-cover")(?=[^>]*fetchPriority="high")(?=[^>]*loading="eager")[^>]*>/,
     )
     expect(heroHtml).toMatch(
       /<link(?=[^>]*rel="preload")(?=[^>]*as="image")(?=[^>]*fetchPriority="high")[^>]*>/,
@@ -782,10 +779,10 @@ describe('Collection hero and page content rendering', () => {
       '<div class="mt-10" role="region" aria-label="About Wholesale Bulk Tea">',
     )
     expect(storyHtml).toContain(
-      '<h2 class="type-heading-05 text-ink mt-5">Why hospitality teams choose Teavision</h2>',
+      '<h3 class="type-heading-05 text-ink mt-5">Why hospitality teams choose Teavision</h3>',
     )
     expect(storyHtml).toContain(
-      '<h3 class="type-label text-ink mt-5">Flexible wholesale ordering</h3>',
+      '<h4 class="type-label text-ink mt-5">Flexible wholesale ordering</h4>',
     )
     expect(pageHtml.indexOf('id="product-grid"')).toBeGreaterThan(-1)
     expect(pageHtml).toContain('Read more about Wholesale Bulk Tea')
@@ -794,7 +791,7 @@ describe('Collection hero and page content rendering', () => {
     ).toBeGreaterThan(pageHtml.indexOf('id="product-grid"'))
   })
 
-  it('preloads the first product image when incomplete hero dimensions prevent the hero from rendering', async () => {
+  it('keeps products lazy when the hero uses its reserved image container without source dimensions', async () => {
     shopifyMocks.getCollection.mockResolvedValue(
       collectionFixture({
         featuredImage: {
@@ -829,7 +826,7 @@ describe('Collection hero and page content rendering', () => {
     })
     const html = renderToStaticMarkup(element)
 
-    expect(getImagePreloads(html)).toHaveLength(1)
+    expect(getImagePreloads(html)).toHaveLength(0)
   })
 })
 

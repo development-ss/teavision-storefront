@@ -93,7 +93,7 @@ test('/collections/all loads without a 500 response', async ({ page }) => {
   await gotoWithoutServerError(page, '/collections/all')
 
   await expect(
-    page.getByRole('heading', { name: /All products/i }),
+    page.getByRole('heading', { level: 1, name: 'Wholesale tea, herbs & spices' }),
   ).toBeVisible()
   await expect(
     page.getByRole('link', { name: /Test Standard Tea/i }).first(),
@@ -108,7 +108,7 @@ test('collection banner is the only prioritized listing image', async ({
 
   await gotoWithoutServerError(page, '/collections/test-banner')
 
-  const banner = page.locator('img.w-full.object-cover').first()
+  const banner = page.getByTestId('collection-hero').locator('img')
   await expect(banner).toHaveAttribute('loading', 'eager')
   await expect(banner).toHaveAttribute('fetchpriority', 'high')
   await expect(

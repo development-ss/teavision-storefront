@@ -222,10 +222,7 @@ const SHOPIFY_HTML_HEADING_TRANSFORMS: Record<
   article: { h1: { tagName: 'h2' } },
   compact: { h1: { tagName: 'h3' }, h2: { tagName: 'h3' } },
   collectionStory: {
-    h1: { tagName: 'h3' },
-    h2: { tagName: 'h3' },
-    h3: { tagName: 'h2', className: 'type-heading-05 text-ink mt-5' },
-    h4: { tagName: 'h3', className: 'type-label text-ink mt-5' },
+    h1: { tagName: 'h2' },
   },
   page: { h1: { tagName: 'h2' } },
 }

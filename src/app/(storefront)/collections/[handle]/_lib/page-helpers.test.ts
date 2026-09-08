@@ -34,17 +34,17 @@ describe('parseCollectionRichHero', () => {
           href: 'mailto:info@teavision.com.au?subject=Custom%20Tea%20Bag%20Enquiry',
           label: 'Speak to Our Team About Custom Tea Bags',
         },
+        {
+          href: 'https://www.teavision.com.au/collections/all',
+          label: 'Create Your Own White Label Tea Bag',
+        },
       ],
       footnote: 'Minimum Order Quantity: 6,000 Tea Bags Per Blend',
-      highlightAction: {
-        href: 'https://www.teavision.com.au/collections/all',
-        label: 'Create Your Own White Label Tea Bag',
-      },
       image: {
         altText: 'Teavision Bulk Tea Bags',
-        height: 577,
+        height: null,
         url: 'https://cdn.shopify.com/s/files/1/0786/8339/files/TeaVision-14_1.jpg?v=1761279097',
-        width: 1600,
+        width: null,
       },
       introHtml:
         "Teavision's most-loved blends in convenient <strong>biodegradable pyramid tea bags</strong>.",
@@ -66,15 +66,14 @@ describe('parseCollectionRichHero', () => {
 })
 
 describe('normalizeHtml', () => {
-  it('demotes imported collection H1 and H2 headings to H3', () => {
+  it('demotes imported H1 to H2 and preserves section headings', () => {
     const html = pageHelpers.normalizeHtml(
       '<h1>Imported title</h1><h2>Imported section</h2><p>Body copy</p>',
     )
 
-    expect(html).toContain('<h3>Imported title</h3>')
-    expect(html).toContain('<h3>Imported section</h3>')
+    expect(html).toContain('<h2>Imported title</h2>')
+    expect(html).toContain('<h2>Imported section</h2>')
     expect(html).not.toContain('<h1')
-    expect(html).not.toContain('<h2')
   })
 })
 
@@ -90,9 +89,9 @@ describe('getLegacyCollectionBannerImage', () => {
     expect(pageHelpers.getLegacyCollectionBannerImage(descriptionHtml)).toEqual(
       {
         altText: null,
-        height: 200,
+        height: null,
         url: 'https://cdn.shopify.com/s/files/1/0786/8339/files/iStock-1828083790.jpg?v=1707454172',
-        width: 1130,
+        width: null,
       },
     )
   })

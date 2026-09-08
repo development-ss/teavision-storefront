@@ -77,7 +77,7 @@ const POPULAR_SEARCH_COLUMNS = [
     { href: '/collections/white-tea', label: 'buy white tea' },
     { href: '/collections/organic-honeybush', label: 'honeybush tea' },
     { href: '/collections/pu-erh-tea', label: 'pu erh tea australia' },
-    { href: '/collections/scullcap', label: 'scullcap' },
+    { href: '/collections/skullcap', label: 'skullcap' },
     { href: '/collections/english-breakfast-tea', label: 'breakfast tea' },
     { href: '/collections/cloves', label: 'clove tea' },
     {

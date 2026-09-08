@@ -2,6 +2,7 @@ import { cacheLife, cacheTag } from 'next/cache'
 
 import { shopifyFetch } from '@/lib/shopify/client'
 import { getCollectionDisplayTitle } from '@/lib/shopify/collection-title'
+import { isPublicCollection } from '@/lib/shopify/collection-content'
 import {
   GetCollectionCursorIndexDocument,
   GetCollectionDocument,
@@ -124,7 +125,7 @@ function looksLikeCss(value: string): boolean {
 function cleanCollectionDescription(
   description: string,
   descriptionHtml: string,
-  seoDescription: string | null | undefined,
+  seoDescription?: string | null,
 ): string {
   const trimmedSeoDescription = seoDescription
     ? removeCitationMarkers(seoDescription).replace(/\s+/g, ' ').trim()
@@ -223,7 +224,6 @@ function reshapeCollection(collection: ShopifyCollectionNode): Collection {
   const description = cleanCollectionDescription(
     collection.description,
     descriptionHtml,
-    collection.seo?.description,
   )
 
   return {
@@ -232,6 +232,16 @@ function reshapeCollection(collection: ShopifyCollectionNode): Collection {
     title: getCollectionDisplayTitle(collection.title),
     description,
     descriptionHtml,
+    hero: {
+      heading: collection.heroHeading?.value ?? null,
+      intro: collection.heroIntro?.value ?? null,
+      image:
+        collection.heroImage?.reference &&
+        'image' in collection.heroImage.reference &&
+        collection.heroImage.reference.image
+          ? reshapeImage(collection.heroImage.reference.image)
+          : null,
+    },
     featuredImage: collection.image ? reshapeImage(collection.image) : null,
     updatedAt: String(collection.updatedAt),
     seo: {
@@ -318,7 +328,9 @@ async function fetchCollectionSummaries(
     after = data.collections.pageInfo.endCursor
   }
 
-  return collections
+  return collections.filter((collection) =>
+    isPublicCollection(collection.handle),
+  )
 }
 
 export async function getCollection(
@@ -388,7 +400,9 @@ export async function getCollectionMenuSummaries(
   const collections: CollectionSummary[] = []
   collectCollectionMenuSummaries(data.menu.items, collections)
 
-  return uniqueCollectionsByHandle(collections)
+  return uniqueCollectionsByHandle(collections).filter((collection) =>
+    isPublicCollection(collection.handle),
+  )
 }
 
 export async function getCollectionProducts(

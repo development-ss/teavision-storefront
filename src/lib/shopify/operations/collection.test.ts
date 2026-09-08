@@ -12,6 +12,7 @@ import {
 
 import {
   COLLECTION_PRODUCT_PAGE_SIZE,
+  getCollection,
   getCollectionProductLinks,
   getCollectionPageIndex,
   getCollectionProductsPage,
@@ -117,6 +118,52 @@ function makeProductsPayload(
     },
   }
 }
+
+describe('collection authoring fields', () => {
+  test('keeps visible copy separate from SEO and maps explicit hero fields', async () => {
+    shopifyFetchMock.mockResolvedValueOnce({
+      collection: {
+        id: 'tea',
+        handle: 'tea',
+        title: 'Tea',
+        description: 'Visible collection introduction.',
+        descriptionHtml: '<p>Visible collection introduction.</p>',
+        updatedAt: '2026-09-08',
+        image: null,
+        seo: {
+          title: 'Search title',
+          description: 'A distinct search snippet.',
+        },
+        heroHeading: { value: 'Tea for your business' },
+        heroIntro: { value: 'A deliberate hero introduction.' },
+        heroImage: {
+          reference: {
+            __typename: 'MediaImage',
+            image: {
+              url: '/tea.jpg',
+              altText: 'Tea leaves',
+              width: 1200,
+              height: 800,
+            },
+          },
+        },
+      },
+    })
+    const collection = await getCollection('tea')
+    expect(collection?.description).toBe('Visible collection introduction.')
+    expect(collection?.seo.description).toBe('A distinct search snippet.')
+    expect(collection?.hero).toEqual({
+      heading: 'Tea for your business',
+      intro: 'A deliberate hero introduction.',
+      image: {
+        url: '/tea.jpg',
+        altText: 'Tea leaves',
+        width: 1200,
+        height: 800,
+      },
+    })
+  })
+})
 
 describe('collection product navigation', () => {
   beforeEach(() => {

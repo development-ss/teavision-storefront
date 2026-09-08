@@ -2,6 +2,9 @@ import { redirect } from 'next/navigation'
 import { notFound } from 'next/navigation'
 
 import { Toolbar } from '@/components/collection/toolbar'
+import { Hero } from '@/components/collection/hero'
+import { getCollectionHero } from '@/lib/shopify/collection-content'
+import { getCollectionCanonicalPath } from '@/lib/seo/collection-metadata'
 import { SearchPageSearchForm } from '@/components/search/search-results-view/search-page-search-form'
 import { Section } from '@/components/ui/section'
 import { getVisibleProductReviewSummary } from '@/lib/reviews/summary'
@@ -25,7 +28,6 @@ import {
   filterProductsByCategoryTags,
   findCategoryTagForPath,
   getCategoryFilterInput,
-  getHeroImage,
   getHref,
   getPaginationHref,
   getPath,
@@ -238,7 +240,7 @@ export async function Results({
   const collectionPath = category
     ? `${getPath(handle)}/${category}`
     : getPath(handle)
-  const collectionUrl = `${SITE_URL}${collectionPath}`
+  const collectionUrl = `${SITE_URL}${getCollectionCanonicalPath(handle, category || hasActiveFilters || query || sort !== 'featured' ? 1 : currentPage)}`
   const clearSearchHref = getPaginationHref({
     category,
     handle,
@@ -246,13 +248,11 @@ export async function Results({
     selectedFilters,
     sort,
   })
-  const collectionHeroImage = getHeroImage(
-    collection.featuredImage,
-    collection.descriptionHtml,
-  )
-  const hasRenderableCollectionHeroImage = Boolean(
-    !category && collectionHeroImage?.width && collectionHeroImage.height,
-  )
+  const hero = getCollectionHero(collection)
+  const hasRenderableCollectionHeroImage = Boolean(hero.image)
+  const categoryLabel = selectedCategoryTag
+    ?.replace(/^categories_/, '')
+    .replace(/_/g, ' ')
 
   // Prev/next link tags for adjacent pages — hoisted to <head> by React 19 (D-05)
   // The Next 16 Metadata API has no prev/next field, so we render them as JSX links.
@@ -267,6 +267,14 @@ export async function Results({
 
   return (
     <>
+      {category ? (
+        <Hero
+          {...hero}
+          collectionTitle={collection.title}
+          collectionPath={getPath(handle)}
+          category={categoryLabel}
+        />
+      ) : null}
       {includeMeta && prevPageHref && <link rel="prev" href={prevPageHref} />}
       {includeMeta && nextPageHref && <link rel="next" href={nextPageHref} />}
 
@@ -275,7 +283,10 @@ export async function Results({
           baseUrl={SITE_URL}
           collection={collection}
           collectionUrl={collectionUrl}
-          products={productsWithRatings}
+          category={categoryLabel}
+          categoryUrl={category ? `${SITE_URL}${collectionPath}` : undefined}
+          products={displayedProducts}
+          startPosition={(currentPage - 1) * COLLECTION_PRODUCT_PAGE_SIZE}
         />
       )}
 
@@ -331,6 +342,9 @@ export async function Results({
             />
 
             <div>
+              <h2 className="sr-only">
+                {categoryLabel || hero.title} products
+              </h2>
               <ProductList
                 clearActionLabel={
                   normalizedQuery

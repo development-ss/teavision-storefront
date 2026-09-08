@@ -27,6 +27,11 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
+        source: '/collections/scullcap',
+        destination: '/collections/skullcap',
+        permanent: true,
+      },
+      {
         source: '/collections/:handle/products/:productHandle',
         destination: '/products/:productHandle',
         permanent: true,

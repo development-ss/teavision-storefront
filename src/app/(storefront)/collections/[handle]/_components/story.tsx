@@ -4,7 +4,6 @@ import type { Collection } from '@/lib/shopify/types'
 
 import {
   normalizeHtml,
-  parseCollectionRichHero,
   shouldRenderRichDescription,
 } from '../_lib/page-helpers'
 type CollectionStoryProps = {
@@ -12,19 +11,12 @@ type CollectionStoryProps = {
 }
 
 export function CollectionStory({ collection }: CollectionStoryProps) {
-  if (
-    parseCollectionRichHero(collection.descriptionHtml) ||
-    !shouldRenderRichDescription(
-      collection.descriptionHtml,
-      collection.description,
-    )
-  ) {
+  const body = normalizeHtml(collection.descriptionHtml)
+  if (!shouldRenderRichDescription(body)) {
     return null
   }
 
-  const storyHtml = sanitizeShopifyCollectionStoryHtml(
-    normalizeHtml(collection.descriptionHtml),
-  )
+  const storyHtml = sanitizeShopifyCollectionStoryHtml(body)
   return (
     <div
       className="mt-10"

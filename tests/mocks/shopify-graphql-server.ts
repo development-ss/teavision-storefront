@@ -209,6 +209,49 @@ function makeCollectionSummary() {
 }
 
 function makeCollection(handle: string) {
+  const summary = {
+    ...makeCollectionSummary(),
+    id: `gid://shopify/Collection/${handle}`,
+    handle,
+  }
+  if (handle === 'test-rich')
+    return {
+      ...summary,
+      title: 'Bulk Tea Bags',
+      descriptionHtml:
+        '<section class="bulk-header"><h1>Ready-Made Bulk Tea Bags for Cafes, Hotels &amp; Retail</h1><p>Convenient tea bags for your business.</p><img src="/images/collections/wholesale-tea-hero-v2.webp"><a href="/pages/catalogue">View our Tea Bag Manufacturing Catalogue</a><a href="mailto:info@teavision.com.au">Speak to Our Team About Custom Tea Bags</a><a href="/collections/all">Create Your Own White Label Tea Bag</a><p>Minimum Order Quantity: 6,000 Tea Bags Per Blend</p><h2>How we manufacture</h2><p>Retained manufacturing story.</p></section><h2>Ordering</h2><p>Retained ordering story.</p>',
+    }
+  if (handle === 'test-poster')
+    return {
+      ...summary,
+      title: 'Wholesale Bulk Tea',
+      descriptionHtml:
+        '<img src="https://cdn.shopify.com/s/files/1/0786/8339/files/wholesale_tea.png"><h2>Wholesale tea</h2><p>Tea for hospitality teams.</p>',
+    }
+  if (handle === 'test-empty')
+    return {
+      ...summary,
+      title: 'Empty Collection',
+      description: '',
+      descriptionHtml: '',
+      seo: { title: '', description: '' },
+    }
+  if (handle === 'test-explicit')
+    return {
+      ...summary,
+      title: 'Old title',
+      descriptionHtml: '<p>Longer story.</p>',
+      heroHeading: { value: 'Custom Collection Heading' },
+      heroIntro: { value: 'An explicit hero introduction.' },
+      heroImage: { reference: { image: fakeProductImage } },
+    }
+  if (handle === 'wholesale-pagination')
+    return {
+      ...summary,
+      title: 'Wholesale Pagination',
+      descriptionHtml: '<p>Wholesale tea for every occasion.</p>',
+      image: fakeProductImage,
+    }
   if (handle === fakeBannerCollectionHandle) {
     return {
       ...makeCollectionSummary(),
@@ -218,6 +261,16 @@ function makeCollection(handle: string) {
       description: 'Representative collection banner performance fixture.',
       descriptionHtml:
         '<img src="/images/homepage/homepage-hero-tea-harvest-lcp.avif" alt="Test Banner Collection" width="1440" height="650"><h2>Test Banner Collection</h2><p>Representative collection banner performance fixture.</p>',
+      heroImage: {
+        reference: {
+          image: {
+            url: '/images/homepage/homepage-hero-tea-harvest-lcp.avif',
+            altText: 'Tea harvest',
+            width: 1440,
+            height: 650,
+          },
+        },
+      },
     }
   }
 
@@ -228,7 +281,32 @@ function makeCollection(handle: string) {
 }
 
 function isFakeCollectionHandle(handle: string | null): handle is string {
-  return handle === 'all' || handle === fakeBannerCollectionHandle
+  return (
+    handle !== null &&
+    [
+      'all',
+      fakeBannerCollectionHandle,
+      'test-rich',
+      'test-poster',
+      'test-empty',
+      'test-explicit',
+      'wholesale-pagination',
+      'skullcap',
+    ].includes(handle)
+  )
+}
+
+function makeCollectionProducts(handle: string | null) {
+  if (handle === 'test-empty') return []
+  const product = makeCollectionProductNode()
+  if (handle !== 'wholesale-pagination') return [product]
+  return Array.from({ length: 25 }, (_, index) => ({
+    ...product,
+    id: `gid://shopify/Product/pagination-${index}`,
+    handle: `pagination-tea-${index}`,
+    title: `Pagination Tea ${String(index + 1).padStart(2, '0')}`,
+    tags: ['categories_Organic Tea'],
+  }))
 }
 
 function makeCollectionProductNode() {
@@ -582,14 +660,30 @@ export async function createFakeShopifyServer({
 
     if (operationName === 'GetCollectionProducts') {
       const handle = readString(graphqlRequest.variables?.handle)
+      const products = makeCollectionProducts(handle)
+      const after =
+        Number(
+          readString(graphqlRequest.variables?.after)?.replace(
+            'collection-cursor-',
+            '',
+          ) ?? -1,
+        ) + 1
+      const first = Number(graphqlRequest.variables?.first ?? 24)
+      const start = Number.isFinite(after) ? after : 0
+      const nodes = products.slice(start, start + first)
       writeJson(response, 200, {
         data: {
           collection: isFakeCollectionHandle(handle)
             ? {
                 products: {
-                  edges: [{ node: makeCollectionProductNode() }],
+                  edges: nodes.map((node) => ({ node })),
                   filters: [],
-                  pageInfo: { hasNextPage: false, endCursor: null },
+                  pageInfo: {
+                    hasNextPage: start + first < products.length,
+                    endCursor: nodes.length
+                      ? `collection-cursor-${start + nodes.length - 1}`
+                      : null,
+                  },
                 },
               }
             : null,
@@ -605,12 +699,12 @@ export async function createFakeShopifyServer({
           collection: isFakeCollectionHandle(handle)
             ? {
                 products: {
-                  edges: [
-                    {
-                      cursor: 'fake-product-cursor',
-                      node: { tags: makeCollectionProductNode().tags },
-                    },
-                  ],
+                  edges: makeCollectionProducts(handle).map(
+                    (product, index) => ({
+                      cursor: `collection-cursor-${index}`,
+                      node: { tags: product.tags },
+                    }),
+                  ),
                   pageInfo: { hasNextPage: false, endCursor: null },
                 },
               }

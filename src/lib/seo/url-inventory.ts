@@ -1,3 +1,4 @@
+import { isPublicCollection } from '@/lib/shopify/collection-content'
 import {
   CANONICAL_BLOG_LISTING_PATH,
   DEFAULT_BLOG_HANDLE,
@@ -174,13 +175,15 @@ export function buildUrlInventoryRows(
       product.updatedAt,
     ),
   )
-  const collectionRows = sources.collections.map((collection) =>
-    createDynamicRow(
-      `/collections/${collection.handle}`,
-      'collection',
-      collection.updatedAt,
-    ),
-  )
+  const collectionRows = sources.collections
+    .filter((collection) => isPublicCollection(collection.handle))
+    .map((collection) =>
+      createDynamicRow(
+        `/collections/${collection.handle}`,
+        'collection',
+        collection.updatedAt,
+      ),
+    )
   const eligibleArticles = sources.blog.articles.filter((article) => {
     const localPath = getArticlePath(DEFAULT_BLOG_HANDLE, article.handle)
 

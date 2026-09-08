@@ -13,6 +13,7 @@ import { isNoindexModeEnabled } from '@/lib/seo/noindex'
 import { isShopifyPageEligibleForSitemap } from '@/lib/seo/shopify-page-eligibility'
 import { SITE_URL } from '@/lib/seo/site-url'
 import { getCollectionSummaries } from '@/lib/shopify/operations/collection'
+import { isPublicCollection } from '@/lib/shopify/collection-content'
 import { getAllProducts } from '@/lib/shopify/operations/product'
 import { getPagePath, getPages } from '@/lib/shopify/operations/storefront-page'
 
@@ -57,14 +58,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }))
 
-  const collectionUrls: MetadataRoute.Sitemap = collections.map(
-    (collection) => ({
+  const collectionUrls: MetadataRoute.Sitemap = collections
+    .filter((collection) => isPublicCollection(collection.handle))
+    .map((collection) => ({
       url: `${SITE_URL}/collections/${collection.handle}`,
       lastModified: collection.updatedAt,
       changeFrequency: 'weekly',
       priority: 0.7,
-    }),
-  )
+    }))
 
   const pageUrls: MetadataRoute.Sitemap = pages
     .filter(

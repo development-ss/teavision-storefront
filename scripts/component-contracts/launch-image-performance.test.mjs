@@ -13,14 +13,19 @@ const repoRoot = path.resolve(
 const imageBudgets = [
   ['public/images/homepage/homepage-hero-tea-harvest-lcp.avif', 350000],
   ['public/images/homepage/bulk-wholesale-lcp.avif', 120000],
+  ['public/images/collections/wholesale-tea-hero-v2.webp', 350000],
+  ['public/images/collections/herbs-and-spices-hero-v2.webp', 350000],
+  [
+    'public/images/collections/australian-native-ingredients-hero-v2.webp',
+    350000,
+  ],
 ]
 
 const sourceFiles = [
   'src/components/homepage/hero/hero.tsx',
   'src/components/product/product-gallery/product-gallery.tsx',
   'src/components/collection/product-card/product-card.tsx',
-  'src/app/(storefront)/collections/[handle]/_components/hero.tsx',
-  'src/app/(storefront)/collections/[handle]/_components/collection-rich-hero.tsx',
+  'src/components/collection/hero/hero.tsx',
 ]
 
 function sourcePath(relativePath) {
@@ -117,15 +122,15 @@ test('launch image components avoid deprecated priority and invalid preload comb
   )
 
   const collectionHero = await readSource(
-    'src/app/(storefront)/collections/[handle]/_components/hero.tsx',
+    'src/components/collection/hero/hero.tsx',
   )
   const collectionHeroBlocks = imageBlocks(collectionHero)
   const collectionBannerBlock = collectionHeroBlocks.find((block) =>
-    block.includes('className="w-full object-cover"'),
+    block.includes('className="object-cover"'),
   )
   assert.ok(
     collectionBannerBlock,
-    'collection hero should contain the banner Image',
+    'shared collection hero should contain its LCP Image',
   )
   assert.match(collectionBannerBlock, /loading="eager"/)
   assert.match(collectionBannerBlock, /fetchPriority="high"/)
@@ -136,18 +141,6 @@ test('launch image components avoid deprecated priority and invalid preload comb
     assert.match(block, /fetchPriority="high"/)
     assert.doesNotMatch(block, /\bpreload\b/)
   }
-
-  const collectionRichHero = await readSource(
-    'src/app/(storefront)/collections/[handle]/_components/collection-rich-hero.tsx',
-  )
-  const collectionRichHeroBlock = imageBlocks(collectionRichHero)[0]
-  assert.ok(
-    collectionRichHeroBlock,
-    'collection rich hero should contain its LCP Image',
-  )
-  assert.match(collectionRichHeroBlock, /loading="eager"/)
-  assert.match(collectionRichHeroBlock, /fetchPriority="high"/)
-  assert.doesNotMatch(collectionRichHeroBlock, /\bpreload\b/)
 })
 
 test('product and collection routes preserve crawlable content and layout-stable streaming', async () => {

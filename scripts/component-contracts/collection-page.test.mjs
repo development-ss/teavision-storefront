@@ -30,7 +30,9 @@ test('collection page hero and grid fallback both render as real content', async
   assert.doesNotMatch(source, /Suspense fallback=\{null\}/)
   assert.doesNotMatch(source, /staticShell/)
   assert.doesNotMatch(source, /getCollectionHandleSamples/)
-  assert.doesNotMatch(source, /LoadingSkeleton/)
+  // New post-build collection handles need an outer static Suspense fallback.
+  // Known handles still render the cached hero and real default product grid.
+  assert.match(source, /<Suspense fallback=\{<LoadingSkeleton \/>\}>/)
   assert.match(source, /<HeroContent params=\{params\} \/>/)
   assert.match(source, /fallback=\{<DefaultResults params=\{params\} \/>\}/)
 })
@@ -74,7 +76,7 @@ test('category collection page reserves the results layout while query content s
   // params — the fallback must stay static (skeleton, not DefaultResults).
   assert.doesNotMatch(source, /Suspense fallback=\{null\}/)
   assert.doesNotMatch(source, /fallback=\{<DefaultResults/)
-  assert.match(source, /<LoadingSkeleton showHero=\{false\} \/>/)
+  assert.match(source, /<LoadingSkeleton \/>/)
   assert.match(
     source,
     /<PageContent\s+params=\{params\}\s+searchParams=\{searchParams\}\s*\/>/,
