@@ -28,6 +28,34 @@ const collection: Collection = {
 }
 
 describe('collection content migration', () => {
+  it.each([
+    ['tea_masters.png', '/images/collections/tea-masters-hero.webp'],
+    [
+      'wellness_tea_59455684-1285-4797-a05f-0b6bb3ae9ae8.png',
+      '/images/collections/wellness-functional-tea-hero.webp',
+    ],
+    ['speciality_tea.png', '/images/collections/speciality-tea-hero.webp'],
+    [
+      'organic_tea_6d641d5d-32cf-4674-8426-4ac32368ad8c.png',
+      '/images/collections/certified-organic-tea-hero.webp',
+    ],
+    [
+      'cardboard_cylinder_with_frank_logo2_large.jpg',
+      '/cardboard_cylinder_with_frank_logo2.jpg',
+    ],
+    ['custom_blends_large.jpeg', '/custom_blends.jpeg'],
+    [
+      'Untitled_design_30_a73872af-f005-47f1-a47a-da89dc67edd4_480x480.png',
+      '/Untitled_design_30_a73872af-f005-47f1-a47a-da89dc67edd4.png',
+    ],
+  ])(
+    'preserves the original %s scene instead of substituting the featured photo',
+    (filename, expected) => {
+      const html = `<img src="https://cdn.shopify.com/s/files/1/0786/8339/files/${filename}">`
+      expect(getHeroImage(image, html)?.url).toContain(expected)
+      expect(getHeroImage(image, html)?.url).not.toBe(image.url)
+    },
+  )
   it('retains linked story paragraphs without promoting them into hero actions', () => {
     const html =
       '<section class="bulk-header"><h1>Tea bags</h1><p>Intro.</p><a href="/catalogue">Catalogue</a><h3>Our process</h3><p>See our <a href="/pages/blending">blending service</a>.</p><h4>Packaging</h4></section>'

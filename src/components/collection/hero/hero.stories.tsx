@@ -34,6 +34,23 @@ export const Default: Story = {
 }
 
 export const NoImage: Story = { args: { image: null } }
+export const PortraitPackaging: Story = {
+  args: {
+    title: 'Private Label Packaging',
+    image: {
+      url: 'https://cdn.shopify.com/s/files/1/0786/8339/files/cardboard_cylinder_with_frank_logo2.jpg?v=1521361412',
+      altText: 'Frank tea packaging',
+      width: 736,
+      height: 981,
+    },
+  },
+  play: async ({ canvas }) => {
+    await expect(
+      canvas.getByRole('img', { name: 'Frank tea packaging' }),
+    ).toHaveClass('object-contain')
+    await expect(canvas.getAllByRole('heading', { level: 1 })).toHaveLength(1)
+  },
+}
 export const Minimal: Story = { args: { image: null, intro: '' } }
 export const Category: Story = { args: { category: 'All Organic Tea' } }
 export const TeaBagActions: Story = {

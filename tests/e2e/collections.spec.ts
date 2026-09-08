@@ -21,6 +21,7 @@ for (const handle of [
   'test-banner',
   'test-rich',
   'test-poster',
+  'test-masters',
   'test-empty',
   'test-explicit',
 ]) {
@@ -48,6 +49,16 @@ for (const handle of [
         /wholesale-tea-hero/,
       )
       await expect(page.locator('img[src*="wholesale_tea.png"]')).toHaveCount(0)
+    }
+    if (handle === 'test-masters') {
+      await expect(hero.locator('img')).toHaveAttribute(
+        'src',
+        /tea-masters-hero/,
+      )
+      await expect(hero.locator('img')).toHaveAttribute(
+        'alt',
+        /Black cast-iron teapot/,
+      )
     }
     if (handle === 'test-explicit') {
       await expect(hero.locator('h1')).toHaveText('Custom Collection Heading')

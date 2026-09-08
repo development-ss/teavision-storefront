@@ -157,19 +157,32 @@ The collection query supports these optional collection metafields. When creatin
 
 These definitions and values were not written to Shopify during implementation. Existing collections work through the migration adapter without them. Standard Shopify SEO title/description fields remain the search-copy source. Prefer these structured fields for future authoring, then remove obsolete banner markup from description HTML as content is migrated. An explicit hero image always takes precedence over the legacy asset mapping; unrecognized body images remain in the story rather than becoming a layout trigger.
 
-`src/lib/shopify/collection-images.ts` records the audited asset migration. Seven poster images contained baked headings. Wholesale Tea, Herbs & Spices and Australian Native Ingredients received new text-free artwork. Wellness, Speciality, Organic and Tea Masters reuse their existing collection photography. Three low-resolution service banners also fall back to their higher-resolution collection photography. Cafe, mushroom, sample and the genuine tea-bag factory photos were retained with measured dimensions.
+`src/lib/shopify/collection-images.ts` records the audited asset migration. Seven poster images contained baked headings. All seven now use conservative edits of their original photographs with the marketing overlays removed. The initial Wellness, Speciality, Organic and Tea Masters substitutions were corrected on 2026-09-09 to preserve their original scenes. Three low-resolution service banners now use full-resolution originals, preserving the original packaging, blending ingredients and iced-tea photography. Cafe, mushroom, sample and the genuine tea-bag factory photos were retained with measured dimensions. Portrait photographs fit inside the shared hero without cropping their subjects.
 
-The three revised assets closely follow the original banner photography, retaining the branded pouches, props, foliage and ingredient arrangements. They remove overlaid marketing text and graphics; branding printed on the original pouches is retained. They are reference-guided edits, not pixel-identical crops.
+The seven revised assets closely follow the original banner photography, retaining branded packaging, props, foliage and ingredient arrangements. They remove overlaid marketing text and graphics; branding printed on original packaging is retained. They are reference-guided edits, not pixel-identical crops.
 
 | Asset                                                                  | Actual dimensions |  Encoded size |
 | ---------------------------------------------------------------------- | ----------------- | ------------: |
 | `public/images/collections/wholesale-tea-hero-v2.webp`                 | 1536 × 1024       | 132,506 bytes |
 | `public/images/collections/herbs-and-spices-hero-v2.webp`              | 1536 × 1024       | 254,164 bytes |
 | `public/images/collections/australian-native-ingredients-hero-v2.webp` | 1536 × 1024       | 286,616 bytes |
+| `public/images/collections/tea-masters-hero.webp`                      | 1536 × 1024       | 116,690 bytes |
+| `public/images/collections/wellness-functional-tea-hero.webp`          | 1536 × 1024       | 177,942 bytes |
+| `public/images/collections/speciality-tea-hero.webp`                   | 1536 × 1024       | 105,516 bytes |
+| `public/images/collections/certified-organic-tea-hero.webp`            | 1536 × 1024       | 139,262 bytes |
 
 Revision brief: edit the original Shopify banners directly, preserve their photographic subjects, arrangement, packaging and colours, remove marketing overlays, and reframe for the shared hero. Built-in ImageGen was used. Full prompts and source references are recorded in [collection-hero-image-prompts-2026-09-08.md](./collection-hero-image-prompts-2026-09-08.md). The outputs were visually inspected and encoded with Sharp at WebP quality 82 without resizing. Versioned filenames refresh the image URLs. Each remains below the 350 KB image budget.
 
 ## Validation record
+
+### Original-scene correction — 2026-09-09
+
+- Full suites passed: 563 unit tests, 96 integration tests, 415 Storybook tests and 57 development-mode browser tests. All 60 component contracts passed, including the four new image budgets. TypeScript, targeted ESLint and the Tailwind class check passed.
+- Seven regression cases assert that legacy hero assets retain their original scene instead of selecting an unrelated featured photo. Browser coverage checks the Tea Masters image with the single-H1 and metadata contract; Storybook checks portrait packaging containment.
+- All seven corrected real-Shopify collection pages returned HTTP 200, loaded their intended images and rendered one H1. Desktop screenshots were visually reviewed. Tea Masters also passed a 390px visual check with no horizontal overflow. The complete portrait packaging cylinder remains visible.
+- Review confirmed that explicit hero metafields still take precedence, the shared layout remains consistent and no null mapping can silently substitute these legacy scenes. The existing Storybook image advisories and development cancellation/cache logs remain outside this image correction.
+
+### Initial implementation — 2026-09-08
 
 - Code review iterations covered layout conditions, partial rich content, retained story links, heading hierarchy, actual image dimensions, metadata fallback quality, preview indexation overrides and future Shopify edits.
 - Full unit suite: 556 tests passed, including the separation of body/SEO copy and explicit metafield mapping.

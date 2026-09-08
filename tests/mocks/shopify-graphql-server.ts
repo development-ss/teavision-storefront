@@ -228,6 +228,14 @@ function makeCollection(handle: string) {
       descriptionHtml:
         '<img src="https://cdn.shopify.com/s/files/1/0786/8339/files/wholesale_tea.png"><h2>Wholesale tea</h2><p>Tea for hospitality teams.</p>',
     }
+  if (handle === 'test-masters')
+    return {
+      ...summary,
+      title: 'Tea Masters Selection',
+      image: fakeProductImage,
+      descriptionHtml:
+        '<img src="https://cdn.shopify.com/s/files/1/0786/8339/files/tea_masters.png"><p>Rare teas selected for tea lovers.</p>',
+    }
   if (handle === 'test-empty')
     return {
       ...summary,
@@ -288,6 +296,7 @@ function isFakeCollectionHandle(handle: string | null): handle is string {
       fakeBannerCollectionHandle,
       'test-rich',
       'test-poster',
+      'test-masters',
       'test-empty',
       'test-explicit',
       'wholesale-pagination',

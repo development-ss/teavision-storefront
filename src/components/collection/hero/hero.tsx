@@ -100,7 +100,13 @@ export function Hero({
                 alt={image.altText ?? ''}
                 fill
                 sizes="(min-width: 1480px) 668px, (min-width: 768px) 45vw, 90vw"
-                className="object-cover"
+                className={cn(
+                  'object-cover',
+                  image.width &&
+                    image.height &&
+                    image.height > image.width &&
+                    'object-contain',
+                )}
                 loading="eager"
                 fetchPriority="high"
               />

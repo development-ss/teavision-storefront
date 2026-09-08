@@ -377,7 +377,7 @@ export function getHeroImage(
     (match) => getLegacyHeroImage(getHtmlAttribute(match[0], 'src') ?? ''),
   ).find((image) => image !== undefined)
   if (explicitImage) return explicitImage
-  if (migratedImage !== undefined) return migratedImage ?? featuredImage
+  if (migratedImage) return migratedImage
   return (
     getLegacyCollectionBannerImage(descriptionHtml) ??
     parseCollectionRichHero(descriptionHtml)?.image ??

@@ -1,9 +1,9 @@
 import type { ShopifyImage } from './types'
 
 // Migration of audited legacy image assets, not collection layout overrides.
-// null means discard poster typography and use the collection's existing photo.
+// Preserve each original hero scene; never substitute an unrelated featured photo.
 // New collections should use custom.hero_image (a Storefront-readable file reference).
-const LEGACY_IMAGES: Record<string, ShopifyImage | null> = {
+const LEGACY_IMAGES: Record<string, ShopifyImage> = {
   'wholesale_tea.png': {
     url: '/images/collections/wholesale-tea-hero-v2.webp',
     width: 1536,
@@ -25,10 +25,33 @@ const LEGACY_IMAGES: Record<string, ShopifyImage | null> = {
     altText:
       'Bowls of dried native botanicals with foliage, pink blossoms and wooden scoops',
   },
-  'wellness_tea_59455684-1285-4797-a05f-0b6bb3ae9ae8.png': null,
-  'speciality_tea.png': null,
-  'organic_tea_6d641d5d-32cf-4674-8426-4ac32368ad8c.png': null,
-  'tea_masters.png': null,
+  'wellness_tea_59455684-1285-4797-a05f-0b6bb3ae9ae8.png': {
+    url: '/images/collections/wellness-functional-tea-hero.webp',
+    width: 1536,
+    height: 1024,
+    altText:
+      'Cream teapot and cup beside a bowl of herbal tea, chamomile and lavender',
+  },
+  'speciality_tea.png': {
+    url: '/images/collections/speciality-tea-hero.webp',
+    width: 1536,
+    height: 1024,
+    altText:
+      'White porcelain gaiwan and cup beside a plate of silvery loose tea leaves',
+  },
+  'organic_tea_6d641d5d-32cf-4674-8426-4ac32368ad8c.png': {
+    url: '/images/collections/certified-organic-tea-hero.webp',
+    width: 1536,
+    height: 1024,
+    altText: 'Bowl of dried green tea on pale stone with fresh leafy branches',
+  },
+  'tea_masters.png': {
+    url: '/images/collections/tea-masters-hero.webp',
+    width: 1536,
+    height: 1024,
+    altText:
+      'Black cast-iron teapot, Tea Masters Selection box and platter of loose teas',
+  },
   'tea_banner_cafe.jpg': {
     url: 'https://cdn.shopify.com/s/files/1/0786/8339/files/tea_banner_cafe.jpg?v=1531044553',
     width: 1380,
@@ -53,14 +76,28 @@ const LEGACY_IMAGES: Record<string, ShopifyImage | null> = {
     height: 413,
     altText: 'Four tea samples with loose leaves and herbal ingredients',
   },
-  'cardboard_cylinder_with_frank_logo2_large.jpg': null,
-  'custom_blends_large.jpeg': null,
-  'Untitled_design_30_a73872af-f005-47f1-a47a-da89dc67edd4_480x480.png': null,
+  'cardboard_cylinder_with_frank_logo2_large.jpg': {
+    url: 'https://cdn.shopify.com/s/files/1/0786/8339/files/cardboard_cylinder_with_frank_logo2.jpg?v=1521361412',
+    width: 736,
+    height: 981,
+    altText: 'Frank Black Noir tea in a cylindrical cardboard package',
+  },
+  'custom_blends_large.jpeg': {
+    url: 'https://cdn.shopify.com/s/files/1/0786/8339/files/custom_blends.jpeg?v=1516623594',
+    width: 1000,
+    height: 562,
+    altText:
+      'Three colourful cups filled with dried fruit and botanical ingredients',
+  },
+  'Untitled_design_30_a73872af-f005-47f1-a47a-da89dc67edd4_480x480.png': {
+    url: 'https://cdn.shopify.com/s/files/1/0786/8339/files/Untitled_design_30_a73872af-f005-47f1-a47a-da89dc67edd4.png?v=1635992296',
+    width: 2000,
+    height: 900,
+    altText: 'Iced tea in glass jars with lemon slices and mint',
+  },
 }
 
-export function getLegacyHeroImage(
-  source: string,
-): ShopifyImage | null | undefined {
+export function getLegacyHeroImage(source: string): ShopifyImage | undefined {
   try {
     const url = new URL(source, 'https://www.teavision.com.au')
     if (!['cdn.shopify.com', 'www.teavision.com.au'].includes(url.hostname))

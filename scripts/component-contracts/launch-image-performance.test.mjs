@@ -15,6 +15,10 @@ const imageBudgets = [
   ['public/images/homepage/bulk-wholesale-lcp.avif', 120000],
   ['public/images/collections/wholesale-tea-hero-v2.webp', 350000],
   ['public/images/collections/herbs-and-spices-hero-v2.webp', 350000],
+  ['public/images/collections/tea-masters-hero.webp', 350000],
+  ['public/images/collections/wellness-functional-tea-hero.webp', 350000],
+  ['public/images/collections/speciality-tea-hero.webp', 350000],
+  ['public/images/collections/certified-organic-tea-hero.webp', 350000],
   [
     'public/images/collections/australian-native-ingredients-hero-v2.webp',
     350000,
@@ -126,7 +130,7 @@ test('launch image components avoid deprecated priority and invalid preload comb
   )
   const collectionHeroBlocks = imageBlocks(collectionHero)
   const collectionBannerBlock = collectionHeroBlocks.find((block) =>
-    block.includes('className="object-cover"'),
+    block.includes("'object-cover'"),
   )
   assert.ok(
     collectionBannerBlock,
