@@ -121,6 +121,15 @@ export const CallToAction: Story = {
   args: { children: 'Browse wholesale', variant: 'primary', size: 'cta' },
 }
 
+export const WrappingCallToAction: Story = {
+  args: {
+    children: 'Speak to Our Team About Custom Tea Bags',
+    variant: 'primary',
+    size: 'wrap',
+    className: 'max-w-64',
+  },
+}
+
 export const AsSubmit: Story = {
   args: { children: 'Submit', variant: 'primary', type: 'submit' },
 }

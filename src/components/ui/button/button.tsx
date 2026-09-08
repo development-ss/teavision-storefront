@@ -49,6 +49,7 @@ const buttonVariants = cva(
         md: 'type-label min-h-11 px-6.5',
         lg: 'type-label min-h-12 px-8.5',
         cta: 'type-label min-h-12 px-8.5',
+        wrap: 'type-label min-h-12 px-5 py-3 text-center leading-snug wrap-anywhere whitespace-normal',
         // Quiet text-link sizing per design .cart__remove — mono caps, no pill padding
         quiet:
           'min-h-11 px-0 font-mono text-[10.5px] font-normal tracking-widest uppercase',
