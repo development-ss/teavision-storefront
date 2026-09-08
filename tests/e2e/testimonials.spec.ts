@@ -90,7 +90,7 @@ test('the loop joins without a gap and duplicate cards are excluded from accessi
   expect(seam.distance).toBeLessThan(1)
 })
 
-test('reduced motion disables the loop and allows manual keyboard scrolling', async ({
+test('reduced motion displays every testimonial in a static grid', async ({
   page,
 }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' })
@@ -106,14 +106,13 @@ test('reduced motion disables the loop and allows manual keyboard scrolling', as
   await expect(
     page.getByRole('checkbox', { name: 'Pause or resume automatic scrolling' }),
   ).toBeHidden()
-  await region.focus()
-  await page.keyboard.press('ArrowRight')
-  await expect
-    .poll(() => region.evaluate((element) => element.scrollLeft))
-    .toBeGreaterThan(0)
+  const list = region.getByRole('list', { name: 'Partner testimonials' })
+  await expect(list).toHaveCSS('display', 'grid')
+  for (const card of await list.getByRole('listitem').all()) await expect(card).toBeVisible()
+  expect(await region.evaluate(element => element.scrollWidth <= element.clientWidth)).toBe(true)
 })
 
-test('mobile cards support a native swipe without page overflow', async ({
+test('mobile cards use a readable grid without page overflow', async ({
   browser,
 }) => {
   const context = await browser.newContext({
@@ -134,26 +133,15 @@ test('mobile cards support a native swipe without page overflow', async ({
     'animation-name',
     'none',
   )
-  const box = (await region.boundingBox())!
-  const y = Math.max(box.y + 50, 100)
-  const session = await context.newCDPSession(page)
-  await session.send('Input.dispatchTouchEvent', {
-    type: 'touchStart',
-    touchPoints: [{ x: 330, y }],
-  })
-  for (const x of [270, 210, 150, 90]) {
-    await session.send('Input.dispatchTouchEvent', {
-      type: 'touchMove',
-      touchPoints: [{ x, y }],
-    })
+  const list = region.getByRole('list', { name: 'Partner testimonials' })
+  await expect(list).toHaveCSS('display', 'grid')
+  await expect(region.locator('ul[inert]')).toBeHidden()
+  for (const card of await list.getByRole('listitem').all()) {
+    await expect(card).toBeVisible()
+    const box = await card.boundingBox()
+    expect(box?.x).toBeGreaterThanOrEqual(0)
+    expect((box?.x ?? 0) + (box?.width ?? 0)).toBeLessThanOrEqual(390)
   }
-  await session.send('Input.dispatchTouchEvent', {
-    type: 'touchEnd',
-    touchPoints: [],
-  })
-  await expect
-    .poll(() => region.evaluate((element) => element.scrollLeft))
-    .toBeGreaterThan(0)
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= window.innerWidth,

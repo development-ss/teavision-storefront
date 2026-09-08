@@ -302,7 +302,12 @@ test('custom blend flavour choices carry into the contact brief', async ({
 
   await gotoWithoutServerError(page, '/pages/custom-tea-blends')
   await page.getByRole('checkbox', { name: 'Peach' }).check()
-  await page.getByRole('link', { name: 'Continue to Brief' }).click()
+  const continueLink = page.getByRole('link', { name: 'Continue to Brief (1)' })
+  await expect(continueLink).toHaveAttribute(
+    'href',
+    '/pages/contact?flavours=Peach#need-help',
+  )
+  await continueLink.click()
 
   await expect(page).toHaveURL(/\/pages\/contact\?flavours=Peach#need-help/)
   await expect(page.getByRole('textbox', { name: 'Message' })).toHaveValue(
