@@ -39,6 +39,10 @@ const eslintConfig = defineConfig([
     '.claude/**',
     // Design mockup reference sources (not application code)
     'design/**',
+    // Local audit, browser, and readiness artifacts
+    '.tmp/**',
+    'test-results/**',
+    'playwright-report/**',
     '.codex-temp/**',
   ]),
   ...storybook.configs['flat/recommended'],
