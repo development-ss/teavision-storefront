@@ -27,7 +27,7 @@ export function GoogleRating() {
       as="aside"
       padding="lg"
       aria-label="Google rating summary"
-      className="w-full max-w-md"
+      className="w-full md:max-w-md"
     >
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
         <Image

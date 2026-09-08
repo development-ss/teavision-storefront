@@ -13,12 +13,13 @@ export function TestimonialsMarquee({
   children,
   itemCount,
 }: TestimonialsMarqueeProps) {
-  // Four cards fill the widest container. Smaller sets stay grouped and scroll
-  // manually, rather than leaving gaps or repeating the same quote on screen.
+  // Only loop on wide screens with a pointer. Touch and reduced-motion layouts
+  // keep every quote in a readable grid without horizontal scrolling.
   const canLoop = itemCount >= 4
   const listClasses = cn(
-    'flex gap-5 px-gutter',
-    canLoop && 'auto-scroll:px-0 auto-scroll:pr-5',
+    'grid grid-cols-1 gap-4 px-gutter md:grid-cols-2 md:gap-5',
+    itemCount === 1 && 'md:grid-cols-1 md:max-w-xl',
+    canLoop && 'auto-scroll:flex auto-scroll:px-0 auto-scroll:pr-5',
   )
 
   return (
@@ -44,18 +45,17 @@ export function TestimonialsMarquee({
       <div
         role="region"
         aria-label="Customer testimonial excerpts"
-        tabIndex={itemCount > 1 ? 0 : undefined}
         className={cn(
-          'focus-visible:ring-ring relative overflow-x-auto overscroll-x-contain pb-3 focus-visible:ring-2 focus-visible:outline-none focus-visible:ring-inset',
+          'relative',
           canLoop &&
             'auto-scroll:overflow-hidden auto-scroll:mask-x-from-[calc(100%-3rem)]',
         )}
       >
         <div
           className={cn(
-            'flex w-max',
+            'w-full',
             canLoop &&
-              'auto-scroll:animate-marquee auto-scroll:[animation-duration:60s] group-focus-within/marquee:[animation-play-state:paused] group-hover/marquee:[animation-play-state:paused] group-has-checked/marquee:[animation-play-state:paused]',
+              'auto-scroll:flex auto-scroll:w-max auto-scroll:animate-marquee auto-scroll:[animation-duration:60s] group-focus-within/marquee:[animation-play-state:paused] group-hover/marquee:[animation-play-state:paused] group-has-checked/marquee:[animation-play-state:paused]',
           )}
         >
           <ul aria-label="Partner testimonials" className={listClasses}>

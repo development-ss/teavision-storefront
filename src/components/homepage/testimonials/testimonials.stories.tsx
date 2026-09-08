@@ -58,7 +58,7 @@ export const PauseControl: Story = {
     // The control is intentionally absent from touch and reduced-motion layouts.
     if (
       window.matchMedia(
-        '(min-width: 64rem) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)',
+        '(min-width: 80rem) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)',
       ).matches
     ) {
       pause.focus()
@@ -92,7 +92,7 @@ export const TwoPartners: Story = {
     await expect(canvas.queryByRole('checkbox')).not.toBeInTheDocument()
     await expect(
       canvas.getByRole('region', { name: 'Customer testimonial excerpts' }),
-    ).toHaveAttribute('tabindex', '0')
+    ).not.toHaveAttribute('tabindex')
   },
 }
 

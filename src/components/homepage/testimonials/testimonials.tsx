@@ -33,7 +33,7 @@ export function Testimonials({
   return (
     <Section.Root tone="sunken" aria-label="Customer testimonials">
       <Section.Container>
-        <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)] lg:gap-16">
+        <div className="grid items-center gap-6 md:grid-cols-2 md:gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)] lg:gap-16">
           <Section.Intro
             align="left"
             eyebrow={intro.eyebrow || 'Partner perspectives'}
@@ -52,16 +52,19 @@ export function Testimonials({
             as="li"
             padding="lg"
             key={`${testimonial.name}-${index}`}
-            className="flex w-[82vw] max-w-96 shrink-0 flex-col gap-6 sm:w-96"
+            className={cn(
+              'flex min-w-0 flex-col gap-5 wrap-anywhere md:gap-6',
+              items.length >= 4 && 'auto-scroll:w-96 auto-scroll:shrink-0',
+            )}
           >
             <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-4 gap-y-2">
-              <div className="bg-paper row-span-2 size-18 shrink-0 overflow-hidden rounded-md">
+              <div className="bg-paper row-span-2 size-14 shrink-0 overflow-hidden rounded-md sm:size-18">
                 <Image
                   src={testimonial.logo.src}
                   alt={testimonial.logo.alt}
                   width={testimonial.logo.width}
                   height={testimonial.logo.height}
-                  sizes="72px"
+                  sizes="(min-width: 640px) 72px, 56px"
                   className={cn(
                     'size-full object-contain',
                     testimonial.logo.src.includes('st-ali-logo') &&
