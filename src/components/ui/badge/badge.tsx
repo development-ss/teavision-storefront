@@ -1,4 +1,4 @@
-import type { ComponentProps } from 'react'
+import type { ComponentProps, ReactNode } from 'react'
 import { cva } from 'class-variance-authority'
 
 import { cn } from '@/lib/utils'
@@ -15,6 +15,7 @@ export type BadgeVariant =
 export type BadgeProps = Omit<ComponentProps<'span'>, 'children'> & {
   variant: BadgeVariant
   label?: string
+  icon?: ReactNode
 }
 
 const badgeVariants = cva(
@@ -41,10 +42,17 @@ const defaultLabels: Partial<Record<BadgeVariant, string>> = {
   new: 'New',
 }
 
-export function Badge({ variant, label, className, ...props }: BadgeProps) {
+export function Badge({
+  variant,
+  label,
+  icon,
+  className,
+  ...props
+}: BadgeProps) {
   const text = label ?? defaultLabels[variant]
   return (
     <span className={cn(badgeVariants({ variant }), className)} {...props}>
+      {icon}
       {text}
     </span>
   )

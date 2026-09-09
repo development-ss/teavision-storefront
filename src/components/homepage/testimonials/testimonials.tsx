@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import { BadgeCheck } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
@@ -39,7 +40,7 @@ export function Testimonials({
             eyebrow={intro.eyebrow || 'Partner perspectives'}
             title={intro.title}
             copy={intro.copy}
-            className="text-brand-deep max-w-xl"
+            className="max-w-xl"
             copyClassName="max-w-[48ch] text-base leading-relaxed"
           />
           <GoogleRating />
@@ -69,7 +70,7 @@ export function Testimonials({
                 />
               </div>
               <div className="min-w-0 self-end">
-                <p className="text-brand-deep font-semibold">
+                <p className="text-ink font-semibold">
                   {testimonial.brand || testimonial.name}
                 </p>
                 {testimonial.brand && (
@@ -78,12 +79,15 @@ export function Testimonials({
               </div>
               <StarRating rating={5} size="lg" className="self-start" />
             </div>
-            <blockquote className="font-display text-brand-deep text-lg leading-relaxed italic">
+            <blockquote className="font-display text-ink-soft text-lg leading-relaxed italic">
               <p>“{excerpt(testimonial.quote)}”</p>
             </blockquote>
             <Badge
               variant="certification"
               label="Verified Customer"
+              icon={
+                <BadgeCheck aria-hidden="true" className="size-3.5 shrink-0" />
+              }
               className="mt-auto self-start"
             />
           </Card>
