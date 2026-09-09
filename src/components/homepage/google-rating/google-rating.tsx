@@ -43,7 +43,7 @@ export function GoogleRating() {
       </div>
 
       <div className="mt-5 flex items-center gap-5">
-        <p className="font-display text-brand-deep shrink-0 text-6xl leading-none font-semibold tracking-tight whitespace-nowrap sm:text-7xl">
+        <p className="font-display text-ink shrink-0 text-6xl leading-none font-semibold tracking-tight whitespace-nowrap sm:text-7xl">
           {RATING.toFixed(1)}
           <span className="sr-only"> out of 5</span>
         </p>
