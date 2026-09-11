@@ -1,3 +1,5 @@
+import { createHmac } from 'node:crypto'
+
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 
 import {
@@ -8,6 +10,7 @@ import {
   setProductPreviewSession,
   SHOPIFY_PRODUCT_PREVIEW_COOKIE,
   SHOPIFY_PRODUCT_PREVIEW_TTL_SECONDS,
+  verifyThemeProductPreview,
 } from './preview-session'
 
 vi.mock('server-only', () => ({}))
@@ -33,6 +36,90 @@ vi.mock('@/lib/env/server', () => ({
 
 const SECRET = 'preview-secret-0123456789abcdef0123456789'
 const NOW = 1_700_000_000_000
+
+describe('Shopify Liquid preview signatures', () => {
+  const timestamp = String(NOW / 1000)
+  const signature = createHmac('sha256', SECRET)
+    .update(`shopify-theme-preview:v1:123:${timestamp}`)
+    .digest('hex')
+
+  test('accepts a current product-bound Liquid HMAC', () => {
+    expect(
+      verifyThemeProductPreview('123', timestamp, signature, NOW, SECRET),
+    ).toBe(true)
+    expect(
+      verifyThemeProductPreview(
+        '123',
+        timestamp,
+        signature,
+        NOW + 299_000,
+        SECRET,
+      ),
+    ).toBe(true)
+  })
+
+  test('rejects expired and future-dated links', () => {
+    expect(
+      verifyThemeProductPreview(
+        '123',
+        timestamp,
+        signature,
+        NOW + 300_000,
+        SECRET,
+      ),
+    ).toBe(false)
+    expect(
+      verifyThemeProductPreview(
+        '123',
+        timestamp,
+        signature,
+        NOW - 31_000,
+        SECRET,
+      ),
+    ).toBe(false)
+  })
+
+  test('rejects tampered product, timestamp, signature, and secret', () => {
+    expect(
+      verifyThemeProductPreview('124', timestamp, signature, NOW, SECRET),
+    ).toBe(false)
+    expect(
+      verifyThemeProductPreview(
+        '123',
+        String(Number(timestamp) + 1),
+        signature,
+        NOW,
+        SECRET,
+      ),
+    ).toBe(false)
+    expect(
+      verifyThemeProductPreview('123', timestamp, '0'.repeat(64), NOW, SECRET),
+    ).toBe(false)
+    expect(
+      verifyThemeProductPreview(
+        '123',
+        timestamp,
+        signature,
+        NOW,
+        'different-secret'.repeat(3),
+      ),
+    ).toBe(false)
+    expect(
+      verifyThemeProductPreview('123', timestamp, signature, NOW, ''),
+    ).toBe(false)
+  })
+
+  test.each([
+    [null, timestamp, signature],
+    ['../123', timestamp, signature],
+    ['123', null, signature],
+    ['123', '1e9', signature],
+    ['123', timestamp, null],
+    ['123', timestamp, 'invalid'],
+  ])('rejects malformed inputs', (id, time, digest) => {
+    expect(verifyThemeProductPreview(id, time, digest, NOW, SECRET)).toBe(false)
+  })
+})
 
 describe('Shopify product preview session', () => {
   beforeEach(() => {
