@@ -1,23 +1,25 @@
-import { timingSafeEqual } from 'node:crypto'
-
 import { getShopifyProductPreviewSecret } from '@/lib/env/server'
 import { logEvent } from '@/lib/observability/logger'
 import { getProductPreview } from '@/lib/shopify/operations/product-preview'
-import { setProductPreviewSession } from '@/lib/shopify/preview-session'
+import {
+  setProductPreviewSession,
+  verifyThemeProductPreview,
+} from '@/lib/shopify/preview-session'
 
 const MIN_PREVIEW_SECRET_LENGTH = 32
-
-function jsonError(error: string, status: number): Response {
-  return Response.json({ error }, { status })
+const PREVIEW_RESPONSE_HEADERS = {
+  'Cache-Control': 'private, no-store',
+  'Referrer-Policy': 'no-referrer',
+  'X-Robots-Tag': 'noindex, nofollow, noarchive',
 }
 
-function isValidSecret(candidate: string | null, expected: string): boolean {
-  if (!candidate) return false
-  const candidateBuffer = Buffer.from(candidate)
-  const expectedBuffer = Buffer.from(expected)
-  return (
-    candidateBuffer.length === expectedBuffer.length &&
-    timingSafeEqual(candidateBuffer, expectedBuffer)
+function jsonError(error: string, status: number): Response {
+  return Response.json(
+    { error },
+    {
+      status,
+      headers: PREVIEW_RESPONSE_HEADERS,
+    },
   )
 }
 
@@ -31,22 +33,26 @@ export async function GET(request: Request): Promise<Response> {
   }
 
   const url = new URL(request.url)
-  const secret = url.searchParams.get('secret')
   const productId = url.searchParams.get('productId')
 
-  if (!isValidSecret(secret, expectedSecret)) {
+  if (
+    ['productId', 'timestamp', 'signature'].some(
+      (key) => url.searchParams.getAll(key).length !== 1,
+    ) ||
+    !verifyThemeProductPreview(
+      productId,
+      url.searchParams.get('timestamp'),
+      url.searchParams.get('signature'),
+    )
+  ) {
     logEvent('warn', 'shopify_product_preview_rejected', {
-      reason: 'invalid-secret',
+      reason: 'invalid-theme-signature',
       productIdPresent: Boolean(productId),
     })
-    return jsonError('Invalid preview secret', 401)
-  }
-
-  if (!productId || !/^\d+$/.test(productId)) {
-    logEvent('warn', 'shopify_product_preview_rejected', {
-      reason: 'invalid-product-id',
-    })
-    return jsonError('Invalid product ID', 400)
+    return jsonError(
+      'Invalid or expired preview link. Open Preview again in Shopify.',
+      401,
+    )
   }
 
   try {
@@ -69,9 +75,16 @@ export async function GET(request: Request): Promise<Response> {
       productId,
       status: preview.status,
     })
-    return Response.redirect(
-      new URL(`/preview/products/${productId}`, request.url),
-    )
+    return new Response(null, {
+      status: 302,
+      headers: {
+        Location: new URL(
+          `/preview/products/${productId}`,
+          request.url,
+        ).toString(),
+        ...PREVIEW_RESPONSE_HEADERS,
+      },
+    })
   } catch {
     logEvent('error', 'shopify_product_preview_rejected', {
       reason: 'admin-fetch-failed',

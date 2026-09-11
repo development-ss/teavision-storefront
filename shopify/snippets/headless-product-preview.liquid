@@ -1,0 +1,18 @@
+{% comment %}
+  Render immediately before window.storefrontRedirectUrl = redirectUrl in the
+  Hydrogen redirect theme. Set preview_secret privately in Shopify's code editor
+  to the server's SHOPIFY_PRODUCT_PREVIEW_SECRET. Never commit the real value.
+  Do not move signing into JavaScript or expose the secret as a theme setting.
+{% endcomment %}
+{%- liquid
+  assign preview_secret = ''
+  if request.path == '/products_preview' and product.id != blank and request.design_mode == false and preview_secret.size >= 32
+    assign preview_timestamp = 'now' | date: '%s'
+    assign preview_message = 'shopify-theme-preview:v1:' | append: product.id | append: ':' | append: preview_timestamp
+    assign preview_signature = preview_message | hmac_sha256: preview_secret
+    assign preview_url = 'https://' | append: storefront_hostname | append: '/api/shopify-preview?productId=' | append: product.id | append: '&timestamp=' | append: preview_timestamp | append: '&signature=' | append: preview_signature
+  endif
+-%}
+{%- if preview_url != blank -%}
+  redirectUrl = new URL({{ preview_url | json }});
+{%- endif -%}
