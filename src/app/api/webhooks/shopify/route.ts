@@ -77,6 +77,7 @@ export async function POST(request: NextRequest): Promise<Response> {
       })
       revalidateTag('product', { expire: 0 })
       revalidateTag('products', { expire: 0 })
+      revalidateTag('collection', { expire: 0 })
       break
 
     case 'collections/create':
