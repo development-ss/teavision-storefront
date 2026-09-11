@@ -2,8 +2,10 @@
 
 ## Status
 
-The headless callback and Liquid bridge are prepared locally. Installation and
-verification through the real Shopify Admin Preview button are still required.
+The headless callback is deployed to a Vercel preview. The Liquid bridge is
+installed in an unpublished Shopify theme copy, with its signing secret still
+empty pending private entry by the owner. Verification through the real Shopify
+Admin Preview button is still required.
 Do not treat passing callback tests as completion of the Shopify-side integration.
 
 ## Why the native button previously failed
@@ -104,3 +106,25 @@ headless preview. Do not alter ordinary storefront routes to mask failures.
 - Existing test-environment color warnings and unavailable-review-provider
   warnings remain; no checkout, payment, or live provider mutations were tested.
 - No Shopify theme installation or production deployment was performed.
+
+## Preview setup, 11 September 2026
+
+- Pushed `fix/native-product-preview` at `dbe23b19` to
+  `development-ss/teavision-storefront` after explicit approval for that public
+  repository. The legacy `franz-ss` remote redirects to this repository.
+- Vercel reports the preview ready at
+  `https://teavision-storefront-r94egzvgj.vercel.app`. Unauthenticated requests
+  redirect to Vercel SSO, so they do not validate callback behavior.
+- Duplicated the active redirect theme into theme ID `141887209559`, named
+  `Native product preview test - unpublished`. Saved the bridge snippet and
+  render line at layout line 92. Set only this copy's storefront hostname to
+  the preview deployment above.
+- The snippet's `preview_secret` remains empty at line 8. The owner must enter
+  the matching Vercel preview secret privately and save before native-flow
+  testing. Never publish this test theme with its preview hostname.
+- Shopify's editor reports the inherited layout syntax error and two warnings,
+  plus an orphan-snippet warning despite the saved render line. Successful
+  saves do not prove Shopify's runtime behavior; these need follow-up during
+  the actual Shopify-hosted test.
+- The active theme `141627293783` remains untouched. No production deployment
+  or native-button acceptance test has been completed.
