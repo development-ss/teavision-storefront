@@ -45,6 +45,35 @@ function isProductId(value: unknown): value is string {
   return typeof value === 'string' && /^\d+$/.test(value)
 }
 
+// Matches Shopify Liquid's hmac_sha256 filter in headless-product-preview.liquid.
+// Keep this purpose separate from the signed browser-session payload.
+export function verifyThemeProductPreview(
+  productId: string | null,
+  timestamp: string | null,
+  signature: string | null,
+  now = Date.now(),
+  secret = getShopifyProductPreviewSecret(),
+): productId is string {
+  if (
+    !secret ||
+    secret.length < 32 ||
+    !isProductId(productId) ||
+    !timestamp ||
+    !/^\d{10}$/.test(timestamp) ||
+    !signature ||
+    !/^[a-f0-9]{64}$/.test(signature)
+  )
+    return false
+
+  const age = Math.floor(now / 1000) - Number(timestamp)
+  if (age < -30 || age >= 300) return false
+
+  const expected = createHmac('sha256', secret)
+    .update(`shopify-theme-preview:v1:${productId}:${timestamp}`)
+    .digest('hex')
+  return signaturesMatch(expected, signature)
+}
+
 function isPayload(value: unknown): value is ProductPreviewPayload {
   if (!value || typeof value !== 'object') return false
 
