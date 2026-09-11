@@ -166,6 +166,30 @@ export const SoldOut: Story = {
   },
 }
 
+export const PreviewOnly: Story = {
+  args: {
+    variants: multiVariants,
+    options,
+    purchasingDisabled: true,
+    addToCart: captureAddToCart,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(
+      canvas.getByRole('button', { name: 'Preview only' }),
+    ).toBeDisabled()
+    await expect(
+      canvas.getByText('Purchasing is disabled in preview.'),
+    ).toBeInTheDocument()
+    await expect(canvas.getByRole('button', { name: '1kg' })).toBeEnabled()
+    await userEvent.click(canvas.getByRole('button', { name: '1kg' }))
+    await expect(
+      canvas.getByRole('button', { name: 'Preview only' }),
+    ).toBeDisabled()
+    expect(capturedAddToCartPayloads).toHaveLength(0)
+  },
+}
+
 export const LimitedQuantity: Story = {
   args: {
     variants: [

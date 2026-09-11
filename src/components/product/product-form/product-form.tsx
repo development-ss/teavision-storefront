@@ -41,6 +41,7 @@ type ProductFormProps = {
      description keeps production's order while availability stays variant-driven */
   descriptionSlot?: ReactNode
   className?: string
+  purchasingDisabled?: boolean
 }
 
 type PendingAdd = {
@@ -94,6 +95,7 @@ export function ProductForm({
   onCartChanged,
   descriptionSlot,
   className,
+  purchasingDisabled = false,
 }: ProductFormProps) {
   const quantityErrorId = useId()
   const quantityStatusId = useId()
@@ -121,7 +123,9 @@ export function ProductForm({
   })
 
   const selectedVariant = variants.find((v) => v.id === selectedVariantId)
-  const canAddToCart = selectedVariant?.availableForSale === true
+  const canAddToCart =
+    !purchasingDisabled && selectedVariant?.availableForSale === true
+  const previewNoticeId = useId()
   const minimumQuantity = getVariantMinimumQuantity(selectedVariant)
   const maximumQuantity = getVariantMaximumQuantity(selectedVariant)
   const quantityIncrement = getVariantQuantityIncrement(selectedVariant)
@@ -207,7 +211,7 @@ export function ProductForm({
   }
 
   function handleGrabDeal() {
-    if (bulkDealQuantity === null) return
+    if (purchasingDisabled || bulkDealQuantity === null) return
 
     addQuantityToCart(bulkDealQuantity, 'bulk')
   }
@@ -241,8 +245,10 @@ export function ProductForm({
                 <ToggleButton
                   key={v.id}
                   pressed={isSelected}
-                  disabled={!isReady || !v.availableForSale}
-                  aria-label={`${displayTitle}${!v.availableForSale ? ', out of stock' : ''}`}
+                  disabled={
+                    !isReady || (!purchasingDisabled && !v.availableForSale)
+                  }
+                  aria-label={`${displayTitle}${!purchasingDisabled && !v.availableForSale ? ', out of stock' : ''}`}
                   className={cn(
                     'border-hairline bg-card text-ink hover:border-ink-faint aria-pressed:border-brand aria-pressed:bg-brand-tint aria-pressed:text-ink min-w-23 flex-col rounded-sm border-[1.5px] px-4.5 py-3.25 text-center transition-colors',
                     isSelected && 'border-brand bg-brand-tint',
@@ -300,10 +306,13 @@ export function ProductForm({
           min={minimumQuantity}
           max={maximumQuantity}
           step={quantityIncrement}
-          disabled={!isReady || !canAddToCart || isPending}
+          disabled={
+            !isReady || !canAddToCart || isPending || purchasingDisabled
+          }
           describedBy={[
             error ? quantityErrorId : null,
             maximumQuantity !== undefined ? quantityLimitId : null,
+            purchasingDisabled ? previewNoticeId : null,
           ]
             .filter((value): value is string => Boolean(value))
             .join(' ')}
@@ -319,19 +328,33 @@ export function ProductForm({
               !isReady ||
               !canAddToCart ||
               !canUseSelectedVariantQuantity ||
-              isPending
+              isPending ||
+              purchasingDisabled
             }
+            aria-describedby={purchasingDisabled ? previewNoticeId : undefined}
             size="lg"
             className="w-full"
           >
             {isPending && pendingAdd?.source === 'primary'
               ? 'Adding…'
-              : canAddToCart
-                ? 'Add to Cart'
-                : 'Sold Out'}
+              : purchasingDisabled
+                ? 'Preview only'
+                : canAddToCart
+                  ? 'Add to Cart'
+                  : 'Sold Out'}
           </Button>
         </div>
       </div>
+
+      {purchasingDisabled ? (
+        <p
+          id={previewNoticeId}
+          role="status"
+          className="type-caption text-ink-soft"
+        >
+          Purchasing is disabled in preview.
+        </p>
+      ) : null}
 
       {maximumQuantity !== undefined ? (
         <p
@@ -386,7 +409,7 @@ export function ProductForm({
           selectedTierQuantity={selectedBulkTierQuantity}
           maximumQuantity={maximumQuantity}
           canAddToCart={canAddToCart && bulkDealQuantity !== null}
-          disabled={!isReady || isPending}
+          disabled={!isReady || isPending || purchasingDisabled}
           isPending={isPending && pendingAdd?.source === 'bulk'}
           onGrabDeal={handleGrabDeal}
           onSelectTier={handleSelectBulkTier}
@@ -400,12 +423,18 @@ export function ProductForm({
         <p
           className={cn(
             'type-caption',
-            canAddToCart ? 'text-brand' : 'text-danger',
+            purchasingDisabled
+              ? 'text-ink-soft'
+              : canAddToCart
+                ? 'text-brand'
+                : 'text-danger',
           )}
         >
-          {canAddToCart
-            ? 'In stock! Usually ships within 24 hours.'
-            : 'Sorry! This product is currently out of stock.'}
+          {purchasingDisabled
+            ? 'Preview only. No orders or cart changes will be made.'
+            : canAddToCart
+              ? 'In stock! Usually ships within 24 hours.'
+              : 'Sorry! This product is currently out of stock.'}
         </p>
       )}
     </div>

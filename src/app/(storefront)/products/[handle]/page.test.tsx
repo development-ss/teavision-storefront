@@ -9,9 +9,9 @@ import {
 import { getProduct } from '@/lib/shopify/operations/product'
 import type { Product } from '@/lib/shopify/types'
 import { makeProduct } from '@/tests/fixtures/shopify/product'
+import { PurchaseForm } from '@/components/product/product-details/purchase-form'
 
 import { ProductContent } from './page'
-import { PurchaseForm } from './_components/purchase-form'
 
 vi.mock('server-only', () => ({}))
 
