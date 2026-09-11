@@ -6,7 +6,8 @@ The headless callback is deployed to a Vercel preview. The owner configured the
 Liquid bridge's secret in the unpublished Shopify theme copy. Two native
 Shopify-generated draft links passed the core flow with that theme explicitly
 selected. The unchanged native button still reaches the old production redirect;
-the coordinated production rollout and final unmodified-button test remain open.
+the final unmodified-button test remains open. The owner approved a coordinated
+production rollout and confirmed the Production signing secret was restored.
 Do not treat passing callback tests as completion of the Shopify-side integration.
 
 ## Why the native button previously failed
@@ -157,3 +158,28 @@ headless preview. Do not alter ordinary storefront routes to mask failures.
 - These results verify the unpublished bridge, not the production deployment.
   Production rollout, an unmodified native-button acceptance test, populated
   draft content checks, and broader redirect regression checks remain open.
+
+## Source-check correction and restored preview
+
+- The owner initially reported a secret match in saved Shopify HTML. The
+  supplied line was Shopify's analytics `pageurl` containing `preview_key`.
+  The owner confirmed that value differed from `SHOPIFY_PRODUCT_PREVIEW_SECRET`
+  and reported zero matches for the actual signing secret. The initial leak
+  conclusion was incorrect. Do not confuse Shopify's native preview key with
+  the separate signing secret or recommend deployment deletion on that basis.
+- Following that incorrect conclusion, the owner temporarily removed preview
+  configuration and reported deleting several deployments. The original
+  signing secret was subsequently restored. No source evidence established a
+  signing-secret leak. The agent's automated rendered-source check remained
+  blocked; the zero-match result is owner-reported evidence.
+- A replacement preview at `teavision-storefront-hzuv0ntm4.vercel.app` was built
+  from `main` at `fb4b108`, not this fix. Its `Invalid preview secret` response
+  came from the old handler, not evidence of an incorrect signing secret.
+- Verified the replacement `teavision-storefront-358654c95.vercel.app` is Ready
+  from `fix/native-product-preview` at `dbe23b1`. The unpublished theme now
+  targets that host. A fresh Shopify-generated draft link passed the bridge;
+  purchasing was disabled, the final URL had no query, robots were noindex,
+  no JSON-LD was present, and exit revoked direct draft access.
+- The owner approved production rollout and confirmed restoration of the
+  Production signing secret. Keep the live theme's production hostname;
+  never publish the unpublished theme with its Vercel preview hostname.
