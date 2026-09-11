@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import Script from 'next/script'
-import { ChevronRight, Globe2, Tags } from 'lucide-react'
+import { ChevronRight } from 'lucide-react'
 
 import {
   getAllProducts,
@@ -22,16 +22,10 @@ import {
   getTrustooProductRatings,
   getTrustooProductReviews,
 } from '@/lib/reviews/trustoo'
-import { sanitizeShopifyCompactHtml } from '@/lib/shopify/html-content'
-import { RichText } from '@/components/ui/rich-text'
-import { Badge } from '@/components/ui/badge'
-import { Eyebrow } from '@/components/ui/eyebrow'
-import { StarRating } from '@/components/ui/star-rating'
-import { ProductForm } from '@/components/product/product-form'
-import { ProductGallery } from '@/components/product/product-gallery'
+import { ProductDetails } from '@/components/product/product-details'
 import { Reviews } from '@/components/product/reviews'
+import { DynamicPurchaseForm } from '@/components/product/product-details/dynamic-purchase-form'
 
-import { DynamicPurchaseForm } from './_components/dynamic-purchase-form'
 import { RelatedProducts } from './_components/related-products'
 import {
   getNumericShopifyId,
@@ -40,53 +34,6 @@ import {
   getShopifyStorefrontContext,
 } from './_lib/shopify-analytics'
 import { ProductViewAnalytics } from './_components/view-analytics'
-
-// Mirrors the Liquid tag display logic from the Teavision theme:
-// - Package_ tags are internal only, never shown
-// - Underscored tags: strip "filter_" prefix, replace first _ with ": "
-// - Plain strings: display as-is
-function formatTag(tag: string): string | null {
-  if (tag.includes('Package_')) return null
-  if (tag.includes('_')) return tag.replace('filter_', '').replace('_', ': ')
-  return tag
-}
-
-function getCategoryLabel(tag: string): string | null {
-  const formattedTag = formatTag(tag)
-  if (!formattedTag) return null
-
-  const categoryMatch = /^categories:\s*(.+)$/i.exec(formattedTag)
-  return categoryMatch?.[1]?.trim() || null
-}
-
-// Mirrors toCategoryPathSegment in the collections route (_lib/page-helpers)
-// so tag links resolve through /collections/all/[category], which matches URL
-// segments against the full collection tag index — not Shopify handleize,
-// which would collapse underscores and break tags like "Certified_ACO".
-function toTagPathSegment(tag: string): string {
-  return tag
-    .toLowerCase()
-    .replace(/[^a-z0-9_]+/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '')
-}
-
-function getMetaSegments(tags: string[], optionName?: string): string[] {
-  const categoryLabels = tags
-    .map(getCategoryLabel)
-    .filter((tag): tag is string => tag !== null)
-  const fallbackLabels = tags
-    .map(formatTag)
-    .filter((tag): tag is string => tag !== null)
-    .filter((tag) => !/^categories:\s*/i.test(tag))
-    .filter((tag) => !/award|organic|certified/i.test(tag))
-  const groupLabels =
-    categoryLabels.length > 0 ? categoryLabels : fallbackLabels
-
-  return [groupLabels[0], optionName, groupLabels[1]]
-    .filter((segment): segment is string => Boolean(segment))
-    .slice(0, 3)
-}
 
 type Props = {
   params: Promise<{ handle: string }>
@@ -132,7 +79,6 @@ export async function ProductContent({
 
   const productUrl = `${SITE_URL}/products/${product.handle}`
   const hasAvailableVariant = product.variants.some((v) => v.availableForSale)
-  const descriptionHtml = sanitizeShopifyCompactHtml(product.descriptionHtml)
   const [productReviewSummaries, productReviews] = await Promise.all([
     getTrustooProductRatings([product.handle]),
     getTrustooProductReviews(product.handle),
@@ -143,27 +89,6 @@ export async function ProductContent({
   }
   const visibleProductReviewSummary =
     getVisibleProductReviewSummary(productReviewSummary)
-  // PDP-local display values: the visible review line always renders, while
-  // JSON-LD aggregateRating stays gated on the strict shared summary above.
-  const displayRating =
-    typeof productReviewSummary.rating === 'number' &&
-    Number.isFinite(productReviewSummary.rating) &&
-    productReviewSummary.rating > 0 &&
-    productReviewSummary.rating <= 5
-      ? productReviewSummary.rating
-      : 0
-  const displayReviewCount =
-    typeof productReviewSummary.reviewCount === 'number' &&
-    Number.isInteger(productReviewSummary.reviewCount) &&
-    productReviewSummary.reviewCount > 0
-      ? productReviewSummary.reviewCount
-      : 0
-  const visibleTags = product.tags.flatMap((tag) => {
-    const label = formatTag(tag)
-    return label ? [{ tag, label }] : []
-  })
-  const metaSegments = getMetaSegments(product.tags, product.options[0]?.name)
-
   const productJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Product',
@@ -187,14 +112,6 @@ export async function ProductContent({
       },
     }),
   }
-
-  const descriptionSlotNode = descriptionHtml ? (
-    <RichText
-      html={descriptionHtml}
-      variant="compact"
-      className="text-ink-soft max-w-prose text-[1.02rem]"
-    />
-  ) : null
 
   const breadcrumbJsonLd = {
     '@context': 'https://schema.org',
@@ -291,83 +208,18 @@ export async function ProductContent({
         </span>
       </nav>
 
-      {/* Main product layout — pt-2 adds the design's 8px grid top offset (delta #1) */}
-      <div className="grid min-w-0 items-start gap-[clamp(28px,4vw,64px)] pt-2 lg:grid-cols-[1.05fr_1fr]">
-        <div className="min-w-0">
-          <ProductGallery images={product.images} title={product.title} />
-        </div>
-
-        {/* Info column: varied rhythm per design — gap-6 removed in favour of per-element mt-* */}
-        <div className="flex min-w-0 flex-col">
-          {/* Title block: eyebrow → h1 → rating, gap-3.5 = 14px (deltas #2, #3) */}
-          <div className="flex flex-col gap-3.5">
-            {metaSegments.length > 0 ? (
-              <Eyebrow className="items-center">
-                <Globe2 aria-hidden="true" className="size-3.5" />
-                {metaSegments.join(' · ')}
-              </Eyebrow>
-            ) : null}
-            <h1 className="font-display text-ink text-[clamp(2rem,3.4vw,2.9rem)] leading-[1.04] font-medium">
-              {product.title}
-            </h1>
-            <a
-              href="#reviews"
-              className="focus-visible:ring-ring flex w-fit flex-wrap items-center gap-2.5 rounded-sm hover:underline focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
-            >
-              <StarRating rating={displayRating} size="lg" />
-              <span className="type-mono-meta text-ink-faint">
-                {displayReviewCount === 0
-                  ? '0 Reviews'
-                  : `${displayRating.toFixed(1)} · ${displayReviewCount.toLocaleString()} ${
-                      displayReviewCount === 1 ? 'review' : 'reviews'
-                    }`}
-              </span>
-            </a>
-          </div>
-
-          {/* Production element order: buy controls → description → availability → tags.
-              The description renders inside the form's slot so the variant-driven
-              availability line can follow it, matching production's DOM order. */}
-          <Suspense
-            fallback={
-              <ProductForm
-                variants={product.variants}
-                options={product.options}
-                descriptionSlot={descriptionSlotNode}
-                className="mt-6.5"
-              />
-            }
-          >
-            <DynamicPurchaseForm
-              product={product}
-              descriptionSlot={descriptionSlotNode}
-              className="mt-6.5"
-            />
-          </Suspense>
-
-          {/* Tag pills at the foot of the info column (owner directive) — mt-8 keeps the 32px rhythm below the buy panel */}
-          {visibleTags.length > 0 ? (
-            <div className="mt-8 flex flex-wrap items-center gap-2">
-              <span className="text-ink inline-flex items-center gap-1.5 text-sm font-semibold">
-                <Tags className="size-4" aria-hidden />
-                Tags :
-              </span>
-              {visibleTags.map(({ tag, label }) => (
-                <Link
-                  key={tag}
-                  href={`/collections/all/${toTagPathSegment(tag)}`}
-                >
-                  <Badge
-                    variant="certification"
-                    label={label}
-                    className="hover:border-ink-soft/40 hover:text-ink transition-colors"
-                  />
-                </Link>
-              ))}
-            </div>
-          ) : null}
-        </div>
-      </div>
+      <ProductDetails
+        product={product}
+        mode="live"
+        reviewSummary={productReviewSummary}
+        livePurchaseForm={({ descriptionSlot, className }) => (
+          <DynamicPurchaseForm
+            product={product}
+            descriptionSlot={descriptionSlot}
+            className={className}
+          />
+        )}
+      />
 
       <Reviews
         key={product.handle}
