@@ -2,10 +2,11 @@
 
 ## Status
 
-The headless callback is deployed to a Vercel preview. The Liquid bridge is
-installed in an unpublished Shopify theme copy, with its signing secret still
-empty pending private entry by the owner. Verification through the real Shopify
-Admin Preview button is still required.
+The headless callback is deployed to a Vercel preview. The owner configured the
+Liquid bridge's secret in the unpublished Shopify theme copy. Two native
+Shopify-generated draft links passed the core flow with that theme explicitly
+selected. The unchanged native button still reaches the old production redirect;
+the coordinated production rollout and final unmodified-button test remain open.
 Do not treat passing callback tests as completion of the Shopify-side integration.
 
 ## Why the native button previously failed
@@ -119,12 +120,40 @@ headless preview. Do not alter ordinary storefront routes to mask failures.
   `Native product preview test - unpublished`. Saved the bridge snippet and
   render line at layout line 92. Set only this copy's storefront hostname to
   the preview deployment above.
-- The snippet's `preview_secret` remains empty at line 8. The owner must enter
-  the matching Vercel preview secret privately and save before native-flow
-  testing. Never publish this test theme with its preview hostname.
+- The snippet's `preview_secret` was initially empty at line 8. The owner
+  subsequently confirmed private entry and saving before the tests below.
+  Never publish this test theme with its preview hostname.
 - Shopify's editor reports the inherited layout syntax error and two warnings,
   plus an orphan-snippet warning despite the saved render line. Successful
   saves do not prove Shopify's runtime behavior; these need follow-up during
   the actual Shopify-hosted test.
 - The active theme `141627293783` remains untouched. No production deployment
   or native-button acceptance test has been completed.
+
+## Shopify-hosted verification, 11 September 2026
+
+- Clicked the actual top-right Preview button for two saved drafts. Unmodified
+  clicks still redirect to production's `/products_preview` 404, as expected
+  while the live theme remains unchanged.
+- Retained each freshly generated native key privately and selected the
+  unpublished theme using `preview_theme_id=141887209559` on Shopify's hosted
+  `/products_preview` route. Both opened the matching headless preview through
+  the Liquid-generated signature, without manually generating an HMAC.
+- Verified the final URL has no query parameters, quantity and purchasing
+  controls are disabled, robots metadata is `noindex, nofollow, noarchive`, and
+  the rendered draft contains no JSON-LD scripts.
+- Verified cross-product access fails. Switching to the second draft replaces
+  the session: the first draft then fails while the second remains accessible.
+- Exit returned to the preview homepage. Direct access to the former draft
+  failed afterwards.
+- An invalid native key plus a supplied product ID did not issue a headless
+  preview. Shopify rendered its fallback redirect and the destination was 404.
+- No product edits, cart mutations, checkout submissions, or orders were made.
+  The tested drafts had no media or description, so this live check does not
+  validate populated media, descriptions, or multiple variant options.
+- The browser policy blocked the rendered-source inspection. Secret absence
+  in rendered Shopify HTML remains unverified and needs manual checking; do
+  not treat code review or successful signing as that check.
+- These results verify the unpublished bridge, not the production deployment.
+  Production rollout, an unmodified native-button acceptance test, populated
+  draft content checks, and broader redirect regression checks remain open.
