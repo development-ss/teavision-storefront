@@ -36,6 +36,10 @@ export function getShopifyWebhookSecret(): string | undefined {
   return optionalEnv('SHOPIFY_WEBHOOK_SECRET')
 }
 
+export function getShopifyProductPreviewSecret(): string | undefined {
+  return optionalEnv('SHOPIFY_PRODUCT_PREVIEW_SECRET')
+}
+
 export function getTrustooPublicToken(): string | undefined {
   return optionalEnv('TRUSTOO_PUBLIC_TOKEN')
 }

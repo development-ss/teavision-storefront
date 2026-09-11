@@ -534,6 +534,44 @@ export async function createFakeShopifyServer({
       return
     }
 
+    if (operationName === 'ProductPreview') {
+      const product = makeRawProduct()
+      const productId = readString(graphqlRequest.variables?.id) ?? product.id
+      writeJson(response, 200, {
+        data: {
+          shop: { currencyCode: 'AUD' },
+          product: {
+            id: productId,
+            handle: product.handle,
+            title: product.title,
+            description: product.description,
+            descriptionHtml: product.descriptionHtml,
+            status: 'DRAFT',
+            tags: product.tags,
+            collections: product.collections,
+            media: { nodes: [{ image: fakeProductImage }] },
+            options: product.options,
+            variants: {
+              nodes: product.variants.edges.map((edge) => ({
+                id: edge.node.id,
+                title: edge.node.title,
+                availableForSale: edge.node.availableForSale,
+                inventoryQuantity: edge.node.quantityAvailable,
+                price: edge.node.price.amount,
+                media: { nodes: [{ image: fakeProductImage }] },
+              })),
+            },
+            priceRangeV2: {
+              minVariantPrice: product.priceRange.minVariantPrice,
+            },
+            ratingMetafield: product.ratingMetafield,
+            ratingCountMetafield: product.ratingCountMetafield,
+          },
+        },
+      })
+      return
+    }
+
     if (operationName === 'GetProductVariants') {
       writeJson(response, 200, {
         data: {

@@ -72,6 +72,8 @@ export default defineConfig({
         SHOPIFY_ADMIN_API_ACCESS_TOKEN: 'test-token',
         SHOPIFY_ADMIN_TEST_MODE: 'true',
         SHOPIFY_ADMIN_TEST_URL: FAKE_SHOPIFY_URL,
+        SHOPIFY_PRODUCT_PREVIEW_SECRET:
+          'test-preview-secret-with-at-least-32-characters',
         SHOPIFY_STOREFRONT_ACCESS_TOKEN: 'test-token',
         SHOPIFY_STOREFRONT_TEST_MODE: 'true',
         SHOPIFY_STOREFRONT_TEST_URL: FAKE_SHOPIFY_URL,
