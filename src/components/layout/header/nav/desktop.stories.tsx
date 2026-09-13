@@ -3,7 +3,12 @@ import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { expect, fireEvent, userEvent, waitFor, within } from 'storybook/test'
 
 import { MegaNav } from './desktop'
-import { SERVICES_LINKS, SHOP_SECTIONS, type ShopKey } from './data'
+import {
+  CATALOGUE_LINKS,
+  SERVICES_LINKS,
+  SHOP_SECTIONS,
+  type ShopKey,
+} from './data'
 import { MobileMegaNav } from './mobile'
 import { MobileServicesPanel } from './services/mobile-panel'
 import { MobileShopPanel } from './shop/mobile-panel'
@@ -33,6 +38,35 @@ function ignoreShopKey(key: ShopKey) {
 }
 
 function noop() {}
+
+async function checkCatalogueLinks(canvasElement: HTMLElement) {
+  const canvas = within(canvasElement)
+  const pageLink = canvas.getByRole('link', {
+    name: 'Organic | Food Safety | Certs and Awards',
+  })
+  const downloads = canvas.getByRole('list', {
+    name: 'Downloadable catalogues',
+  })
+  await expect(pageLink).toHaveAttribute('href', '/pages/certifications')
+  await expect(pageLink).not.toHaveAttribute('download')
+  await expect(
+    pageLink.compareDocumentPosition(downloads) &
+      Node.DOCUMENT_POSITION_FOLLOWING,
+  ).toBeTruthy()
+  const links = within(downloads).getAllByRole('link')
+  await expect(links).toHaveLength(6)
+  await expect(links[0]).toHaveAccessibleName(
+    'ACO Organic Certificate - Full Organic Range (PDF download)',
+  )
+  for (const catalogue of CATALOGUE_LINKS) {
+    const link = within(downloads).getByRole('link', {
+      name: catalogue.label + ' (PDF download)',
+    })
+    await expect(link).toHaveAttribute('href', catalogue.href)
+    await expect(link).toHaveAttribute('download')
+    await expect(link.getBoundingClientRect().height).toBeGreaterThanOrEqual(40)
+  }
+}
 
 function StoryPanelFrame({ children }: { children: ReactNode }) {
   return <div className="bg-paper relative min-h-80">{children}</div>
@@ -276,6 +310,7 @@ export const CollectionProductLinks: Story = {
 }
 
 export const DesktopServicesOpen: Story = {
+  play: async ({ canvasElement }) => checkCatalogueLinks(canvasElement),
   render: () => (
     <StoryPanelFrame>
       <ServicesMegaPanel
@@ -360,6 +395,7 @@ export const MobileShopOpen: Story = {
 }
 
 export const MobileServicesOpen: Story = {
+  play: async ({ canvasElement }) => checkCatalogueLinks(canvasElement),
   render: () => (
     <MobileServicesPanel
       onClose={noop}

@@ -170,6 +170,10 @@ export const SERVICES_LINKS = [
 
 export const CATALOGUE_LINKS = [
   {
+    href: '/vendor/catalogues/aco-organic-certificate.pdf',
+    label: 'ACO Organic Certificate - Full Organic Range',
+  },
+  {
     href: '/vendor/catalogues/tea-cafe-catalogue.pdf',
     label: 'Tea Catalogue',
   },
@@ -188,10 +192,6 @@ export const CATALOGUE_LINKS = [
   {
     href: '/vendor/catalogues/tea-blends-catalogue.pdf',
     label: 'Tea Blends Catalogue',
-  },
-  {
-    href: '/vendor/catalogues/aco-organic-certificate.pdf',
-    label: 'ACO Organic Certificate - Full Organic Range',
   },
 ] satisfies NavLink[]
 
