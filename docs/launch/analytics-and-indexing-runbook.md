@@ -21,6 +21,28 @@ kinds for newsletter, contact, wholesale, and NPD. Submitted names, email
 addresses, phone numbers, companies, product lists, notes, and message bodies
 must never be copied into analytics payloads.
 
+When a GTM container is configured (production default `GTM-KF2Z76H`), these
+events are pushed to the GTM `dataLayer` after analytics consent, using GA4
+event names: `view_item`, `search`, `add_to_cart`, `cart_update`,
+`begin_checkout` and `generate_lead` (with `lead_kind`). Item lists go under
+`ecommerce.items`. They are not also sent to GA4 directly, so nothing is
+counted twice. GTM needs a Custom Event trigger and GA4 event tag for each
+event it should forward (`src/lib/analytics/destinations/gtm.ts`).
+
+GTM container review (2 October 2026, live site):
+
+- The `contact_form_submission`, `newsletter_form_submission`,
+  `homepage_bottom_form` and `purchase` tags use triggers from the old Shopify
+  theme (form ID `contact_form`, a page URL containing `newsletter`, the
+  `btn-link` class, and an `orderComplete` event). The new storefront never
+  produces these, so the tags do not fire. Point them at `generate_lead` with
+  the matching `lead_kind` instead.
+- One click on a `tel:` or `mailto:` link sent three `phone_number_click` or
+  `email_address_click` events to G-RQZ3KYHCLZ. Check the trigger setup in GTM
+  Preview.
+- Four Universal Analytics tags remain in the container. Universal Analytics
+  no longer collects data, so they can be removed.
+
 ## Pre-Cutover Analytics Verification
 
 1. Keep local and CI configuration on `NEXT_PUBLIC_ANALYTICS_MODE=fake`.
