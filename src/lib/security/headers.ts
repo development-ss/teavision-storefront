@@ -72,6 +72,29 @@ export function buildContentSecurityPolicy(
     connectSources.push(
       'https://www.google-analytics.com',
       'https://region1.google-analytics.com',
+      'https://analytics.google.com',
+      'https://stats.g.doubleclick.net',
+    )
+  }
+
+  // The live GTM container also fires Google Ads remarketing, conversion and
+  // call-tracking tags. Hosts recorded from the live site after consent on
+  // 2 October 2026.
+  if (gtmEnabled) {
+    scriptSources.push(
+      'https://googleads.g.doubleclick.net',
+      'https://www.googleadservices.com',
+      'https://www.gstatic.com',
+    )
+    connectSources.push(
+      'https://ad.doubleclick.net',
+      'https://www.google.com',
+      'https://www.googleadservices.com',
+    )
+    imgSources.push(
+      'https://www.google.com',
+      'https://www.google.com.au',
+      'https://googleads.g.doubleclick.net',
     )
   }
 

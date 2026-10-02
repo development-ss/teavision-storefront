@@ -105,6 +105,52 @@ describe('security headers', () => {
     expect(contentSecurityPolicy).not.toContain('klaviyo')
   })
 
+  test('allows the Google Ads hosts the GTM container loads', () => {
+    const directives = Object.fromEntries(
+      buildContentSecurityPolicy({
+        NEXT_PUBLIC_GTM_CONTAINER_ID: 'GTM-TEAVISION',
+      })
+        .split('; ')
+        .map((directive) => {
+          const [name, ...sources] = directive.split(' ')
+          return [name, sources]
+        }),
+    )
+
+    expect(directives['script-src']).toEqual(
+      expect.arrayContaining([
+        'https://googleads.g.doubleclick.net',
+        'https://www.googleadservices.com',
+        'https://www.gstatic.com',
+      ]),
+    )
+    expect(directives['connect-src']).toEqual(
+      expect.arrayContaining([
+        'https://analytics.google.com',
+        'https://stats.g.doubleclick.net',
+        'https://ad.doubleclick.net',
+        'https://www.google.com',
+        'https://www.googleadservices.com',
+      ]),
+    )
+    expect(directives['img-src']).toEqual(
+      expect.arrayContaining([
+        'https://www.google.com',
+        'https://googleads.g.doubleclick.net',
+      ]),
+    )
+  })
+
+  test('keeps Google Ads hosts out when only GA4 is configured', () => {
+    const contentSecurityPolicy = buildContentSecurityPolicy({
+      NEXT_PUBLIC_GA4_MEASUREMENT_ID: 'G-TEAVISION',
+    })
+
+    expect(contentSecurityPolicy).toContain('https://analytics.google.com')
+    expect(contentSecurityPolicy).not.toContain('googleadservices.com')
+    expect(contentSecurityPolicy).not.toContain('www.gstatic.com')
+  })
+
   test('allows the default production GTM container on Vercel production', () => {
     expect(buildContentSecurityPolicy({ VERCEL_ENV: 'production' })).toContain(
       'googletagmanager.com',
