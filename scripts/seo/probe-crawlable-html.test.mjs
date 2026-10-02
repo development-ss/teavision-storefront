@@ -14,6 +14,8 @@ const collectionHtml = `
 <!doctype html>
 <html lang="en-AU">
   <head>
+    <title>All products</title>
+    <meta name="description" content="All products from Teavision.">
     <link rel="canonical" href="https://www.teavision.com.au/collections/all">
     <script type="application/ld+json">
       {
@@ -67,6 +69,40 @@ test('collection HTML passes with one H1, product grid content, canonical, and J
   assert.equal(
     rows.every((row) => row.status === 'PASS'),
     true,
+  )
+})
+
+test('collection HTML fails when SEO metadata appears after the head', () => {
+  const lateMetadataHtml = collectionHtml
+    .replace('    <title>All products</title>\n', '')
+    .replace(
+      '    <meta name="description" content="All products from Teavision.">\n',
+      '',
+    )
+    .replace(
+      '    <link rel="canonical" href="https://www.teavision.com.au/collections/all">\n',
+      '',
+    )
+    .replace(
+      '  </head>\n  <body>',
+      '  </head>\n  <body>\n    <title>All products</title>\n    <meta name="description" content="All products from Teavision.">\n    <link rel="canonical" href="https://www.teavision.com.au/collections/all">',
+    )
+  const rows = evaluateRouteHtml({
+    expectedTitle: 'All products',
+    html: lateMetadataHtml,
+    kind: 'collection',
+    route: '/collections/all',
+  })
+
+  assert.equal(
+    rows.find((row) => row.check === 'canonical link')?.status,
+    'PASS',
+  )
+  assert.deepEqual(
+    ['page title in head', 'meta description in head', 'canonical in head'].map(
+      (name) => rows.find((row) => row.check === name)?.status,
+    ),
+    ['FAIL', 'FAIL', 'FAIL'],
   )
 })
 

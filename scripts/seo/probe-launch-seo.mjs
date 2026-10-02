@@ -24,6 +24,7 @@ const SOURCE_PATHS = {
   auditRemediation: 'docs/launch/seo-audit-remediation.md',
   evidence: 'docs/launch/seo-route-evidence.md',
   launchMatrix: 'src/lib/seo/launch-route-matrix.ts',
+  legacyRedirects: 'src/lib/seo/legacy-redirects.ts',
   nextConfig: 'next.config.ts',
   policies: 'src/lib/legal/policies.ts',
   runbook: 'docs/launch/analytics-and-indexing-runbook.md',
@@ -196,6 +197,14 @@ function parseLegalPolicies(policySource) {
   }))
 }
 
+export function parseLegacyCatalogRedirects(source) {
+  return [
+    ...source.matchAll(
+      /\{\s*source:\s*'([^']+)',\s*destination:\s*'([^']+)',?\s*\}/g,
+    ),
+  ].map((match) => ({ source: match[1], target: match[2] }))
+}
+
 function materializeExpectations() {
   const matrixSource = readSource(SOURCE_PATHS.launchMatrix)
   const policySource = readSource(SOURCE_PATHS.policies)
@@ -228,6 +237,16 @@ function materializeExpectations() {
         shouldIndexWhenEnabled: false,
       })),
     ),
+    ...parseLegacyCatalogRedirects(
+      readSource(SOURCE_PATHS.legacyRedirects),
+    ).map((redirect) => ({
+      canonicalPath: redirect.target,
+      expectedStatus: 301,
+      kind: 'redirect',
+      path: redirect.source,
+      shouldAppearInSitemap: false,
+      shouldIndexWhenEnabled: false,
+    })),
   ]
 
   return {
@@ -413,7 +432,14 @@ function getCodedRedirectsForAudit() {
       target: policy.href,
     })),
   )
-  const redirects = [...literalRedirects, ...policyRedirects]
+  const legacyRedirects = parseLegacyCatalogRedirects(
+    readSource(SOURCE_PATHS.legacyRedirects),
+  )
+  const redirects = [
+    ...literalRedirects,
+    ...policyRedirects,
+    ...legacyRedirects,
+  ]
   const seen = new Set()
 
   return redirects.filter((redirect) => {

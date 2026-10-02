@@ -269,6 +269,25 @@ function hasCanonicalLink(html) {
   )
 }
 
+function extractHeadHtml(html) {
+  return html.match(/<head\b[^>]*>([\s\S]*?)<\/head>/i)?.[1] ?? ''
+}
+
+function hasPageTitle(html) {
+  return /<title\b[^>]*>[^<]*\S[^<]*<\/title>/i.test(html)
+}
+
+function hasMetaDescription(html) {
+  const tags = html.match(/<meta\b[^>]*>/gi) ?? []
+
+  return tags.some((tag) => {
+    const name = tag.match(/\bname=["']([^"']+)["']/i)?.[1]
+    const content = tag.match(/\bcontent=["']([^"']*)["']/i)?.[1]
+
+    return name?.toLowerCase() === 'description' && Boolean(content?.trim())
+  })
+}
+
 export function extractJsonLd(html) {
   const scripts = [
     ...html.matchAll(
@@ -372,6 +391,7 @@ export function evaluateRouteHtml({
   route,
 }) {
   const h1Count = countH1(html)
+  const headHtml = extractHeadHtml(html)
   const hasMeaningfulContent =
     kind === 'collection'
       ? hasCollectionContent(html, expectedTitle)
@@ -399,6 +419,27 @@ export function evaluateRouteHtml({
 
   if (kind === 'collection') {
     rows.push(
+      check(
+        'page title in head',
+        hasPageTitle(headHtml),
+        hasPageTitle(headHtml)
+          ? 'page title found in head'
+          : 'page title missing from head',
+      ),
+      check(
+        'meta description in head',
+        hasMetaDescription(headHtml),
+        hasMetaDescription(headHtml)
+          ? 'meta description found in head'
+          : 'meta description missing from head',
+      ),
+      check(
+        'canonical in head',
+        hasCanonicalLink(headHtml),
+        hasCanonicalLink(headHtml)
+          ? 'canonical link found in head'
+          : 'canonical link missing from head',
+      ),
       check(
         'collection product content',
         hasMeaningfulContent,
