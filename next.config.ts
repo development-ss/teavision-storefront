@@ -1,8 +1,10 @@
 import type { NextConfig } from 'next'
 import { withSentryConfig } from '@sentry/nextjs/config'
 
+import { resolveGtmContainerId } from './src/lib/analytics/destination-ids'
 import { getPolicyRedirects } from './src/lib/legal/policies'
 import { CANONICAL_BLOG_LISTING_PATH } from './src/lib/blog/paths'
+import { LEGACY_CATALOG_REDIRECTS } from './src/lib/seo/legacy-redirects'
 import { securityHeaders } from './src/lib/security/headers'
 
 const developmentProxyOrigins = ['detonate-trickster-venus.ngrok-free.dev']
@@ -13,6 +15,8 @@ const nextConfig: NextConfig = {
     process.env.SHOPIFY_STOREFRONT_TEST_MODE === 'true' ? '.next-e2e' : '.next',
   allowedDevOrigins: developmentProxyOrigins,
   cacheComponents: true,
+  // Put page metadata in the initial HTML header for every request.
+  htmlLimitedBots: /.*/,
   experimental: {
     serverActions: {
       allowedOrigins:
@@ -23,6 +27,9 @@ const nextConfig: NextConfig = {
     // Build-time copyright year — avoids per-request new Date() in components,
     // which breaks Next 16 prerendering. Refreshes on every build/deploy.
     BUILD_YEAR: String(new Date().getFullYear()),
+    // Inline the resolved GTM container so production keeps the pre-migration
+    // tag without a separate Vercel setting. See destination-ids.ts.
+    NEXT_PUBLIC_GTM_CONTAINER_ID: resolveGtmContainerId(process.env) ?? '',
   },
   async redirects() {
     return [
@@ -68,6 +75,12 @@ const nextConfig: NextConfig = {
         destination: CANONICAL_BLOG_LISTING_PATH,
         permanent: true,
       },
+      // The SEO team asked for a literal 301 on these post-migration fixes.
+      {
+        source: '/blogs',
+        destination: CANONICAL_BLOG_LISTING_PATH,
+        statusCode: 301,
+      },
       {
         source: '/blogs/journal',
         destination: CANONICAL_BLOG_LISTING_PATH,
@@ -79,6 +92,11 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       ...getPolicyRedirects(),
+      ...LEGACY_CATALOG_REDIRECTS.map(({ source, destination }) => ({
+        source,
+        destination,
+        statusCode: 301 as const,
+      })),
     ]
   },
   async headers() {
