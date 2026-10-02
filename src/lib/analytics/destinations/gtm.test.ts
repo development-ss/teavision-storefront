@@ -48,6 +48,14 @@ describe('GTM analytics destination', () => {
         NEXT_PUBLIC_GA4_MEASUREMENT_ID: 'G-TEST',
       }),
     ).toEqual(['ga4'])
+    // Live production config on 2 October 2026: ga4 mode, no GA4 ID, GTM set.
+    expect(
+      ids({
+        NODE_ENV: 'production',
+        NEXT_PUBLIC_ANALYTICS_MODE: 'ga4',
+        NEXT_PUBLIC_GTM_CONTAINER_ID: 'GTM-TEST',
+      }),
+    ).toEqual(['gtm'])
     expect(
       ids({
         NODE_ENV: 'development',

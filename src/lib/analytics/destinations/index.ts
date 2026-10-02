@@ -37,9 +37,12 @@ export function createDefaultAnalyticsDestinations(
   if (isLocalOrCi(env)) return [createFakeAnalyticsDestination()]
 
   // GTM already loads GA4 and Google Ads, so a configured container takes the
-  // events. Sending them to GA4 directly as well would count them twice.
+  // events. Sending them to GA4 directly as well would count them twice. Only
+  // an explicit ga4 mode with its own measurement ID bypasses GTM; production
+  // sets ga4 mode without an ID, which would otherwise drop every event.
   const gtmContainerId = env.NEXT_PUBLIC_GTM_CONTAINER_ID?.trim()
-  if (mode !== 'ga4' && gtmContainerId) {
+  const directGa4 = mode === 'ga4' && Boolean(ga4MeasurementId)
+  if (gtmContainerId && !directGa4) {
     return [createGtmAnalyticsDestination(gtmContainerId)]
   }
 
