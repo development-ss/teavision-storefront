@@ -1,9 +1,11 @@
 import { describe, expect, test } from 'vitest'
 
 import { LEGAL_POLICIES, getPolicyRedirects } from '@/lib/legal/policies'
+import { LEGACY_CATALOG_REDIRECTS } from '@/lib/seo/legacy-redirects'
 
 import {
   APP_OWNED_REDIRECT_EXPECTATIONS,
+  LEGACY_CATALOG_REDIRECT_ROUTE_EXPECTATIONS,
   LEGAL_ROUTE_EXPECTATIONS,
   POLICY_REDIRECT_ROUTE_EXPECTATIONS,
   REDIRECT_ROUTE_EXPECTATIONS,
@@ -130,6 +132,34 @@ describe('launch SEO route matrix', () => {
 
       expect(APP_OWNED_REDIRECT_EXPECTATIONS).toContainEqual(expectation)
       expect(REDIRECT_ROUTE_EXPECTATIONS).toContainEqual(expectation)
+    }
+  })
+
+  test('uses a literal 301 for the /blogs listing alias', () => {
+    expect(APP_OWNED_REDIRECT_EXPECTATIONS).toContainEqual({
+      path: '/blogs',
+      expectedStatus: 301,
+      canonicalPath: '/blog',
+      shouldIndexWhenEnabled: false,
+      shouldAppearInSitemap: false,
+      checks: ['status', 'redirect', 'canonical'],
+    })
+  })
+
+  test('represents every legacy catalog redirect', () => {
+    expect(LEGACY_CATALOG_REDIRECT_ROUTE_EXPECTATIONS).toHaveLength(
+      LEGACY_CATALOG_REDIRECTS.length,
+    )
+
+    for (const redirect of LEGACY_CATALOG_REDIRECTS) {
+      expect(REDIRECT_ROUTE_EXPECTATIONS).toContainEqual({
+        path: redirect.source,
+        expectedStatus: 301,
+        canonicalPath: redirect.destination,
+        shouldIndexWhenEnabled: false,
+        shouldAppearInSitemap: false,
+        checks: ['status', 'redirect', 'canonical'],
+      })
     }
   })
 

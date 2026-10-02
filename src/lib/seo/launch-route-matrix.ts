@@ -3,6 +3,7 @@ import {
   getPolicyRedirects,
   type LegalPolicy,
 } from '@/lib/legal/policies'
+import { LEGACY_CATALOG_REDIRECTS } from '@/lib/seo/legacy-redirects'
 
 export type LaunchSeoRouteCheck =
   | 'canonical'
@@ -16,7 +17,7 @@ export type LaunchSeoPath = '/' | `/${string}`
 
 export type LaunchSeoRouteExpectation = {
   path: LaunchSeoPath
-  expectedStatus: 200 | 308
+  expectedStatus: 200 | 301 | 308
   canonicalPath: LaunchSeoPath
   shouldIndexWhenEnabled: boolean
   shouldAppearInSitemap: boolean
@@ -231,6 +232,14 @@ export const APP_OWNED_REDIRECT_EXPECTATIONS = [
     checks: REDIRECT_CHECKS,
   },
   {
+    path: '/blogs',
+    expectedStatus: 301,
+    canonicalPath: '/blog',
+    shouldIndexWhenEnabled: false,
+    shouldAppearInSitemap: false,
+    checks: REDIRECT_CHECKS,
+  },
+  {
     path: '/blogs/journal',
     expectedStatus: 308,
     canonicalPath: '/blog',
@@ -259,9 +268,22 @@ export const POLICY_REDIRECT_ROUTE_EXPECTATIONS = getPolicyRedirects().map(
   }),
 )
 
+export const LEGACY_CATALOG_REDIRECT_ROUTE_EXPECTATIONS =
+  LEGACY_CATALOG_REDIRECTS.map(
+    (redirect): LaunchSeoRouteExpectation => ({
+      path: redirect.source,
+      expectedStatus: 301,
+      canonicalPath: redirect.destination,
+      shouldIndexWhenEnabled: false,
+      shouldAppearInSitemap: false,
+      checks: REDIRECT_CHECKS,
+    }),
+  )
+
 export const REDIRECT_ROUTE_EXPECTATIONS = [
   ...APP_OWNED_REDIRECT_EXPECTATIONS,
   ...POLICY_REDIRECT_ROUTE_EXPECTATIONS,
+  ...LEGACY_CATALOG_REDIRECT_ROUTE_EXPECTATIONS,
 ] satisfies readonly LaunchSeoRouteExpectation[]
 
 export function getLaunchSeoRouteExpectations(): LaunchSeoRouteExpectation[] {
