@@ -1,3 +1,5 @@
+import { resolveGtmContainerId } from '../analytics/destination-ids'
+
 export type SecurityHeader = {
   key: string
   value: string
@@ -57,7 +59,7 @@ export function buildContentSecurityPolicy(
   const frameSources = ["'self'", 'https://maps.google.com']
 
   const ga4Enabled = hasEnvValue(env, 'NEXT_PUBLIC_GA4_MEASUREMENT_ID')
-  const gtmEnabled = hasEnvValue(env, 'NEXT_PUBLIC_GTM_CONTAINER_ID')
+  const gtmEnabled = Boolean(resolveGtmContainerId(env))
   const metaEnabled = hasEnvValue(env, 'NEXT_PUBLIC_META_PIXEL_ID')
   const klaviyoEnabled = hasEnvValue(env, 'NEXT_PUBLIC_KLAVIYO_PUBLIC_KEY')
   const shopifyPixelEnabled = isTruthyEnv(

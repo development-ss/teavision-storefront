@@ -104,4 +104,13 @@ describe('security headers', () => {
     expect(contentSecurityPolicy).not.toContain('facebook.net')
     expect(contentSecurityPolicy).not.toContain('klaviyo')
   })
+
+  test('allows the default production GTM container on Vercel production', () => {
+    expect(buildContentSecurityPolicy({ VERCEL_ENV: 'production' })).toContain(
+      'googletagmanager.com',
+    )
+    expect(buildContentSecurityPolicy({ VERCEL_ENV: 'preview' })).not.toContain(
+      'googletagmanager.com',
+    )
+  })
 })
