@@ -55,6 +55,14 @@ export const metadata: Metadata = withNoindexRobots({
   twitter: {
     card: 'summary_large_image',
   },
+  // Google Search Console ownership tokens carried over from the old Shopify
+  // theme. They are public by design and must stay on every page.
+  verification: {
+    google: [
+      'zuc6JgNhxfEuNOkQesHoVQ94s48QvRnQ6AQlv43E2Hw',
+      'QT0PK9njH7ghSELI7aFl3uVvzdYA07K4wRHNtnUOSYo',
+    ],
+  },
 })
 
 export default function RootLayout({
