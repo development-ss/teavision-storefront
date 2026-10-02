@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import { submitContactFormAction } from '@/lib/contact/actions'
 import { withNoindexRobots } from '@/lib/seo/noindex'
 
+import { JsonLd } from './_components/json-ld'
 import { PageContent } from './_components/page-content'
 
 const TITLE = 'Tea Blending, Packing & Wholesale Services'
@@ -37,5 +38,10 @@ export const metadata: Metadata = withNoindexRobots({
 })
 
 export default function Page() {
-  return <PageContent action={submitContactFormAction} />
+  return (
+    <>
+      <JsonLd />
+      <PageContent action={submitContactFormAction} />
+    </>
+  )
 }
