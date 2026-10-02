@@ -18,8 +18,10 @@ import {
   getTagPath,
   normalizeBlogHandle,
 } from '@/lib/blog/operations'
+import { ORGANIZATION_ID, organizationJsonLd } from '@/lib/seo/homepage-json-ld'
 import { withNoindexRobots } from '@/lib/seo/noindex'
 import { serializeInlineJson } from '@/lib/seo/serialize-inline-json'
+import { SITE_URL } from '@/lib/seo/site-url'
 import { sanitizeShopifyArticleHtml } from '@/lib/shopify/html-content'
 
 type Props = {
@@ -106,16 +108,19 @@ export default async function ArticlePage({ params }: Props) {
     description,
     datePublished: article.publishedAt,
     dateModified: article.updatedAt,
-    author: {
-      '@type': 'Person',
-      name: authorName ?? 'Teavision Team',
-    },
+    // A named author is a Person. Unattributed posts credit the company rather
+    // than an invented "Teavision Team" person.
+    author: authorName
+      ? { '@type': 'Person', name: authorName }
+      : { '@type': 'Organization', '@id': ORGANIZATION_ID, name: 'Teavision' },
     publisher: {
       '@type': 'Organization',
+      '@id': ORGANIZATION_ID,
       name: 'Teavision',
+      logo: { '@type': 'ImageObject', url: organizationJsonLd.logo },
     },
     image: article.featuredImage ? [article.featuredImage.url] : undefined,
-    mainEntityOfPage: getArticlePath(normalizedBlog, article.handle),
+    mainEntityOfPage: `${SITE_URL}${getArticlePath(normalizedBlog, article.handle)}`,
   }
 
   return (
