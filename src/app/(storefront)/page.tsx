@@ -19,7 +19,7 @@ import {
   submitContactFormAction,
 } from '@/lib/contact/actions'
 import { getDraftHomepage, getHomepage } from '@/lib/sanity/home-page'
-import { organizationJsonLd, websiteJsonLd } from '@/lib/seo/homepage-json-ld'
+import { getHomepageFaqJsonLd, websiteJsonLd } from '@/lib/seo/homepage-json-ld'
 import { withNoindexRobots } from '@/lib/seo/noindex'
 import { serializeInlineJson } from '@/lib/seo/serialize-inline-json'
 
@@ -54,19 +54,21 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function HomePage() {
   const { isEnabled } = await draftMode()
   const homepage = isEnabled ? await getDraftHomepage() : await getHomepage()
+  const faqJsonLd = getHomepageFaqJsonLd(homepage.faq.items)
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: serializeInlineJson(organizationJsonLd),
-        }}
-      />
+      {/* Organization JSON-LD comes from the storefront layout on every page. */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: serializeInlineJson(websiteJsonLd) }}
       />
+      {faqJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: serializeInlineJson(faqJsonLd) }}
+        />
+      )}
 
       <div className="bg-paper">
         <HomepageHero hero={homepage.hero} />

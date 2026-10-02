@@ -6,7 +6,7 @@ import type { ReactNode } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { HomepageContent } from '@/lib/sanity/home-page'
-import { organizationJsonLd, websiteJsonLd } from '@/lib/seo/homepage-json-ld'
+import { websiteJsonLd } from '@/lib/seo/homepage-json-ld'
 
 import * as pageModule from './page'
 
@@ -363,13 +363,10 @@ describe('HomePage route cutover', () => {
     expect(jsonLdNodes).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          '@type': organizationJsonLd['@type'],
-          name: organizationJsonLd.name,
-        }),
-        expect.objectContaining({
           '@type': websiteJsonLd['@type'],
           name: websiteJsonLd.name,
         }),
+        expect.objectContaining({ '@type': 'FAQPage' }),
       ]),
     )
   })

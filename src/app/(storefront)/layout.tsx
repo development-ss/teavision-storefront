@@ -6,6 +6,8 @@ import { Footer } from '@/components/layout/footer'
 import { Header as HeaderView } from '@/components/layout/header'
 import { NewsletterPopup } from '@/components/layout/newsletter-popup'
 import { sendNewsletterSignupFormAction } from '@/lib/contact/actions'
+import { organizationJsonLd } from '@/lib/seo/homepage-json-ld'
+import { serializeInlineJson } from '@/lib/seo/serialize-inline-json'
 
 import { Header } from './_components/header'
 
@@ -16,6 +18,12 @@ export default function StorefrontLayout({
 }) {
   return (
     <div className="flex min-h-dvh flex-col">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: serializeInlineJson(organizationJsonLd),
+        }}
+      />
       <a
         href="#main-content"
         className="type-label border-hairline bg-paper text-ink focus-visible:ring-ring sr-only z-60 rounded-sm border px-4 py-3 focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
