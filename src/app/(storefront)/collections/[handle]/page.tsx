@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
+import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 
 import { LoadingSkeleton } from '@/components/collection/loading-skeleton'
-import { withNoindexRobots } from '@/lib/seo/noindex'
 import { getCollectionPageNumber } from '@/lib/shopify/collection-content'
 import {
   getCollection,
@@ -30,7 +30,10 @@ export async function generateMetadata({
 }: PageProps): Promise<Metadata> {
   const { handle } = await params
   const collection = await getCollection(handle)
-  if (!collection) return withNoindexRobots({ title: 'Collection not found' })
+  // Throwing here, while metadata still blocks the response, sends a real 404.
+  // The page body's notFound() runs after streaming starts, which left unknown
+  // collections answering 200 with the not-found page.
+  if (!collection) notFound()
   const search = await searchParams
   // Only ?page=2+ needs the real page count (cached cursor index, same entry
   // the results grid reads), so the plain collection URL costs nothing extra.

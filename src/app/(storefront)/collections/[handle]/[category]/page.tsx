@@ -1,12 +1,17 @@
 import type { Metadata } from 'next'
+import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 
 import { LoadingSkeleton } from '@/components/collection/loading-skeleton'
-import { withNoindexRobots } from '@/lib/seo/noindex'
-import { getCollection } from '@/lib/shopify/operations/collection'
+import {
+  getCollection,
+  getCollectionProductsPage,
+  getCollectionTagCounts,
+} from '@/lib/shopify/operations/collection'
 import { getCollectionMetadata } from '@/lib/seo/collection-metadata'
 
 import { PageContent } from '../_components/page-content'
+import { findCategoryTagForPath, matchCategoryTag } from '../_lib/page-helpers'
 import type { PageProps } from '../_lib/page-types'
 
 export async function generateMetadata({
@@ -15,7 +20,20 @@ export async function generateMetadata({
 }: PageProps): Promise<Metadata> {
   const { handle, category } = await params
   const collection = await getCollection(handle)
-  if (!collection) return withNoindexRobots({ title: 'Collection not found' })
+  // Throwing here, while metadata still blocks the response, sends a real 404.
+  // The results grid repeats this lookup after streaming starts, too late to
+  // change the status. Both reads hit the same cached entries as the grid.
+  if (!collection) notFound()
+  if (category) {
+    const [firstPage, tagCounts] = await Promise.all([
+      getCollectionProductsPage(handle, 1),
+      getCollectionTagCounts(handle),
+    ])
+    const categoryTag =
+      findCategoryTagForPath(category, firstPage.filters, firstPage.products) ??
+      matchCategoryTag(category, Object.keys(tagCounts))
+    if (!categoryTag) notFound()
+  }
   return getCollectionMetadata(collection, await searchParams, category)
 }
 

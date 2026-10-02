@@ -124,6 +124,28 @@ test.describe('out-of-range collection pages', () => {
   }
 })
 
+test.describe('missing collections', () => {
+  for (const path of [
+    '/collections/missing-collection',
+    '/collections/wholesale-pagination/categories_missing-category',
+  ]) {
+    test(`${path} answers with a real 404`, async ({ request }) => {
+      const response = await request.get(path)
+
+      expect(response.status()).toBe(404)
+      expect(await response.text()).toContain('This page has gone cold')
+    })
+  }
+
+  test('a real category page still answers 200', async ({ request }) => {
+    const response = await request.get(
+      '/collections/wholesale-pagination/categories_organic-tea',
+    )
+
+    expect(response.status()).toBe(200)
+  })
+})
+
 test.describe('post-migration redirects', () => {
   async function expectRedirect(
     request: APIRequestContext,
