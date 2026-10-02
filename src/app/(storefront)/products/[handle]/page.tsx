@@ -11,6 +11,7 @@ import {
   PRODUCT_DETAIL_CACHE_VERSION,
 } from '@/lib/shopify/operations/product'
 import { withNoindexRobots } from '@/lib/seo/noindex'
+import { buildProductJsonLd } from '@/lib/seo/product-json-ld'
 import { serializeInlineJson } from '@/lib/seo/serialize-inline-json'
 import { SITE_URL } from '@/lib/seo/site-url'
 import { getVisibleProductReviewSummary } from '@/lib/reviews/summary'
@@ -78,7 +79,6 @@ export async function ProductContent({
   if (!product) notFound()
 
   const productUrl = `${SITE_URL}/products/${product.handle}`
-  const hasAvailableVariant = product.variants.some((v) => v.availableForSale)
   const [productReviewSummaries, productReviews] = await Promise.all([
     getTrustooProductRatings([product.handle]),
     getTrustooProductReviews(product.handle),
@@ -89,29 +89,11 @@ export async function ProductContent({
   }
   const visibleProductReviewSummary =
     getVisibleProductReviewSummary(productReviewSummary)
-  const productJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Product',
-    name: product.title,
-    description: product.description,
-    ...(product.images[0] && { image: product.images[0].url }),
-    offers: {
-      '@type': 'Offer',
-      url: productUrl,
-      price: product.priceRange.minVariantPrice.amount,
-      priceCurrency: product.priceRange.minVariantPrice.currencyCode,
-      availability: hasAvailableVariant
-        ? 'https://schema.org/InStock'
-        : 'https://schema.org/OutOfStock',
-    },
-    ...(visibleProductReviewSummary && {
-      aggregateRating: {
-        '@type': 'AggregateRating',
-        ratingValue: visibleProductReviewSummary.rating,
-        reviewCount: visibleProductReviewSummary.reviewCount,
-      },
-    }),
-  }
+  const productJsonLd = buildProductJsonLd({
+    product,
+    productUrl,
+    reviewSummary: visibleProductReviewSummary,
+  })
 
   const breadcrumbJsonLd = {
     '@context': 'https://schema.org',

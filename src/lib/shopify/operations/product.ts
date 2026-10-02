@@ -131,6 +131,7 @@ function reshapeVariant(
   return {
     id: variant.id,
     title: variant.title,
+    sku: variant.sku?.trim() || null,
     availableForSale: variant.availableForSale,
     currentlyNotInStock: variant.currentlyNotInStock,
     quantityAvailable: legacyInventory?.quantityAvailable ?? null,

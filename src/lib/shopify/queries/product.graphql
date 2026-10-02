@@ -26,6 +26,7 @@ fragment ProductSummaryFields on Product {
 fragment ProductVariantFields on ProductVariant {
   id
   title
+  sku
   availableForSale
   currentlyNotInStock
   quantityRule {

@@ -25,6 +25,7 @@ export type ShopifyImage = {
 export type ProductVariant = {
   id: string
   title: string
+  sku?: string | null
   availableForSale: boolean
   currentlyNotInStock?: boolean
   quantityAvailable?: number | null
