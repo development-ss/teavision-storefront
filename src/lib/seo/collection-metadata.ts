@@ -39,6 +39,10 @@ export function getCollectionMetadata(
   collection: Collection,
   search: CollectionSearchParams = {},
   category?: string,
+  // Real page count for the unfiltered view. A page past the end redirects
+  // inside the streamed body, so crawlers still get a 200 for it; its
+  // canonical must name the page the visitor ends up on, not itself.
+  totalPages?: number,
 ): Metadata {
   const heading = getCollectionHeading(collection)
   let title = collection.seo.title?.trim() || `${heading} | Teavision`
@@ -64,10 +68,11 @@ export function getCollectionMetadata(
   const isFiltered = Boolean(
     category || hasFilter || (sort && sort !== 'featured'),
   )
-  const canonicalPath = getCollectionCanonicalPath(
-    collection.handle,
-    isFiltered ? 1 : getCollectionPageNumber(search.page),
-  )
+  const requestedPage = getCollectionPageNumber(search.page)
+  const page = isFiltered
+    ? 1
+    : Math.min(requestedPage, Math.max(1, totalPages ?? requestedPage))
+  const canonicalPath = getCollectionCanonicalPath(collection.handle, page)
   const image = getCollectionHero(collection).image
 
   return withNoindexRobots({

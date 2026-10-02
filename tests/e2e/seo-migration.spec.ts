@@ -106,6 +106,24 @@ test.describe('collection metadata is in the initial HTML head', () => {
   })
 })
 
+test.describe('out-of-range collection pages', () => {
+  for (const { path, canonical } of [
+    { path: '/collections/all?page=2', canonical: '/collections/all' },
+    {
+      path: '/collections/wholesale-pagination?page=9',
+      canonical: '/collections/wholesale-pagination?page=2',
+    },
+  ]) {
+    test(`${path} canonicalizes to the last real page`, async ({ request }) => {
+      const { head } = await getRawHtml(request, path)
+      const url = new URL(canonicalLinks(head)[0])
+
+      expect(canonicalLinks(head)).toHaveLength(1)
+      expect(`${url.pathname}${url.search}`).toBe(canonical)
+    })
+  }
+})
+
 test.describe('post-migration redirects', () => {
   async function expectRedirect(
     request: APIRequestContext,

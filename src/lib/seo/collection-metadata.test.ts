@@ -77,6 +77,40 @@ describe('collection SEO metadata', () => {
       getCollectionMetadata(collection, { page: '2' }).alternates?.canonical,
     ).toBe('/collections/wholesale-white-tea?page=2')
   })
+  it('keeps the canonical on an in-range page', () => {
+    expect(
+      getCollectionMetadata(collection, { page: '2' }, undefined, 3).alternates
+        ?.canonical,
+    ).toBe('/collections/wholesale-white-tea?page=2')
+  })
+  it.each([
+    { page: '2', totalPages: 1, canonical: '/collections/wholesale-white-tea' },
+    {
+      page: '99',
+      totalPages: 1,
+      canonical: '/collections/wholesale-white-tea',
+    },
+    {
+      page: '99',
+      totalPages: 3,
+      canonical: '/collections/wholesale-white-tea?page=3',
+    },
+    { page: '5', totalPages: 0, canonical: '/collections/wholesale-white-tea' },
+  ])(
+    'canonicalizes page $page of $totalPages to the last real page',
+    ({ page, totalPages, canonical }) => {
+      vi.stubEnv('DISABLE_INDEXING', 'false')
+      const metadata = getCollectionMetadata(
+        collection,
+        { page },
+        undefined,
+        totalPages,
+      )
+      expect(metadata.alternates?.canonical).toBe(canonical)
+      expect(metadata.openGraph?.url).toBe(canonical)
+      expect(metadata.robots).toBeUndefined()
+    },
+  )
   it.each([
     { sort: 'price-asc' },
     { filter: '{"tag":"organic"}' },

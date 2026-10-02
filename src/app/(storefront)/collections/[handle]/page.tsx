@@ -3,8 +3,10 @@ import { Suspense } from 'react'
 
 import { LoadingSkeleton } from '@/components/collection/loading-skeleton'
 import { withNoindexRobots } from '@/lib/seo/noindex'
+import { getCollectionPageNumber } from '@/lib/shopify/collection-content'
 import {
   getCollection,
+  getCollectionPageIndex,
   getCollections,
 } from '@/lib/shopify/operations/collection'
 import { getCollectionMetadata } from '@/lib/seo/collection-metadata'
@@ -29,7 +31,14 @@ export async function generateMetadata({
   const { handle } = await params
   const collection = await getCollection(handle)
   if (!collection) return withNoindexRobots({ title: 'Collection not found' })
-  return getCollectionMetadata(collection, await searchParams)
+  const search = await searchParams
+  // Only ?page=2+ needs the real page count (cached cursor index, same entry
+  // the results grid reads), so the plain collection URL costs nothing extra.
+  const totalPages =
+    getCollectionPageNumber(search.page) > 1
+      ? (await getCollectionPageIndex(handle)).totalPages
+      : undefined
+  return getCollectionMetadata(collection, search, undefined, totalPages)
 }
 
 export default function Page({ params, searchParams }: PageProps) {
