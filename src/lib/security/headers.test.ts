@@ -63,7 +63,7 @@ describe('security headers', () => {
         "img-src 'self' blob: data: https://cdn.shopify.com https://www.teavision.com.au https://cdn.sanity.io https://searchserverapi.com https://searchserverapi1.com",
         "font-src 'self' data:",
         "connect-src 'self' https://searchserverapi1.com https://api.trustoo.io https://*.myshopify.com https://*.shopify.com",
-        "frame-src 'self' https://maps.google.com",
+        "frame-src 'self' https://maps.google.com https://www.google.com",
         "media-src 'self'",
         "manifest-src 'self'",
       ].join('; '),

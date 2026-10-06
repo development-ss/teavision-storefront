@@ -56,7 +56,12 @@ export function buildContentSecurityPolicy(
     'https://*.myshopify.com',
     'https://*.shopify.com',
   ]
-  const frameSources = ["'self'", 'https://maps.google.com']
+  // maps.google.com embeds redirect to www.google.com/maps/embed.
+  const frameSources = [
+    "'self'",
+    'https://maps.google.com',
+    'https://www.google.com',
+  ]
 
   const ga4Enabled = hasEnvValue(env, 'NEXT_PUBLIC_GA4_MEASUREMENT_ID')
   const gtmEnabled = Boolean(resolveGtmContainerId(env))
