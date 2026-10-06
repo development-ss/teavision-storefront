@@ -10,6 +10,18 @@ export type OverlayImageCardProps = {
   className?: string
 }
 
+function normalizeLabel(value: string): string {
+  return value.trim().replace(/\s+/g, ' ').toLowerCase()
+}
+
+// The card title already names the link, so alt text that repeats it is
+// announced twice. Treat that image as decorative.
+export function getCardImageAlt(card: HomepageImageCard): string {
+  return normalizeLabel(card.image.alt) === normalizeLabel(card.title)
+    ? ''
+    : card.image.alt
+}
+
 export function OverlayImageCard({ card, className }: OverlayImageCardProps) {
   return (
     <Link
@@ -21,7 +33,7 @@ export function OverlayImageCard({ card, className }: OverlayImageCardProps) {
     >
       <Image
         src={card.image.src}
-        alt={card.image.alt}
+        alt={getCardImageAlt(card)}
         fill
         sizes="(min-width: 1280px) 25vw, (min-width: 768px) 48vw, 100vw"
         className="object-cover"
