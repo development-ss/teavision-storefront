@@ -13,23 +13,26 @@ export function Sidebar() {
 
       <dl className="divide-paper/20 mt-6 divide-y">
         {CONTACT_METHODS.map((method) => (
-          <div key={method.label} className="flex gap-4 py-5 first:pt-0">
-            <div className="bg-paper/10 text-paper mt-1 flex size-11 shrink-0 items-center justify-center rounded-full">
-              <Icon name={method.icon} />
-            </div>
-            <div>
-              <dt className="type-mono-meta text-paper/60">{method.label}</dt>
-              <dd className="font-display text-paper mt-1 text-[1.15rem] leading-tight">
-                <a
-                  href={method.href}
-                  className="hover:text-gold focus-visible:ring-gold focus-visible:ring-offset-brand-deep rounded-sm hover:underline focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
-                  target={method.external ? '_blank' : undefined}
-                  rel={method.external ? 'noopener noreferrer' : undefined}
-                >
-                  {method.value}
-                </a>
-              </dd>
-            </div>
+          <div
+            key={method.label}
+            className="group relative min-h-22 py-5 pl-15 first:min-h-17 first:pt-0"
+          >
+            <dt className="type-mono-meta text-paper/60">
+              <span className="bg-paper/10 text-paper absolute top-6 left-0 flex size-11 items-center justify-center rounded-full group-first:top-1">
+                <Icon name={method.icon} />
+              </span>
+              {method.label}
+            </dt>
+            <dd className="font-display text-paper mt-1 text-[1.15rem] leading-tight">
+              <a
+                href={method.href}
+                className="hover:text-gold focus-visible:ring-gold focus-visible:ring-offset-brand-deep rounded-sm hover:underline focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+                target={method.external ? '_blank' : undefined}
+                rel={method.external ? 'noopener noreferrer' : undefined}
+              >
+                {method.value}
+              </a>
+            </dd>
           </div>
         ))}
       </dl>
