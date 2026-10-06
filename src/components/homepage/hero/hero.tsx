@@ -42,6 +42,7 @@ export function HomepageHero({ hero }: HomepageHeroProps) {
         alt={hero.image.alt}
         fill
         sizes="100vw"
+        loading="eager"
         fetchPriority="high"
         quality={82}
         placeholder={hero.image.lqip ? 'blur' : 'empty'}
