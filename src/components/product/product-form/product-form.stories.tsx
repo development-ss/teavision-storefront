@@ -181,8 +181,8 @@ export const PreviewOnly: Story = {
     await expect(
       canvas.getByText('Purchasing is disabled in preview.'),
     ).toBeInTheDocument()
-    await expect(canvas.getByRole('button', { name: '1kg' })).toBeEnabled()
-    await userEvent.click(canvas.getByRole('button', { name: '1kg' }))
+    await expect(canvas.getByRole('button', { name: /^1kg\b/ })).toBeEnabled()
+    await userEvent.click(canvas.getByRole('button', { name: /^1kg\b/ }))
     await expect(
       canvas.getByRole('button', { name: 'Preview only' }),
     ).toBeDisabled()
@@ -311,7 +311,7 @@ export const SelectedVariantPayload: Story = {
     await userEvent.click(
       canvas.getByRole('button', { name: 'Increase quantity' }),
     )
-    await userEvent.click(canvas.getByRole('button', { name: '1kg' }))
+    await userEvent.click(canvas.getByRole('button', { name: /^1kg\b/ }))
     await userEvent.click(canvas.getByRole('button', { name: 'Add to Cart' }))
 
     await waitFor(() => {

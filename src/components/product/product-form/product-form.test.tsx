@@ -130,6 +130,26 @@ describe('ProductForm', () => {
     )
   })
 
+  it('keeps visible variant text in the accessible name of a sold-out option', () => {
+    const html = renderToStaticMarkup(
+      <ProductFormWithInitialVariant
+        variants={[variants[0], { ...variants[1], availableForSale: false }]}
+        options={options}
+        initialVariantId={variants[0].id}
+      />,
+    )
+
+    const soldOutButton = html.match(
+      /<button[^>]*>(?:(?!<\/button>).)*, out of stock(?:(?!<\/button>).)*<\/button>/,
+    )?.[0]
+
+    expect(soldOutButton).toBeDefined()
+    expect(soldOutButton).not.toContain('aria-label=')
+    expect(soldOutButton).toContain(
+      '<span class="sr-only">, out of stock</span>',
+    )
+  })
+
   it('uses a deep-linked numeric Shopify variant id for initial bulk pricing', () => {
     const html = renderToStaticMarkup(
       <ProductFormWithInitialVariant
@@ -372,9 +392,9 @@ describe('ProductForm', () => {
     const increaseButton = host.querySelector<HTMLButtonElement>(
       'button[aria-label="Increase quantity"]',
     )
-    const nextVariantButton = host.querySelector<HTMLButtonElement>(
-      'button[aria-label="250g box"]',
-    )
+    const nextVariantButton = Array.from(
+      host.querySelectorAll<HTMLButtonElement>('button[aria-pressed]'),
+    ).find((button) => button.textContent?.startsWith('250g box'))
     const addToCartButton = Array.from(host.querySelectorAll('button')).find(
       (button) => button.textContent === 'Add to Cart',
     )

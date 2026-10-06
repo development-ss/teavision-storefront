@@ -248,7 +248,6 @@ export function ProductForm({
                   disabled={
                     !isReady || (!purchasingDisabled && !v.availableForSale)
                   }
-                  aria-label={`${displayTitle}${!purchasingDisabled && !v.availableForSale ? ', out of stock' : ''}`}
                   className={cn(
                     'border-hairline bg-card text-ink hover:border-ink-faint aria-pressed:border-brand aria-pressed:bg-brand-tint aria-pressed:text-ink min-w-23 flex-col rounded-sm border-[1.5px] px-4.5 py-3.25 text-center transition-colors',
                     isSelected && 'border-brand bg-brand-tint',
@@ -256,6 +255,9 @@ export function ProductForm({
                   onClick={() => handleSelectVariant(v.id)}
                 >
                   <span className="text-sm font-bold">{displayTitle}</span>
+                  {!purchasingDisabled && !v.availableForSale && (
+                    <span className="sr-only">, out of stock</span>
+                  )}
                   <Price
                     price={v.price}
                     size="sm"
