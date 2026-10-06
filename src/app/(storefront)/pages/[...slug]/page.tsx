@@ -11,7 +11,7 @@ import {
 import { withNoindexRobots } from '@/lib/seo/noindex'
 
 import { Content } from './_components/content'
-import { getMetaDescription } from './_lib/page-formatting'
+import { getMetaDescription, getMetadataTitle } from './_lib/page-formatting'
 
 type Props = {
   params: Promise<{ slug: string[] }>
@@ -67,14 +67,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   const description = getMetaDescription(page)
-  const title = page.seo.title ?? page.title
+  const title = getMetadataTitle(page)
   const canonical = getPagePath(page.handle)
 
   return withNoindexRobots({
     title,
     description,
     openGraph: {
-      title,
+      title: typeof title === 'string' ? title : title.absolute,
       description,
       url: canonical,
       type: 'website',
