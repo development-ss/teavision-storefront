@@ -9,6 +9,7 @@ import {
   WHOLESALE_ACCOUNT_PAGE_PATH,
   WHOLESALE_ACCOUNT_PAGE_TITLE,
 } from '@/lib/contact/wholesale-account'
+import { DEFAULT_OG_IMAGE } from '@/lib/seo/default-og-image'
 import { withNoindexRobots } from '@/lib/seo/noindex'
 
 import { WholesaleAccountForm } from './_components/form'
@@ -21,6 +22,7 @@ export const metadata: Metadata = withNoindexRobots({
     description: WHOLESALE_ACCOUNT_DESCRIPTION,
     url: WHOLESALE_ACCOUNT_PAGE_PATH,
     type: 'website',
+    images: [DEFAULT_OG_IMAGE],
   },
   alternates: { canonical: WHOLESALE_ACCOUNT_PAGE_PATH },
 })

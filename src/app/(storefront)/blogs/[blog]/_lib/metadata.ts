@@ -8,6 +8,7 @@ import {
   getBlog,
   getUniqueArticleTags,
 } from '@/lib/blog/operations'
+import { DEFAULT_OG_IMAGE } from '@/lib/seo/default-og-image'
 import { withNoindexRobots } from '@/lib/seo/noindex'
 
 type ListingMetadataInput = {
@@ -61,7 +62,7 @@ export async function generateListingMetadata({
               alt: blogData.seo.ogImage.altText ?? title,
             },
           ]
-        : undefined,
+        : [DEFAULT_OG_IMAGE],
     },
     alternates: { canonical },
     robots: noIndex

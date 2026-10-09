@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Caveat, Hanken_Grotesk, Space_Mono, Spectral } from 'next/font/google'
 
+import { DEFAULT_OG_IMAGE } from '@/lib/seo/default-og-image'
 import { withNoindexRobots } from '@/lib/seo/noindex'
 import { SITE_URL } from '@/lib/seo/site-url'
 import { cn } from '@/lib/utils'
@@ -51,6 +52,7 @@ export const metadata: Metadata = withNoindexRobots({
     type: 'website',
     siteName: 'Teavision',
     locale: 'en_AU',
+    images: [DEFAULT_OG_IMAGE],
   },
   twitter: {
     card: 'summary_large_image',

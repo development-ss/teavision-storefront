@@ -18,6 +18,7 @@ import {
   getTagPath,
   normalizeBlogHandle,
 } from '@/lib/blog/operations'
+import { DEFAULT_OG_IMAGE } from '@/lib/seo/default-og-image'
 import { ORGANIZATION_ID, organizationJsonLd } from '@/lib/seo/homepage-json-ld'
 import { withNoindexRobots } from '@/lib/seo/noindex'
 import { serializeInlineJson } from '@/lib/seo/serialize-inline-json'
@@ -74,7 +75,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
               alt: openGraphImage.altText ?? article.title,
             },
           ]
-        : undefined,
+        : [DEFAULT_OG_IMAGE],
     },
     alternates: { canonical },
   })

@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 
 import { ContactSection } from '@/components/contact/contact-section'
 import { submitContactFormAction } from '@/lib/contact/actions'
+import { DEFAULT_OG_IMAGE } from '@/lib/seo/default-og-image'
 import { withNoindexRobots } from '@/lib/seo/noindex'
 
 import { CtaSection } from './_components/cta-section'
@@ -23,6 +24,7 @@ export const metadata: Metadata = withNoindexRobots({
     description: PAGE_DESCRIPTION,
     url: PAGE_PATH,
     type: 'website',
+    images: [DEFAULT_OG_IMAGE],
   },
   alternates: { canonical: PAGE_PATH },
 })

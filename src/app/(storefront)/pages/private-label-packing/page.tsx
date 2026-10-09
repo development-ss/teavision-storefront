@@ -4,6 +4,7 @@ import { ContactSection } from '@/components/contact/contact-section'
 import { Faq } from '@/components/homepage/faq'
 import { submitContactFormAction } from '@/lib/contact/actions'
 import { getServiceFaqs } from '@/lib/faq/content'
+import { DEFAULT_OG_IMAGE } from '@/lib/seo/default-og-image'
 import { withNoindexRobots } from '@/lib/seo/noindex'
 
 import { CapabilitiesSection } from './_components/capabilities-section'
@@ -28,6 +29,7 @@ export const metadata: Metadata = withNoindexRobots({
     description: PAGE_DESCRIPTION,
     url: PAGE_PATH,
     type: 'website',
+    images: [DEFAULT_OG_IMAGE],
   },
   alternates: { canonical: PAGE_PATH },
 })

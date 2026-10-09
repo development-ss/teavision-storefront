@@ -10,6 +10,7 @@ import {
   getProduct,
   PRODUCT_DETAIL_CACHE_VERSION,
 } from '@/lib/shopify/operations/product'
+import { DEFAULT_OG_IMAGE } from '@/lib/seo/default-og-image'
 import { withNoindexRobots } from '@/lib/seo/noindex'
 import { isProductIndexable } from '@/lib/seo/product-eligibility'
 import { buildProductJsonLd } from '@/lib/seo/product-json-ld'
@@ -64,7 +65,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: product.title,
       description,
       url: `/products/${handle}`,
-      ...(imageUrl && { images: [{ url: imageUrl }] }),
+      type: 'website',
+      images: imageUrl ? [{ url: imageUrl }] : [DEFAULT_OG_IMAGE],
     },
     alternates: { canonical: `/products/${handle}` },
     ...(!isProductIndexable(handle) && {

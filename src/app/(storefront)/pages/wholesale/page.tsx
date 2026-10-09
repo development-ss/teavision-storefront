@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 
 import { Section } from '@/components/ui/section'
+import { DEFAULT_OG_IMAGE } from '@/lib/seo/default-og-image'
 import { withNoindexRobots } from '@/lib/seo/noindex'
 
 import { SupplyPaths } from './_components/supply-paths'
@@ -16,6 +17,8 @@ export const metadata: Metadata = withNoindexRobots({
     description:
       'Buy bulk tea, herbs and spices direct from Teavision for cafes, restaurants, and retailers.',
     url: '/pages/wholesale',
+    type: 'website',
+    images: [DEFAULT_OG_IMAGE],
   },
   alternates: { canonical: '/pages/wholesale' },
 })

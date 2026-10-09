@@ -5,6 +5,7 @@ import { Eyebrow } from '@/components/ui/eyebrow'
 import { Section } from '@/components/ui/section'
 import { ContactSection } from '@/components/contact/contact-section'
 import { submitContactFormAction } from '@/lib/contact/actions'
+import { DEFAULT_OG_IMAGE } from '@/lib/seo/default-og-image'
 import { withNoindexRobots } from '@/lib/seo/noindex'
 import { serializeInlineJson } from '@/lib/seo/serialize-inline-json'
 import { SITE_URL } from '@/lib/seo/site-url'
@@ -42,6 +43,8 @@ export const metadata: Metadata = withNoindexRobots({
     title: COLLECTIONS_TITLE,
     description: COLLECTIONS_DESCRIPTION,
     url: '/collections',
+    type: 'website',
+    images: [DEFAULT_OG_IMAGE],
   },
   alternates: { canonical: '/collections' },
 })

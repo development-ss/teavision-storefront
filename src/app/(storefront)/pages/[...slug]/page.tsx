@@ -8,6 +8,7 @@ import {
   getPages,
   type ShopifyPage,
 } from '@/lib/shopify/operations/storefront-page'
+import { DEFAULT_OG_IMAGE } from '@/lib/seo/default-og-image'
 import { withNoindexRobots } from '@/lib/seo/noindex'
 
 import { Content } from './_components/content'
@@ -78,6 +79,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description,
       url: canonical,
       type: 'website',
+      images: [DEFAULT_OG_IMAGE],
     },
     alternates: { canonical },
   })

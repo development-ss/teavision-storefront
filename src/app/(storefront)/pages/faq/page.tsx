@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 
 import { Faq } from '@/components/homepage/faq'
 import { FAQ_GROUPS } from '@/lib/faq/content'
+import { DEFAULT_OG_IMAGE } from '@/lib/seo/default-og-image'
 import { withNoindexRobots } from '@/lib/seo/noindex'
 import { cn } from '@/lib/utils'
 
@@ -21,6 +22,7 @@ export const metadata: Metadata = withNoindexRobots({
     description: FAQ_PAGE_DESCRIPTION,
     url: FAQ_PAGE_PATH,
     type: 'website',
+    images: [DEFAULT_OG_IMAGE],
   },
   alternates: { canonical: FAQ_PAGE_PATH },
 })

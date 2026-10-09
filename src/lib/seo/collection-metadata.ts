@@ -10,6 +10,7 @@ import {
 } from '@/lib/shopify/collection-content'
 import type { Collection } from '@/lib/shopify/types'
 
+import { DEFAULT_OG_IMAGE } from './default-og-image'
 import { withNoindexRobots } from './noindex'
 
 export type CollectionSearchParams = {
@@ -86,9 +87,10 @@ export function getCollectionMetadata(
       title,
       description,
       url: canonicalPath,
+      type: 'website',
       images: image
         ? [{ url: image.url, alt: image.altText || heading }]
-        : undefined,
+        : [DEFAULT_OG_IMAGE],
     },
   })
 }

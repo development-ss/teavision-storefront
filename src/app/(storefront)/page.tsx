@@ -19,6 +19,7 @@ import {
   submitContactFormAction,
 } from '@/lib/contact/actions'
 import { getDraftHomepage, getHomepage } from '@/lib/sanity/home-page'
+import { DEFAULT_OG_IMAGE } from '@/lib/seo/default-og-image'
 import { getHomepageFaqJsonLd, websiteJsonLd } from '@/lib/seo/homepage-json-ld'
 import { withNoindexRobots } from '@/lib/seo/noindex'
 import { serializeInlineJson } from '@/lib/seo/serialize-inline-json'
@@ -44,7 +45,7 @@ export async function generateMetadata(): Promise<Metadata> {
               height: seo.ogImage.height,
             },
           ]
-        : undefined,
+        : [DEFAULT_OG_IMAGE],
     },
     alternates: { canonical: seo.canonicalPath },
     robots: seo.noIndex ? { index: false, follow: false } : undefined,

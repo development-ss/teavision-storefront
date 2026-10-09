@@ -1,6 +1,7 @@
 import { Suspense } from 'react'
 import type { Metadata } from 'next'
 
+import { DEFAULT_OG_IMAGE } from '@/lib/seo/default-og-image'
 import { withNoindexRobots } from '@/lib/seo/noindex'
 import {
   CUSTOM_TEA_BLEND_LIMITS,
@@ -41,6 +42,8 @@ export const metadata: Metadata = withNoindexRobots({
     description:
       'Contact Teavision for wholesale tea, custom blending, private label, samples, and supply enquiries.',
     url: '/pages/contact',
+    type: 'website',
+    images: [DEFAULT_OG_IMAGE],
   },
   alternates: { canonical: '/pages/contact' },
 })

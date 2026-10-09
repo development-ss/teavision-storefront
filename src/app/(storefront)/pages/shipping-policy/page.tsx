@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import { Card } from '@/components/ui/card'
 import { Section } from '@/components/ui/section'
 import { getLegalPolicy } from '@/lib/legal/policies'
+import { DEFAULT_OG_IMAGE } from '@/lib/seo/default-og-image'
 import { withNoindexRobots } from '@/lib/seo/noindex'
 
 const policy = getLegalPolicy('shipping-policy')
@@ -16,6 +17,7 @@ export const metadata: Metadata = withNoindexRobots({
     description: policy.description,
     url: policy.href,
     type: 'website',
+    images: [DEFAULT_OG_IMAGE],
   },
 })
 

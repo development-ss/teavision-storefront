@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 
+import { DEFAULT_OG_IMAGE } from '@/lib/seo/default-og-image'
 import { withNoindexRobots } from '@/lib/seo/noindex'
 
 import { PageContent } from './_components/page-content'
@@ -16,6 +17,7 @@ export const metadata: Metadata = withNoindexRobots({
     description: DESCRIPTION,
     url: '/pages/certifications',
     type: 'website',
+    images: [DEFAULT_OG_IMAGE],
   },
   alternates: { canonical: '/pages/certifications' },
 })

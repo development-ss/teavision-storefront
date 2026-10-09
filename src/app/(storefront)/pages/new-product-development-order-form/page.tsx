@@ -8,6 +8,7 @@ import {
   NPD_ORDER_PAGE_PATH,
   NPD_ORDER_PAGE_TITLE,
 } from '@/lib/contact/npd-order'
+import { DEFAULT_OG_IMAGE } from '@/lib/seo/default-og-image'
 import { withNoindexRobots } from '@/lib/seo/noindex'
 
 import { NpdOrderForm } from './_components/npd-order-form'
@@ -20,6 +21,7 @@ export const metadata: Metadata = withNoindexRobots({
     description: NPD_ORDER_DESCRIPTION,
     url: NPD_ORDER_PAGE_PATH,
     type: 'website',
+    images: [DEFAULT_OG_IMAGE],
   },
   alternates: { canonical: NPD_ORDER_PAGE_PATH },
 })
