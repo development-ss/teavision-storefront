@@ -197,7 +197,30 @@ function parseLegalPolicies(policySource) {
   }))
 }
 
+// The SHOPIFY_ADMIN_REDIRECTS group in legacy-redirects.ts is a copy of the
+// old Shopify admin URL redirect table (2 October 2026). That table is the
+// evidence for those rows, so they do not need a URL parity register row.
+const SHOPIFY_ADMIN_REDIRECTS_BLOCK =
+  /const SHOPIFY_ADMIN_REDIRECTS = \[([\s\S]*?)\] as const/
+
 export function parseLegacyCatalogRedirects(source) {
+  const shopifyAdminBlock =
+    source.match(SHOPIFY_ADMIN_REDIRECTS_BLOCK)?.[1] ?? ''
+  const shopifyAdminKeys = new Set(
+    parseRedirectObjects(shopifyAdminBlock).map(
+      (redirect) => `${redirect.source}\u0000${redirect.target}`,
+    ),
+  )
+
+  return parseRedirectObjects(source).map((redirect) => ({
+    ...redirect,
+    origin: shopifyAdminKeys.has(`${redirect.source}\u0000${redirect.target}`)
+      ? 'shopify-admin'
+      : 'app',
+  }))
+}
+
+function parseRedirectObjects(source) {
   return [
     ...source.matchAll(
       /\{\s*source:\s*'([^']+)',\s*destination:\s*'([^']+)',?\s*\}/g,
@@ -837,19 +860,31 @@ function runUrlAuditMode() {
   for (const redirect of getCodedRedirectsForAudit()) {
     const key = `${redirect.source}\u0000${redirect.target}`
 
-    results.push(
-      appOwnedRegisterKeys.has(key)
-        ? pass(
-            'coded redirect register row',
-            redirect.source,
-            `registered -> ${redirect.target}`,
-          )
-        : fail(
-            'coded redirect register row',
-            redirect.source,
-            `missing register row for ${redirect.target}`,
-          ),
-    )
+    if (appOwnedRegisterKeys.has(key)) {
+      results.push(
+        pass(
+          'coded redirect register row',
+          redirect.source,
+          `registered -> ${redirect.target}`,
+        ),
+      )
+    } else if (redirect.origin === 'shopify-admin') {
+      results.push(
+        pass(
+          'coded redirect register row',
+          redirect.source,
+          `copied from the Shopify admin redirect table -> ${redirect.target}`,
+        ),
+      )
+    } else {
+      results.push(
+        fail(
+          'coded redirect register row',
+          redirect.source,
+          `missing register row for ${redirect.target}`,
+        ),
+      )
+    }
   }
 
   return results

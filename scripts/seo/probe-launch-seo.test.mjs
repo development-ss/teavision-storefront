@@ -85,6 +85,43 @@ test('url-audit mode fails when a coded redirect lacks a register row', () => {
   }
 })
 
+test('url-audit mode accepts copied Shopify admin redirects without register rows', () => {
+  const register = readFileSync(REGISTER_PATH, 'utf8')
+  const result = runProbe(['--mode', 'url-audit'], {
+    SEO_URL_MIGRATION_EXPORT: '',
+  })
+
+  assert.doesNotMatch(register, /`\/collections\/nettle-leaf`/)
+  assert.equal(result.status, 0, result.stderr)
+  assert.match(
+    result.stdout,
+    /\/collections\/nettle-leaf \| PASS \| copied from the Shopify admin redirect table -> \/collections\/nettle-leaf-tea/,
+  )
+  assert.doesNotMatch(result.stdout, /missing register row/)
+})
+
+test('legacy redirect parsing marks the Shopify admin redirect group', async () => {
+  const { parseLegacyCatalogRedirects } = await import('./probe-launch-seo.mjs')
+  const source = `
+    const SEO_REVIEW_REDIRECTS = [
+      { source: '/products/old-tea', destination: '/products/new-tea' },
+    ] as const satisfies readonly LegacyCatalogRedirect[]
+
+    const SHOPIFY_ADMIN_REDIRECTS = [
+      { source: '/collections/old', destination: '/collections/new' },
+    ] as const satisfies readonly LegacyCatalogRedirect[]
+  `
+
+  assert.deepEqual(parseLegacyCatalogRedirects(source), [
+    { source: '/products/old-tea', target: '/products/new-tea', origin: 'app' },
+    {
+      source: '/collections/old',
+      target: '/collections/new',
+      origin: 'shopify-admin',
+    },
+  ])
+})
+
 test('live SEO modes include Phase 18 language, robots, and tag sitemap checks', () => {
   const source = readFileSync(SCRIPT_PATH, 'utf8')
 
