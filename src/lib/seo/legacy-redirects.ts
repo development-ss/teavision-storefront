@@ -59,6 +59,17 @@ const SEO_REVIEW_REDIRECTS = [
   },
 ] as const satisfies readonly LegacyCatalogRedirect[]
 
+// Old product URLs the SEO team's re-check of 8 October 2026 found returning
+// 404. Pink Apple Tea is a draft in Shopify, marked "discontinued was not
+// selling", so it goes to the iced tea collection, where /collections/iced-tea
+// already redirects.
+const SEO_RECHECK_REDIRECTS = [
+  {
+    source: '/products/pink-apple-iced-tea',
+    destination: '/collections/wholesale-bulk-ice-tea-blends',
+  },
+] as const satisfies readonly LegacyCatalogRedirect[]
+
 // URL redirects that the old Shopify Online Store served from its own redirect
 // table (Shopify admin, URL redirects). The headless storefront never reads
 // that table, so these old URLs showed "not found". Copied on 2 October 2026,
@@ -317,5 +328,6 @@ const SHOPIFY_ADMIN_REDIRECTS = [
 
 export const LEGACY_CATALOG_REDIRECTS = [
   ...SEO_REVIEW_REDIRECTS,
+  ...SEO_RECHECK_REDIRECTS,
   ...SHOPIFY_ADMIN_REDIRECTS,
 ] as const satisfies readonly LegacyCatalogRedirect[]
