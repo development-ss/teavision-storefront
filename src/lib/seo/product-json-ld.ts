@@ -172,6 +172,8 @@ export function buildProductJsonLd({
         name: isNamedVariant
           ? `${product.title} ${variant.title}`
           : product.title,
+        // Every pack size is the same tea, so it shares the product text.
+        description: product.description,
         ...(variant.sku && { sku: variant.sku }),
         ...(variant.image && { image: variant.image.url }),
         ...getVariantAttributes(product.options, variant),

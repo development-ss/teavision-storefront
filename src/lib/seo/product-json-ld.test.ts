@@ -98,6 +98,7 @@ describe('buildProductJsonLd', () => {
       expect.objectContaining({
         '@type': 'Product',
         name: 'Organic Raspberry Leaf 1kg',
+        description: 'Cut raspberry leaf.',
         sku: 'CON-CAT-CLAW',
         size: '1kg',
         url: `${productUrl}?variant=333`,
@@ -111,6 +112,7 @@ describe('buildProductJsonLd', () => {
         }),
       }),
       expect.objectContaining({
+        description: 'Cut raspberry leaf.',
         sku: 'CON-CAT-CLAW-250G',
         size: '250g',
         offers: expect.objectContaining({
@@ -119,6 +121,7 @@ describe('buildProductJsonLd', () => {
         }),
       }),
       expect.objectContaining({
+        description: 'Cut raspberry leaf.',
         sku: 'CON-CAT-CLAW-50G',
         size: '50g',
         url: `${productUrl}?variant=111`,
