@@ -71,17 +71,9 @@ export function JsonLd({
         itemListElement: products.slice(0, 24).map((product, index) => ({
           '@type': 'ListItem',
           position: startPosition + index + 1,
+          // Position and URL only: Google wants full Product markup on the
+          // product page itself, not repeated in every collection list.
           url: `${baseUrl}/products/${product.handle}`,
-          item: {
-            '@type': 'Product',
-            name: product.title,
-            image: product.featuredImage?.url,
-            offers: {
-              '@type': 'Offer',
-              price: product.priceRange.minVariantPrice.amount,
-              priceCurrency: product.priceRange.minVariantPrice.currencyCode,
-            },
-          },
         })),
       },
     ],
