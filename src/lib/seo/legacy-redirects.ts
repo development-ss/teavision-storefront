@@ -59,14 +59,20 @@ const SEO_REVIEW_REDIRECTS = [
   },
 ] as const satisfies readonly LegacyCatalogRedirect[]
 
-// Old product URLs the SEO team's re-check of 8 October 2026 found returning
-// 404. Pink Apple Tea is a draft in Shopify, marked "discontinued was not
-// selling", so it goes to the iced tea collection, where /collections/iced-tea
-// already redirects.
+// Product URLs changed after the SEO team's re-check of 8 October 2026. Pink
+// Apple Tea is a draft in Shopify, marked "discontinued was not selling", so it
+// goes to the iced tea collection, where /collections/iced-tea already
+// redirects. Organic Raw Sticky Chai's Shopify handle was renamed on 9 October
+// 2026 from a "copy-of" handle Shopify had generated when the product was
+// duplicated.
 const SEO_RECHECK_REDIRECTS = [
   {
     source: '/products/pink-apple-iced-tea',
     destination: '/collections/wholesale-bulk-ice-tea-blends',
+  },
+  {
+    source: '/products/copy-of-peninsula-raw-sticky-chai-loose-leaf',
+    destination: '/products/organic-raw-sticky-chai',
   },
 ] as const satisfies readonly LegacyCatalogRedirect[]
 
