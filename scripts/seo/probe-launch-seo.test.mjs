@@ -219,3 +219,27 @@ test('structured data route expectations cover audit-required supported schema t
   assert.equal(requiredTypes.has('Review'), false)
   assert.equal(requiredTypes.has('AggregateRating'), false)
 })
+
+test('structured data helpers accept a ProductGroup for multi-size products', async () => {
+  const { extractJsonLd, hasProductAggregateRating, hasProductJsonLd } =
+    await import('./probe-launch-seo.mjs')
+  const html = `
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "ProductGroup",
+        "name": "Cat's Claw Cut",
+        "hasVariant": [{ "@type": "Product", "sku": "CON-CAT-CLAW-50G" }],
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": 5,
+          "reviewCount": 3
+        }
+      }
+    </script>
+  `
+  const values = extractJsonLd(html)
+
+  assert.equal(hasProductJsonLd(values), true)
+  assert.equal(hasProductAggregateRating(values), true)
+})

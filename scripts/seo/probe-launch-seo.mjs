@@ -494,8 +494,16 @@ export function findSchemaNodes(values, schemaType) {
   return nodes
 }
 
+// Products with several pack sizes are marked up as a ProductGroup.
+function findProductNodes(values) {
+  return [
+    ...findSchemaNodes(values, 'Product'),
+    ...findSchemaNodes(values, 'ProductGroup'),
+  ]
+}
+
 export function hasProductJsonLd(values) {
-  return findSchemaNodes(values, 'Product').length > 0
+  return findProductNodes(values).length > 0
 }
 
 function isAggregateRating(value) {
@@ -507,7 +515,7 @@ function isAggregateRating(value) {
 }
 
 export function hasProductAggregateRating(values) {
-  return findSchemaNodes(values, 'Product').some((product) =>
+  return findProductNodes(values).some((product) =>
     isAggregateRating(product.aggregateRating),
   )
 }

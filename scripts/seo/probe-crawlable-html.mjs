@@ -471,7 +471,7 @@ export function evaluateRouteHtml({
       ),
       check(
         'Product JSON-LD',
-        hasSchemaType(html, ['Product']),
+        hasSchemaType(html, ['Product', 'ProductGroup']),
         'Product JSON-LD expected',
       ),
     )

@@ -223,17 +223,26 @@ test.describe('migrated tracking and schema codes', () => {
   }) => {
     const { html } = await getRawHtml(request, '/products/test-standard-tea')
     const product = jsonLdNodes(html).find(
-      (node) => node['@type'] === 'Product',
+      (node) => node['@type'] === 'Product' || node['@type'] === 'ProductGroup',
     )
 
     expect(product).toMatchObject({
       name: 'Test Standard Tea',
       brand: { '@type': 'Brand', name: 'Teavision' },
-      offers: {
+    })
+
+    const offers =
+      product?.['@type'] === 'ProductGroup'
+        ? (product.hasVariant as JsonLdNode[]).map((variant) => variant.offers)
+        : [product?.offers]
+
+    expect(offers.length).toBeGreaterThan(0)
+    for (const offer of offers) {
+      expect(offer).toMatchObject({
         '@type': 'Offer',
         itemCondition: 'https://schema.org/NewCondition',
-      },
-    })
+      })
+    }
   })
 
   test('the services page lists its services with Service schema', async ({
