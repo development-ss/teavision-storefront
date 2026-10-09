@@ -8,7 +8,8 @@ import { withNoindexRobots } from '@/lib/seo/noindex'
 import { cn } from '@/lib/utils'
 
 export const metadata: Metadata = withNoindexRobots({
-  title: '404 — Page Not Found | Teavision',
+  // absolute: the root layout template would add a second "| Teavision".
+  title: { absolute: '404 — Page Not Found | Teavision' },
   description: "The page you're looking for has moved or never existed.",
 })
 
