@@ -11,6 +11,7 @@ import {
   PRODUCT_DETAIL_CACHE_VERSION,
 } from '@/lib/shopify/operations/product'
 import { withNoindexRobots } from '@/lib/seo/noindex'
+import { isProductIndexable } from '@/lib/seo/product-eligibility'
 import { buildProductJsonLd } from '@/lib/seo/product-json-ld'
 import { serializeInlineJson } from '@/lib/seo/serialize-inline-json'
 import { SITE_URL } from '@/lib/seo/site-url'
@@ -66,6 +67,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       ...(imageUrl && { images: [{ url: imageUrl }] }),
     },
     alternates: { canonical: `/products/${handle}` },
+    ...(!isProductIndexable(handle) && {
+      robots: { index: false, follow: true },
+    }),
   })
 }
 
@@ -130,10 +134,14 @@ export async function ProductContent({
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: serializeInlineJson(productJsonLd) }}
-      />
+      {isProductIndexable(product.handle) ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: serializeInlineJson(productJsonLd),
+          }}
+        />
+      ) : null}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

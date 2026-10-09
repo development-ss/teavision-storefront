@@ -8,6 +8,7 @@ import {
 } from '@/lib/blog/operations'
 import { LEGAL_POLICIES } from '@/lib/legal/policies'
 import { getLaunchSeoRouteExpectations } from '@/lib/seo/launch-route-matrix'
+import { isProductIndexable } from '@/lib/seo/product-eligibility'
 import { isShopifyPageEligibleForSitemap } from '@/lib/seo/shopify-page-eligibility'
 import { getSiteUrl, SITE_URL } from '@/lib/seo/site-url'
 import {
@@ -168,13 +169,15 @@ export function buildUrlInventoryRows(
     .map((page) =>
       createDynamicRow(getPagePath(page.handle), 'page', page.updatedAt),
     )
-  const productRows = sources.products.map((product) =>
-    createDynamicRow(
-      `/products/${product.handle}`,
-      'product',
-      product.updatedAt,
-    ),
-  )
+  const productRows = sources.products
+    .filter((product) => isProductIndexable(product.handle))
+    .map((product) =>
+      createDynamicRow(
+        `/products/${product.handle}`,
+        'product',
+        product.updatedAt,
+      ),
+    )
   const collectionRows = sources.collections
     .filter((collection) => isPublicCollection(collection.handle))
     .map((collection) =>

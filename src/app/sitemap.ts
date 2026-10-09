@@ -10,6 +10,7 @@ import {
 import { isSitemapExposureEnabledFromEnv } from '@/lib/env/server'
 import { getLaunchSeoRouteExpectations } from '@/lib/seo/launch-route-matrix'
 import { isNoindexModeEnabled } from '@/lib/seo/noindex'
+import { isProductIndexable } from '@/lib/seo/product-eligibility'
 import { isShopifyPageEligibleForSitemap } from '@/lib/seo/shopify-page-eligibility'
 import { SITE_URL } from '@/lib/seo/site-url'
 import { getCollectionSummaries } from '@/lib/shopify/operations/collection'
@@ -51,12 +52,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     getBlog(DEFAULT_BLOG_HANDLE),
   ])
 
-  const productUrls: MetadataRoute.Sitemap = products.map((product) => ({
-    url: `${SITE_URL}/products/${product.handle}`,
-    lastModified: product.updatedAt ?? STATIC_LAST_MODIFIED,
-    changeFrequency: 'daily',
-    priority: 0.8,
-  }))
+  const productUrls: MetadataRoute.Sitemap = products
+    .filter((product) => isProductIndexable(product.handle))
+    .map((product) => ({
+      url: `${SITE_URL}/products/${product.handle}`,
+      lastModified: product.updatedAt ?? STATIC_LAST_MODIFIED,
+      changeFrequency: 'daily',
+      priority: 0.8,
+    }))
 
   const collectionUrls: MetadataRoute.Sitemap = collections
     .filter((collection) => isPublicCollection(collection.handle))

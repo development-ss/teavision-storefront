@@ -205,3 +205,26 @@ describe('sitemap Shopify page coverage', () => {
     expect(paths).not.toContain('/pages/test-page')
   })
 })
+
+describe('sitemap product coverage', () => {
+  beforeEach(() => {
+    isNoindexModeEnabledMock.mockReturnValue(false)
+    isSitemapExposureEnabledFromEnvMock.mockReturnValue(false)
+    getBlogMock.mockResolvedValue(createBlog())
+    vi.mocked(getCollectionSummaries).mockResolvedValue([])
+    vi.mocked(getPages).mockResolvedValue([])
+  })
+
+  test('lists real products but leaves out the checkout-only freight product', async () => {
+    vi.mocked(getAllProducts).mockResolvedValue([
+      { handle: 'cats-claw-cut' },
+      { handle: 'freight' },
+    ] as Awaited<ReturnType<typeof getAllProducts>>)
+
+    const entries = await sitemap()
+    const paths = entries.map((entry) => new URL(entry.url).pathname)
+
+    expect(paths).toContain('/products/cats-claw-cut')
+    expect(paths).not.toContain('/products/freight')
+  })
+})
