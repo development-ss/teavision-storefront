@@ -10,7 +10,12 @@ describe('isShopifyPageEligibleForSitemap', () => {
     'terms-conditions',
     'terms-conditions-1',
     'test-page',
-  ])('excludes the redirected or utility Shopify page %s', (handle) => {
+    'reviews',
+    'appi-compliance',
+    'gdpr-compliance',
+    'pipeda-compliance',
+    'us-laws-compliance',
+  ])('keeps the non-indexable Shopify page %s out of search', (handle) => {
     expect(isShopifyPageEligibleForSitemap(handle)).toBe(false)
   })
 

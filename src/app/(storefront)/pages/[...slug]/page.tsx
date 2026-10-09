@@ -10,6 +10,7 @@ import {
 } from '@/lib/shopify/operations/storefront-page'
 import { DEFAULT_OG_IMAGE } from '@/lib/seo/default-og-image'
 import { withNoindexRobots } from '@/lib/seo/noindex'
+import { isShopifyPageEligibleForSitemap } from '@/lib/seo/shopify-page-eligibility'
 
 import { Content } from './_components/content'
 import { getMetaDescription, getMetadataTitle } from './_lib/page-formatting'
@@ -82,6 +83,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       images: [DEFAULT_OG_IMAGE],
     },
     alternates: { canonical },
+    ...(!isShopifyPageEligibleForSitemap(page.handle) && {
+      robots: { index: false, follow: true },
+    }),
   })
 }
 
