@@ -14,8 +14,13 @@ export const organizationJsonLd = {
   foundingDate: '2014',
   description:
     'Australian-owned tea company and wholesale supplier of loose leaf tea, tea bags, herbs, spices and superfood powders to cafes, retailers and wellness brands.',
+  // The warehouse and office address shown on /pages/contact.
   address: {
     '@type': 'PostalAddress',
+    streetAddress: '29 Palladium Circuit',
+    addressLocality: 'Clyde North',
+    addressRegion: 'VIC',
+    postalCode: '3978',
     addressCountry: 'AU',
   },
   contactPoint: {
