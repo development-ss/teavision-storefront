@@ -277,12 +277,12 @@ describe('ProductForm', () => {
       )
     })
 
-    expect(host.textContent).toContain('Buy 10 for 10% Off')
+    expect(host.textContent).toContain('Buy 10+ for 10% Off')
     expect(host.textContent).toContain('Total $463.00')
     expect(host.textContent).not.toContain('Total $462.96')
 
     const buyTenButton = Array.from(host.querySelectorAll('button')).find(
-      (button) => button.textContent?.includes('Buy 10 for 10% Off') === true,
+      (button) => button.textContent?.includes('Buy 10+ for 10% Off') === true,
     )
     if (!buyTenButton) throw new Error('Expected volume tier button to render')
 
@@ -337,7 +337,7 @@ describe('ProductForm', () => {
     })
 
     const tierButton = Array.from(host.querySelectorAll('button')).find(
-      (button) => button.textContent?.includes('Buy 6 for 5% Off') === true,
+      (button) => button.textContent?.includes('Buy 6+ for 5% Off') === true,
     )
     if (!tierButton) throw new Error('Expected aligned tier button to render')
 

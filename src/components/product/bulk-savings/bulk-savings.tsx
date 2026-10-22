@@ -48,7 +48,7 @@ function formatPercent(value: number): string {
 
 function getTierLabel(tier: BulkPricingTier | VolumeDiscountTier): string {
   if (isVolumeDiscountTier(tier)) {
-    return `Buy ${tier.minimumQuantity} for ${formatPercent(tier.discountPercent)}% Off`
+    return `Buy ${tier.minimumQuantity}+ for ${formatPercent(tier.discountPercent)}% Off`
   }
 
   return `Buy ${tier.minimumQuantity}+`
