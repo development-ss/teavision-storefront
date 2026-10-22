@@ -277,6 +277,97 @@ describe('CartView', () => {
     expect(html).toContain('aria-label="Now $90.00"')
   })
 
+  describe('Hulk offers whose name does not say bulk', () => {
+    const tiers = [
+      { minimumQuantity: 5, discountPercent: 5 },
+      { minimumQuantity: 10, discountPercent: 10 },
+      { minimumQuantity: 20, discountPercent: 12 },
+      { minimumQuantity: 40, discountPercent: 15 },
+    ]
+
+    function renderLine(
+      discountAllocations: ReturnType<typeof makeDiscountAllocation>[],
+      totalAmount: string,
+    ): string {
+      return renderToStaticMarkup(
+        <CartView
+          cart={makeCart({
+            cost: {
+              subtotalAmount: makeMoney('621.56'),
+              totalAmount: makeMoney(totalAmount),
+            },
+            lines: [
+              makeCartLine({
+                quantity: 41,
+                cost: {
+                  amountPerQuantity: makeMoney('15.16'),
+                  compareAtAmountPerQuantity: null,
+                  subtotalAmount: makeMoney('621.56'),
+                  totalAmount: makeMoney(totalAmount),
+                },
+                discountAllocations,
+              }),
+            ],
+          })}
+          volumeDiscountTiersByHandle={{ 'test-standard-tea': tiers }}
+        />,
+      )
+    }
+
+    it('shows the tier percent instead of the offer name', () => {
+      const html = renderLine(
+        [
+          makeDiscountAllocation({
+            title: 'perItem',
+            discountedAmount: makeMoney('93.07'),
+          }),
+        ],
+        '528.49',
+      )
+
+      expect(getTextContent(html).match(/15% discount applied/g)).toHaveLength(
+        2,
+      )
+      expect(html).not.toContain('perItem')
+    })
+
+    it('labels the bulk discount by percent when listed beside another discount', () => {
+      const html = renderLine(
+        [
+          makeDiscountAllocation({
+            title: 'perItem',
+            discountedAmount: makeMoney('93.07'),
+          }),
+          makeDiscountAllocation({
+            title: 'Welcome discount',
+            discountedAmount: makeMoney('10.00'),
+          }),
+        ],
+        '518.49',
+      )
+
+      expect(getTextContent(html)).toContain('15% bulk discount')
+      expect(html).toContain('Welcome discount')
+      expect(html).not.toContain('perItem')
+    })
+
+    it('keeps the name of a discount that does not match the tier amount', () => {
+      const html = renderLine(
+        [
+          makeDiscountAllocation({
+            title: 'Spring sale',
+            discountedAmount: makeMoney('31.08'),
+          }),
+        ],
+        '590.48',
+      )
+
+      expect(html).toContain('Spring sale')
+      expect(html).not.toContain('bulk discount')
+      expect(html).not.toContain('discount applied')
+    })
+  })
+
   it('renders compare-at prices with legible styling (not 10px invisible text)', () => {
     const html = renderToStaticMarkup(
       <CartView

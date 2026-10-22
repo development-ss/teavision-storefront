@@ -11,6 +11,7 @@ import {
   getVariantQuantityIncrement,
 } from '@/lib/shopify/quantity-rules'
 import type { Cart, Money, VolumeDiscountTier } from '@/lib/shopify/types'
+import { getHulkDiscountedUnitPrice } from '@/lib/shopify/volume-discounts'
 
 import { CartCheckoutForm } from './checkout-form'
 import type { CartAccountContextState } from './account-context'
@@ -195,15 +196,71 @@ function formatPercent(value: number): string {
   }).format(value)
 }
 
+function getActiveVolumeDiscountTier(
+  line: CartLine,
+  volumeDiscountTiers: readonly VolumeDiscountTier[],
+): VolumeDiscountTier | null {
+  return (
+    volumeDiscountTiers
+      .filter((tier) => line.quantity >= tier.minimumQuantity)
+      .sort((a, b) => b.minimumQuantity - a.minimumQuantity)[0] ?? null
+  )
+}
+
+/**
+ * True when an amount equals the discount the active Hulk tier gives this
+ * line. The offer's name is merchant-editable, so matching the amount lets
+ * the cart recognise the bulk discount whatever the offer is called.
+ */
+function matchesVolumeDiscountTier(
+  discountedAmount: Money,
+  line: CartLine,
+  tier: VolumeDiscountTier | null,
+): boolean {
+  if (
+    !tier ||
+    line.quantity <= 0 ||
+    discountedAmount.currencyCode !== line.cost.subtotalAmount.currencyCode
+  ) {
+    return false
+  }
+
+  const baseUnitPrice = divideMoney(line.cost.subtotalAmount, line.quantity)
+  const tierUnitPrice = getHulkDiscountedUnitPrice(
+    baseUnitPrice,
+    tier.discountPercent,
+  )
+  const expectedAmount =
+    (parseMoneyAmount(baseUnitPrice) - parseMoneyAmount(tierUnitPrice)) *
+    line.quantity
+  if (expectedAmount <= SAVINGS_EPSILON) return false
+
+  // Allow one cent per unit for rounding differences between Hulk and Shopify.
+  const tolerance = line.quantity * 0.01 + SAVINGS_EPSILON
+
+  return (
+    Math.abs(parseMoneyAmount(discountedAmount) - expectedAmount) <= tolerance
+  )
+}
+
 function isBulkDiscountAllocation(
   discount: CartLineDiscountAllocation,
+  line: CartLine,
+  tier: VolumeDiscountTier | null,
 ): boolean {
   const title = discount.title?.toLowerCase() ?? ''
 
-  return title.includes('bulk') || title.includes('quantity')
+  return (
+    title.includes('bulk') ||
+    title.includes('quantity') ||
+    matchesVolumeDiscountTier(discount.discountedAmount, line, tier)
+  )
 }
 
-function getAppliedBulkDiscountPercent(line: CartLine): number | null {
+function getAppliedBulkDiscountPercent(
+  line: CartLine,
+  tier: VolumeDiscountTier | null,
+): number | null {
   const subtotalAmount = parseMoneyAmount(line.cost.subtotalAmount)
   if (subtotalAmount <= 0) return null
 
@@ -211,7 +268,7 @@ function getAppliedBulkDiscountPercent(line: CartLine): number | null {
 
   for (const discount of line.discountAllocations) {
     if (
-      isBulkDiscountAllocation(discount) &&
+      isBulkDiscountAllocation(discount, line, tier) &&
       discount.discountedAmount.currencyCode ===
         line.cost.subtotalAmount.currencyCode
     ) {
@@ -221,7 +278,34 @@ function getAppliedBulkDiscountPercent(line: CartLine): number | null {
 
   if (bulkDiscountAmount <= SAVINGS_EPSILON) return null
 
+  // Show the tier's own percent (15%, not 14.97%) when the amounts agree.
+  if (
+    tier &&
+    matchesVolumeDiscountTier(
+      makeMoney(bulkDiscountAmount, line.cost.subtotalAmount.currencyCode),
+      line,
+      tier,
+    )
+  ) {
+    return tier.discountPercent
+  }
+
   return (bulkDiscountAmount / subtotalAmount) * 100
+}
+
+function getDiscountAllocationLabel(
+  discount: CartLineDiscountAllocation,
+  line: CartLine,
+  tier: VolumeDiscountTier | null,
+): string {
+  if (
+    tier &&
+    matchesVolumeDiscountTier(discount.discountedAmount, line, tier)
+  ) {
+    return `${formatPercent(tier.discountPercent)}% bulk discount`
+  }
+
+  return discount.title ?? 'Discount'
 }
 
 export function CartView({
@@ -301,16 +385,30 @@ export function CartView({
                   : line.merchandise.title
               const hasDiscounts = line.discountAllocations.length > 0
               const lineDisplayPricing = getLineDisplayPricing(line)
+              const volumeDiscountTiers =
+                volumeDiscountTiersByHandle[product.handle] ?? []
+              const activeVolumeDiscountTier = getActiveVolumeDiscountTier(
+                line,
+                volumeDiscountTiers,
+              )
               const showDiscountAllocations =
                 hasDiscounts &&
                 (!lineDisplayPricing.totalCompareAtPrice ||
-                  !line.discountAllocations.every(isBulkDiscountAllocation))
+                  !line.discountAllocations.every((discount) =>
+                    isBulkDiscountAllocation(
+                      discount,
+                      line,
+                      activeVolumeDiscountTier,
+                    ),
+                  ))
               const nextBulkDiscountPrompt = getNextBulkDiscountPrompt(
                 line,
-                volumeDiscountTiersByHandle[product.handle] ?? [],
+                volumeDiscountTiers,
               )
-              const appliedBulkDiscountPercent =
-                getAppliedBulkDiscountPercent(line)
+              const appliedBulkDiscountPercent = getAppliedBulkDiscountPercent(
+                line,
+                activeVolumeDiscountTier,
+              )
 
               return (
                 <li
@@ -363,7 +461,8 @@ export function CartView({
                     {nextBulkDiscountPrompt ? (
                       <p className="type-body-sm text-gold-deep mt-2 wrap-break-word">
                         Buy {nextBulkDiscountPrompt.quantityNeeded} more and get{' '}
-                        {formatPercent(nextBulkDiscountPrompt.discountPercent)}% discount
+                        {formatPercent(nextBulkDiscountPrompt.discountPercent)}%
+                        discount
                       </p>
                     ) : null}
                     {showDiscountAllocations ? (
@@ -378,7 +477,11 @@ export function CartView({
                               aria-hidden="true"
                             />
                             <span className="min-w-0 wrap-break-word">
-                              {discount.title ?? 'Discount'}
+                              {getDiscountAllocationLabel(
+                                discount,
+                                line,
+                                activeVolumeDiscountTier,
+                              )}
                             </span>
                             <span className="inline-flex gap-0.5">
                               <span aria-hidden="true">-</span>
