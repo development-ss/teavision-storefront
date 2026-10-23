@@ -17,6 +17,7 @@ import {
   getCustomerAccountOrder,
   getCustomerAccountOrders,
   normalizeCustomerAccountUserErrors,
+  resolveCustomerAccountSessionGid,
   setDefaultCustomerAddress,
   updateCustomerProfile,
 } from './operations'
@@ -66,6 +67,23 @@ describe('Customer Account read operations', () => {
     await expect(getCustomerAccountIdentity(makeSession())).resolves.toEqual({
       customerId: 'gid://shopify/Customer/test-customer-1',
       email: 'avery@example.test',
+    })
+  })
+
+  test('keeps a session that already stores a customer GID', async () => {
+    const session = makeSession()
+
+    await expect(resolveCustomerAccountSessionGid(session)).resolves.toBe(
+      session,
+    )
+  })
+
+  test('replaces a non-GID session customer id with the account GID', async () => {
+    const session = { ...makeSession(), customerId: '1234567890123' }
+
+    await expect(resolveCustomerAccountSessionGid(session)).resolves.toEqual({
+      ...session,
+      customerId: 'gid://shopify/Customer/test-customer-1',
     })
   })
 

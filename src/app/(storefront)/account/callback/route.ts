@@ -6,7 +6,10 @@ import {
   decodeIdTokenClaims,
   exchangeCustomerAccountCode,
 } from '@/lib/shopify/customer-account/oauth'
-import { getCustomerAccountIdentity } from '@/lib/shopify/customer-account/operations'
+import {
+  getCustomerAccountIdentity,
+  isShopifyCustomerGid,
+} from '@/lib/shopify/customer-account/operations'
 import {
   clearPendingCustomerAuth,
   getPendingCustomerAuth,
@@ -80,7 +83,10 @@ export async function GET(request: Request): Promise<Response> {
     return await failCallback('nonce-mismatch')
   }
 
-  let customerId = claims.sub
+  // Only trust the ID token subject when it is a customer GID; carts report
+  // their owner as a GID, so any other format breaks signed-in carts.
+  let customerId =
+    claims.sub && isShopifyCustomerGid(claims.sub) ? claims.sub : undefined
   if (!customerId) {
     try {
       customerId = (

@@ -1,3 +1,5 @@
+import { logEvent } from '@/lib/observability/logger'
+
 import { customerAccountFetch } from './client'
 import type {
   CustomerAccountAddress,
@@ -548,6 +550,40 @@ export async function getCustomerAccountIdentity(
     customerId: data.customer.id,
     email: data.customer.emailAddress?.emailAddress ?? null,
   }
+}
+
+const SHOPIFY_CUSTOMER_GID_PREFIX = 'gid://shopify/Customer/'
+
+// Storefront carts identify their owner with a Shopify customer GID, so the
+// session must store the same format for cart ownership checks to match.
+export function isShopifyCustomerGid(value: string): boolean {
+  return (
+    value.startsWith(SHOPIFY_CUSTOMER_GID_PREFIX) &&
+    value.length > SHOPIFY_CUSTOMER_GID_PREFIX.length
+  )
+}
+
+// Sessions created while Shopify sent a non-GID ID token subject hold an ID
+// that never matches a cart owner. Look up the GID with the session's own
+// token instead of forcing those customers to sign in again.
+export async function resolveCustomerAccountSessionGid(
+  session: CustomerAccountSession,
+): Promise<CustomerAccountSession> {
+  if (isShopifyCustomerGid(session.customerId)) return session
+
+  try {
+    const identity = await getCustomerAccountIdentity(session)
+    if (identity && isShopifyCustomerGid(identity.customerId)) {
+      return { ...session, customerId: identity.customerId }
+    }
+  } catch {
+    // Fall through: the unresolved session is still returned below.
+  }
+
+  logEvent('error', 'customer_account_failed', {
+    status: 'session-customer-id-unresolved',
+  })
+  return session
 }
 
 export async function getCustomerAccountOrders(

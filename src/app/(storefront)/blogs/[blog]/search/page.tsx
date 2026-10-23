@@ -14,6 +14,11 @@ type Props = {
   searchParams: Promise<{ q?: string }>
 }
 
+// htmlLimitedBots makes metadata block every response, and this page's
+// metadata reads searchParams, so the shell has to wait for the request.
+// That is intended for SEO; tell Next.js the blocking route is deliberate.
+export const instant = false
+
 export function generateStaticParams() {
   return [{ blog: DEFAULT_BLOG_HANDLE }]
 }

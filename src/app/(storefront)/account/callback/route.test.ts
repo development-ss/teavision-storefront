@@ -184,71 +184,77 @@ describe('account OAuth callback route', () => {
     expect(tokenRequestBody.has('nonce')).toBe(false)
   })
 
-  test('loads customer identity when Shopify omits subject from the ID token', async () => {
-    cookieState.values.set(
-      'teavision_customer_auth',
-      sealPendingCustomerAuth({
-        codeVerifier: 'verifier',
-        createdAt: Date.now(),
-        nonce: 'nonce-1',
-        returnTo: '/account',
-        state: 'state-1',
-      }),
-    )
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(async (input: RequestInfo | URL) => {
-        const url = String(input)
-        if (url.endsWith('/.well-known/openid-configuration')) {
-          return Response.json({
-            authorization_endpoint: 'http://127.0.0.1:9013/auth',
-            end_session_endpoint: 'http://127.0.0.1:9013/logout',
-            issuer: 'http://127.0.0.1:9013',
-            jwks_uri: 'http://127.0.0.1:9013/jwks',
-            token_endpoint: 'http://127.0.0.1:9013/token',
-          })
-        }
+  test.each([
+    ['missing', null],
+    ['not a customer GID', '1234567890123'],
+  ])(
+    'loads customer identity when the ID token subject is %s',
+    async (_label, subject) => {
+      cookieState.values.set(
+        'teavision_customer_auth',
+        sealPendingCustomerAuth({
+          codeVerifier: 'verifier',
+          createdAt: Date.now(),
+          nonce: 'nonce-1',
+          returnTo: '/account',
+          state: 'state-1',
+        }),
+      )
+      vi.stubGlobal(
+        'fetch',
+        vi.fn(async (input: RequestInfo | URL) => {
+          const url = String(input)
+          if (url.endsWith('/.well-known/openid-configuration')) {
+            return Response.json({
+              authorization_endpoint: 'http://127.0.0.1:9013/auth',
+              end_session_endpoint: 'http://127.0.0.1:9013/logout',
+              issuer: 'http://127.0.0.1:9013',
+              jwks_uri: 'http://127.0.0.1:9013/jwks',
+              token_endpoint: 'http://127.0.0.1:9013/token',
+            })
+          }
 
-        if (url.endsWith('/.well-known/customer-account-api')) {
-          return Response.json({
-            customer_account_api_endpoint: 'http://127.0.0.1:9013/graphql',
-          })
-        }
+          if (url.endsWith('/.well-known/customer-account-api')) {
+            return Response.json({
+              customer_account_api_endpoint: 'http://127.0.0.1:9013/graphql',
+            })
+          }
 
-        if (url.endsWith('/graphql')) {
-          return Response.json({
-            data: {
-              customer: {
-                emailAddress: { emailAddress: 'customer@example.com' },
-                id: 'gid://shopify/Customer/from-api',
+          if (url.endsWith('/graphql')) {
+            return Response.json({
+              data: {
+                customer: {
+                  emailAddress: { emailAddress: 'customer@example.com' },
+                  id: 'gid://shopify/Customer/from-api',
+                },
               },
-            },
+            })
+          }
+
+          return Response.json({
+            access_token: 'customer-access-token',
+            expires_in: 3600,
+            id_token: makeIdToken('nonce-1', subject),
+            refresh_token: 'customer-refresh-token',
           })
-        }
+        }),
+      )
 
-        return Response.json({
-          access_token: 'customer-access-token',
-          expires_in: 3600,
-          id_token: makeIdToken('nonce-1', null),
-          refresh_token: 'customer-refresh-token',
-        })
-      }),
-    )
+      const response = await GET(
+        new Request(
+          'https://teavision.test/account/callback?code=abc&state=state-1',
+        ),
+      )
+      const sessionCookie = cookieState.values.get('teavision_customer_session')
 
-    const response = await GET(
-      new Request(
-        'https://teavision.test/account/callback?code=abc&state=state-1',
-      ),
-    )
-    const sessionCookie = cookieState.values.get('teavision_customer_session')
-
-    expect(response.headers.get('location')).toBe(
-      'https://teavision.test/account',
-    )
-    expect(unsealCustomerSession(sessionCookie ?? '')).toMatchObject({
-      customerId: 'gid://shopify/Customer/from-api',
-    })
-  })
+      expect(response.headers.get('location')).toBe(
+        'https://teavision.test/account',
+      )
+      expect(unsealCustomerSession(sessionCookie ?? '')).toMatchObject({
+        customerId: 'gid://shopify/Customer/from-api',
+      })
+    },
+  )
 
   test('successful callback syncs an existing cart after session creation', async () => {
     cookieState.values.set('teavision_cart', 'gid://shopify/Cart/current')

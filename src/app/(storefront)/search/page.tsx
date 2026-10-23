@@ -23,6 +23,11 @@ const SEARCH_FALLBACK_STATE = {
   filters: [],
 } satisfies SearchRouteState
 
+// htmlLimitedBots makes metadata block every response, and this page's
+// metadata reads searchParams, so the shell has to wait for the request.
+// That is intended for SEO; tell Next.js the blocking route is deliberate.
+export const instant = false
+
 export async function generateMetadata({
   searchParams,
 }: Props): Promise<Metadata> {

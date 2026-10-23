@@ -12,6 +12,7 @@ import {
   updateCartNote,
   updateCartLines,
 } from '@/lib/shopify/operations/cart'
+import { customerAccountFetch } from '@/lib/shopify/customer-account/client'
 import { getCustomerAccountSession } from '@/lib/shopify/customer-account/session'
 import { logEvent } from '@/lib/observability/logger'
 import { hashIdentifier } from '@/lib/observability/redact'
@@ -48,6 +49,10 @@ vi.mock('@/lib/shopify/operations/cart', () => ({
 
 vi.mock('@/lib/shopify/customer-account/session', () => ({
   getCustomerAccountSession: vi.fn(),
+}))
+
+vi.mock('@/lib/shopify/customer-account/client', () => ({
+  customerAccountFetch: vi.fn(),
 }))
 
 vi.mock('@/lib/observability/logger', () => ({
@@ -113,6 +118,9 @@ const updateCartNoteMock = updateCartNote as unknown as Mock<
 const getCustomerAccountSessionMock =
   getCustomerAccountSession as unknown as Mock<typeof getCustomerAccountSession>
 const logEventMock = logEvent as unknown as Mock<typeof logEvent>
+const customerAccountFetchMock = customerAccountFetch as unknown as Mock<
+  typeof customerAccountFetch
+>
 
 describe('cart Server Actions', () => {
   beforeEach(() => {
@@ -242,6 +250,39 @@ describe('cart Server Actions', () => {
       { customerAccessToken: 'customer-access-token' },
     )
     expect(revalidatePathMock).toHaveBeenCalledWith('/cart')
+  })
+
+  test('keeps the signed-in cart when the session stores a non-GID customer id', async () => {
+    const cart = makeCart({
+      buyerIdentity: { customerId: 'gid://shopify/Customer/1234567890123' },
+      id: 'gid://shopify/Cart/signed-in',
+    })
+    const cookieStore = makeCookieStore(cart.id)
+    cookiesMock.mockResolvedValue(cookieStore)
+    getCartMock.mockResolvedValue(cart)
+    addCartLinesMock.mockResolvedValue(makeCart({ ...cart, totalQuantity: 2 }))
+    getCustomerAccountSessionMock.mockResolvedValue({
+      accessToken: 'customer-access-token',
+      customerId: '1234567890123',
+      expiresAt: Date.now() + 60000,
+      idToken: 'id-token',
+      refreshToken: 'refresh-token',
+    })
+    customerAccountFetchMock.mockResolvedValue({
+      customer: {
+        emailAddress: { emailAddress: 'customer@example.com' },
+        id: 'gid://shopify/Customer/1234567890123',
+      },
+    })
+
+    await addToCartAction('gid://shopify/ProductVariant/1', 1)
+    await expect(getCartAction()).resolves.toBe(cart)
+
+    expect(createCartMock).not.toHaveBeenCalled()
+    expect(addCartLinesMock).toHaveBeenCalledWith(cart.id, [
+      { merchandiseId: 'gid://shopify/ProductVariant/1', quantity: 1 },
+    ])
+    expect(cookieStore.delete).not.toHaveBeenCalled()
   })
 
   test('getCartAction discards a cart owned by a different signed-in customer', async () => {

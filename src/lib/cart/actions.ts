@@ -108,7 +108,13 @@ async function getOptionalCustomerAccountSession(): Promise<CustomerAccountSessi
   const { getCustomerAccountSession } =
     await import('@/lib/shopify/customer-account/session')
 
-  return await getCustomerAccountSession()
+  const session = await getCustomerAccountSession()
+  if (!session) return null
+
+  const { resolveCustomerAccountSessionGid } =
+    await import('@/lib/shopify/customer-account/operations')
+
+  return await resolveCustomerAccountSessionGid(session)
 }
 
 export async function getCartIdFromCookie(): Promise<string | null> {

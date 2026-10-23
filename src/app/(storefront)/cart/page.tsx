@@ -4,7 +4,10 @@ import { Suspense } from 'react'
 import { Section } from '@/components/ui/section'
 import { getCartAction } from '@/lib/cart/actions'
 import { withNoindexRobots } from '@/lib/seo/noindex'
-import { getCustomerAccountIdentity } from '@/lib/shopify/customer-account/operations'
+import {
+  getCustomerAccountIdentity,
+  isShopifyCustomerGid,
+} from '@/lib/shopify/customer-account/operations'
 import { getCustomerAccountSession } from '@/lib/shopify/customer-account/session'
 import {
   getProduct,
@@ -67,8 +70,13 @@ async function CartPageContent({ searchParams }: CartPageProps) {
   const accountIdentity = session
     ? await getCustomerAccountIdentity(session).catch(() => null)
     : null
+  // Older sessions may hold a non-GID customer ID. The identity was loaded
+  // with that session's own token, so it still describes the same customer.
   const accountEmail =
-    session && accountIdentity?.customerId === session.customerId
+    session &&
+    accountIdentity &&
+    (!isShopifyCustomerGid(session.customerId) ||
+      accountIdentity.customerId === session.customerId)
       ? accountIdentity.email
       : null
   const accountContextState =

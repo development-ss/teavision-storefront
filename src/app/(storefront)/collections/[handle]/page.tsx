@@ -16,6 +16,11 @@ import { HeroContent } from './_components/hero-content'
 import { PageContent } from './_components/page-content'
 import type { PageProps } from './_lib/page-types'
 
+// htmlLimitedBots makes metadata block every response, and this page's
+// metadata reads searchParams, so the shell has to wait for the request.
+// That is intended for SEO; tell Next.js the blocking route is deliberate.
+export const instant = false
+
 export async function generateStaticParams(): Promise<
   Array<{ handle: string }>
 > {
