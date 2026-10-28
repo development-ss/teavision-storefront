@@ -36,7 +36,7 @@ export const organizationJsonLd = {
     'https://www.instagram.com/teavision_australia/',
   ],
   // Matches the claim shown on /pages/our-story and /pages/certifications.
-  award: ['17+ industry awards, including 7 Gold Medals'],
+  award: ['15+ industry awards, including 5 Gold Medals'],
   hasCredential: [
     {
       '@type': 'EducationalOccupationalCredential',

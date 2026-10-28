@@ -42,10 +42,10 @@ export const TRUST_POINTS = [
 export const AWARD_EXCELLENCE = {
   title: 'Award-Winning Excellence',
   copy: 'Our commitment to quality has been recognized with prestigious awards from around the world',
-  stat: '17+',
+  stat: '15+',
   label: 'Industry Awards',
   detailPrefix: 'Including',
-  detailHighlight: '7 Gold Medals',
+  detailHighlight: '5 Gold Medals',
   detailSuffix: 'for various tea blends and industry recognition',
 }
 

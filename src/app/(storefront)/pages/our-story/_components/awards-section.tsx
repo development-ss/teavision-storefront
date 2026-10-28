@@ -17,13 +17,13 @@ export function AwardsSection() {
             include:
           </p>
           <p className="sr-only">
-            17+ industry awards, including 7 Gold Medals for various tea blends
+            15+ industry awards, including 5 Gold Medals for various tea blends
             and industry recognition, plus Australian Organic certification.
           </p>
         </div>
 
         <div className="flex justify-center">
-          <Badge variant="gold" label="17+ industry awards" />
+          <Badge variant="gold" label="15+ industry awards" />
         </div>
 
         <ul
