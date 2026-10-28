@@ -315,7 +315,7 @@ export const PRIVATE_LABEL_CARDS_FIXTURE = [
       height: 1200,
     },
     action: 'Explore',
-    body: 'From 20kg minimum orders, we manufacture pyramid, flat, and round tea bags with full packaging options to suit your volume.',
+    body: 'We manufacture pyramid, flat, and round tea bags with full packaging options to suit your volume.',
   },
   {
     title: 'Private Label',

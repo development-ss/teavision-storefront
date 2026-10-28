@@ -28,14 +28,14 @@ export const NPD_PRODUCT_TYPES = [
     label: 'Tea Bags & Loose Leaf',
   },
   {
-    value: 'Tea Bags Blank White Tags 8,000 per SKU MOQ',
+    value: 'Tea Bags Blank White Tags 6,000 per SKU MOQ',
     label: 'Tea Bags Blank White Tags',
-    note: '8,000 per SKU MOQ',
+    note: '6,000 per SKU MOQ',
   },
   {
-    value: 'Tea Bags Custom Printed Tag Logo 48,000 Per SKU MOQ',
+    value: 'Tea Bags Custom Printed Tag Logo 24,000 Per SKU MOQ',
     label: 'Tea Bags Custom Printed Tag Logo',
-    note: '48,000 per SKU MOQ',
+    note: '24,000 per SKU MOQ',
   },
   {
     value: 'Powder Blend (superfood, extracts etc)',

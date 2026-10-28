@@ -10,7 +10,7 @@ export const HERO_FEATURES = [
   'Custom Blends Available',
   'Global Shipping',
   'Private Label Packaging',
-  'MOQ from 8,000 bags',
+  'MOQ 6,000 blank tags / 24,000 printed tags',
 ] as const
 
 export type CertLogo = {
@@ -76,7 +76,7 @@ export const SOLUTION_CARDS: SolutionCard[] = [
       'Your own recipe or our expertise',
       'Organic and conventional options',
       'Natural flavoring available',
-      'MOQ: 8,000 tea bags for custom blends',
+      'MOQ: 6,000 tea bags with blank tags, 24,000 with custom printed tags',
     ],
   },
   {
