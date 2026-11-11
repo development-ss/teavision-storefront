@@ -262,7 +262,8 @@ describe('ProductContent heading hierarchy', () => {
       }),
     )
 
-    expect(html).toContain('Organic Black Tea · Size · Assam Tea')
+    expect(html).toContain('Organic Black Tea · Assam Tea')
+    expect(html).not.toContain('· Size ·')
     expect(html).not.toContain('>Certifications</th>')
     expect(html).not.toContain('<details')
     expect(countOccurrences(html, 'Certified organic black tea.')).toBe(1)

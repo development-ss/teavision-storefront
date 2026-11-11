@@ -49,7 +49,9 @@ function toTagPathSegment(tag: string): string {
     .replace(/^-|-$/g, '')
 }
 
-export function getMetaSegments(tags: string[], optionName?: string): string[] {
+// The product's groups only. A purchase option name such as "Size" is not a
+// group, so it never appears in this label (TKT-02526).
+export function getMetaSegments(tags: string[]): string[] {
   const categoryLabels = tags
     .map(getCategoryLabel)
     .filter((tag): tag is string => tag !== null)
@@ -61,9 +63,7 @@ export function getMetaSegments(tags: string[], optionName?: string): string[] {
   const groupLabels =
     categoryLabels.length > 0 ? categoryLabels : fallbackLabels
 
-  return [groupLabels[0], optionName, groupLabels[1]]
-    .filter((segment): segment is string => Boolean(segment))
-    .slice(0, 3)
+  return groupLabels.filter(Boolean).slice(0, 2)
 }
 
 function getDisplayRating(rating: number | undefined): number {
@@ -96,7 +96,7 @@ export function ProductDetails({
     const label = formatTag(tag)
     return label ? [{ tag, label }] : []
   })
-  const metaSegments = getMetaSegments(product.tags, product.options[0]?.name)
+  const metaSegments = getMetaSegments(product.tags)
   const ratingContent = (
     <>
       <StarRating rating={displayRating} size="lg" />
