@@ -14,13 +14,13 @@ import { JsonLd } from './_components/json-ld'
 import { LogisticsSection } from './_components/logistics-section'
 import { ProcessSection } from './_components/process-section'
 import { WhyChooseSection } from './_components/why-choose-section'
-import { PAGE_DESCRIPTION, PAGE_PATH, PAGE_TITLE } from './_lib/data'
+import { META_TITLE, PAGE_DESCRIPTION, PAGE_PATH } from './_lib/data'
 
 export const metadata: Metadata = withNoindexRobots({
-  title: { absolute: PAGE_TITLE },
+  title: { absolute: META_TITLE },
   description: PAGE_DESCRIPTION,
   openGraph: {
-    title: PAGE_TITLE,
+    title: META_TITLE,
     description: PAGE_DESCRIPTION,
     url: PAGE_PATH,
     type: 'website',

@@ -3,6 +3,7 @@ import { MapPinned, ShieldCheck, Tag, type LucideIcon } from 'lucide-react'
 // Page metadata — shared by page.tsx (Metadata) and json-ld.tsx (structured data)
 export const PAGE_PATH = '/pages/bulk-wholesale-supply'
 export const PAGE_TITLE = 'Bulk Wholesale Supply'
+export const META_TITLE = 'Bulk Wholesale Tea Supply Australia | Teavision'
 export const PAGE_DESCRIPTION =
   'Import premium teas, herbs and botanicals at scale with Teavision. Container freight to Melbourne, 1500+ ingredients direct from farms, ACO/HACCP certified supply chain.'
 

@@ -17,7 +17,7 @@ import { TopProductsSection } from './_components/top-products-section'
 import { YourBrandSection } from './_components/your-brand-section'
 
 const PAGE_PATH = '/pages/private-label-packing'
-const PAGE_TITLE = 'Private Label Packing'
+const PAGE_TITLE = 'Private Label Tea Packing Australia | Teavision'
 const PAGE_DESCRIPTION =
   "Australia's #1 private label tea partner. Custom blends, tea bag manufacturing, extract powders, and full packaging under your brand. Low MOQs, export-ready docs."
 

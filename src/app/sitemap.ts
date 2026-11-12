@@ -13,12 +13,11 @@ import { isNoindexModeEnabled } from '@/lib/seo/noindex'
 import { isProductIndexable } from '@/lib/seo/product-eligibility'
 import { isShopifyPageEligibleForSitemap } from '@/lib/seo/shopify-page-eligibility'
 import { SITE_URL } from '@/lib/seo/site-url'
+import { STATIC_PAGE_LAST_MODIFIED } from '@/lib/seo/static-page-dates'
 import { getCollectionSummaries } from '@/lib/shopify/operations/collection'
 import { isPublicCollection } from '@/lib/shopify/collection-content'
 import { getAllProducts } from '@/lib/shopify/operations/product'
 import { getPagePath, getPages } from '@/lib/shopify/operations/storefront-page'
-
-const STATIC_LAST_MODIFIED = '2026-06-02'
 
 function getSitemapUrl(path: string): string {
   return path === '/' ? SITE_URL : `${SITE_URL}${path}`
@@ -31,7 +30,7 @@ const STATIC_PAGES: MetadataRoute.Sitemap = getLaunchSeoRouteExpectations()
   )
   .map((expectation) => ({
     url: getSitemapUrl(expectation.path),
-    lastModified: STATIC_LAST_MODIFIED,
+    lastModified: STATIC_PAGE_LAST_MODIFIED[expectation.path],
     changeFrequency: 'monthly',
     priority: expectation.path === '/' ? 1.0 : 0.5,
   }))
@@ -56,7 +55,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .filter((product) => isProductIndexable(product.handle))
     .map((product) => ({
       url: `${SITE_URL}/products/${product.handle}`,
-      lastModified: product.updatedAt ?? STATIC_LAST_MODIFIED,
+      lastModified: product.updatedAt,
       changeFrequency: 'daily',
       priority: 0.8,
     }))
@@ -95,7 +94,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const latestArticleDate = indexedArticles[0]?.publishedAt
     ? new Date(indexedArticles[0].publishedAt)
-    : STATIC_LAST_MODIFIED
+    : undefined
 
   const blogUrls: MetadataRoute.Sitemap =
     blog && !blog.seo.noIndex

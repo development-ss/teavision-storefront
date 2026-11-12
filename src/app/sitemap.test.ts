@@ -5,6 +5,8 @@ import {
   getArticlePath,
   type BlogIndex,
 } from '@/lib/blog/operations'
+import { getLaunchSeoRouteExpectations } from '@/lib/seo/launch-route-matrix'
+import { STATIC_PAGE_LAST_MODIFIED } from '@/lib/seo/static-page-dates'
 import { getCollectionSummaries } from '@/lib/shopify/operations/collection'
 import { getAllProducts } from '@/lib/shopify/operations/product'
 import { getPages } from '@/lib/shopify/operations/storefront-page'
@@ -226,5 +228,70 @@ describe('sitemap product coverage', () => {
 
     expect(paths).toContain('/products/cats-claw-cut')
     expect(paths).not.toContain('/products/freight')
+  })
+})
+
+describe('sitemap static page dates', () => {
+  beforeEach(() => {
+    isNoindexModeEnabledMock.mockReturnValue(false)
+    isSitemapExposureEnabledFromEnvMock.mockReturnValue(false)
+    getBlogMock.mockResolvedValue(createBlog())
+    vi.mocked(getAllProducts).mockResolvedValue([])
+    vi.mocked(getCollectionSummaries).mockResolvedValue([])
+    vi.mocked(getPages).mockResolvedValue([])
+  })
+
+  test('gives every app-owned sitemap page its own recorded date', async () => {
+    const staticPaths = getLaunchSeoRouteExpectations()
+      .filter(
+        (expectation) =>
+          expectation.expectedStatus === 200 &&
+          expectation.shouldAppearInSitemap,
+      )
+      .map((expectation) => expectation.path)
+
+    expect(staticPaths.length).toBeGreaterThan(0)
+
+    for (const path of staticPaths) {
+      const date = STATIC_PAGE_LAST_MODIFIED[path]
+
+      expect(date, `add a last-changed date for ${path}`).toMatch(
+        /^\d{4}-\d{2}-\d{2}$/,
+      )
+      expect(Number.isNaN(Date.parse(date ?? ''))).toBe(false)
+    }
+
+    const entries = await sitemap()
+    const byPath = new Map(
+      entries.map((entry) => [new URL(entry.url).pathname, entry]),
+    )
+
+    for (const path of staticPaths) {
+      const pathname = new URL(path, 'https://www.teavision.com.au').pathname
+
+      expect(byPath.get(pathname)?.lastModified).toBe(
+        STATIC_PAGE_LAST_MODIFIED[path],
+      )
+    }
+  })
+
+  test('does not reuse one shared date for every page', () => {
+    const dates = new Set(Object.values(STATIC_PAGE_LAST_MODIFIED))
+
+    expect(dates.size).toBeGreaterThan(1)
+  })
+
+  test('leaves the date out when a product has no update date', async () => {
+    vi.mocked(getAllProducts).mockResolvedValue([
+      { handle: 'cats-claw-cut' },
+    ] as Awaited<ReturnType<typeof getAllProducts>>)
+
+    const entries = await sitemap()
+    const product = entries.find((entry) =>
+      entry.url.endsWith('/products/cats-claw-cut'),
+    )
+
+    expect(product).toBeDefined()
+    expect(product?.lastModified).toBeUndefined()
   })
 })

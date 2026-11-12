@@ -34,11 +34,11 @@ function getInitialBlendMessage(
 }
 
 export const metadata: Metadata = withNoindexRobots({
-  title: { absolute: 'Contact' },
+  title: { absolute: 'Contact Teavision | Wholesale Tea Enquiries' },
   description:
     'Contact Teavision for wholesale tea, custom blending, private label, samples, and supply enquiries across Australia.',
   openGraph: {
-    title: 'Contact',
+    title: 'Contact Teavision | Wholesale Tea Enquiries',
     description:
       'Contact Teavision for wholesale tea, custom blending, private label, samples, and supply enquiries.',
     url: '/pages/contact',
