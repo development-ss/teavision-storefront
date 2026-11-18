@@ -188,10 +188,10 @@ export const AWARD_IMAGES = [
     height: 258,
   },
   {
-    src: '/images/supply-chain/supply-chain-mark-2.png',
+    src: '/images/supply-chain/supply-chain-haccp-australia-mark.png',
     alt: '',
     width: 400,
-    height: 259,
+    height: 258,
   },
   {
     src: '/images/supply-chain/supply-chain-mark-3.png',

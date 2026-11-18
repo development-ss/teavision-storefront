@@ -399,8 +399,8 @@ export const SUPPLY_CHAIN_PROTECTION_FIXTURE = {
       height: 408,
     },
     {
-      src: '/images/certifications/haccp.png',
-      alt: 'HACCP certified mark',
+      src: '/images/certifications/haccp-australia.png',
+      alt: 'HACCP Australia certification mark',
       width: 630,
       height: 408,
     },
